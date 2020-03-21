@@ -1,126 +1,24 @@
 package planning.repository;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import planning.exception.InternalServerException;
-import planning.message.CommonMessage;
 import planning.model.Classroom;
-import planning.modelVO.ClassroomVO;
 import java.util.List;
 
 @Repository
-public class ClassroomCRUD {
+public interface ClassroomCRUD extends JpaRepository<Classroom, Long> {
 
-    private final SessionFactory hibernate;
+    @Query("from Classroom c where c.name = :className")
+    public Classroom getClassroomByName(String className);
 
-    @Autowired
-    public ClassroomCRUD(SessionFactory hibernate) {
-        this.hibernate = hibernate;
-    }
+    @Query("from Classroom c where c.removed = false order by c.name")
+    public List<Classroom> getAllClassrooms();
 
-    @Transactional
-    public Classroom getClassroomByName(String className) {
-        try {
-            Session session = hibernate.getCurrentSession();
+    @Query("from Classroom c where c.id = :classId and c.removed = false")
+    public Classroom getClassroomById(long classId);
 
-            return session.createQuery("FROM Classroom where name = :name", Classroom.class)
-                    .setParameter("name", className)
-                    .uniqueResult();
+    @Query("from Classroom c where c.id = :classId and c.name = :className and c.removed = false")
+    public Classroom checkDuplicateClassName(long classId, String className);
 
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    @Transactional
-    public Classroom addClassroom(ClassroomVO classroomVO){
-        Classroom classroom = new Classroom();
-        classroom.setName(classroomVO.getName());
-
-        try {
-            Session session = hibernate.getCurrentSession();
-
-            session.save(classroom);
-
-            return classroom;
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    public List<Classroom> getAllClassrooms(){
-        try{
-            Session session = hibernate.getCurrentSession();
-
-            return session.createQuery("from Classroom " +
-                    "where removed = false " +
-                    "order by name", Classroom.class)
-                    .list();
-
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    public void deleteClassroom(Classroom classroom) {
-        classroom.setRemoved(true);
-
-        try {
-            Session session = hibernate.getCurrentSession();
-
-            session.update(classroom);
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    public Classroom getClassroomById(long classId) {
-        try{
-            Session session = hibernate.getCurrentSession();
-
-            return session.createQuery("from Classroom where id = :classId and removed = false", Classroom.class)
-                    .setParameter("classId", classId)
-                    .uniqueResult();
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    public Classroom checkDuplicateClassName(long classId, String className) {
-        try{
-            Session session = hibernate.getCurrentSession();
-
-            return session.createQuery("from Classroom " +
-                    "where id != :classId " +
-                    "and name = :className " +
-                    "and removed = false", Classroom.class)
-                    .setParameter("classId", classId)
-                    .setParameter("className", className)
-                    .uniqueResult();
-        } catch (HibernateException ex) {
-            throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-        }
-    }
-
-    public Classroom updateClassroom(Classroom classroom, ClassroomVO classroomVO) {
-        if(classroomVO != null) {
-            classroom.setName(classroom.getName());
-
-            try {
-                Session session = hibernate.getCurrentSession();
-
-                session.update(classroom);
-
-                return classroom;
-            } catch (HibernateException ex) {
-                throw InternalServerException.getInstance(CommonMessage.getHibernateError());
-            }
-        }
-
-        return null;
-    }
 }

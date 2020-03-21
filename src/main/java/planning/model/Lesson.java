@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,16 +11,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "classroom")
-public class Classroom {
+@Table(name = "lesson")
+public class Lesson {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column
-    private String name;
 
     @Column(updatable = false)
     @CreationTimestamp
@@ -29,5 +25,26 @@ public class Classroom {
 
     @Column
     private boolean removed;
+
+    @Column
+    private String name;
+
+    @Column
+    private String code;
+
+    @Column
+    private String number;
+
+    @Column
+    private int unit;
+
+    @Enumerated
+    private Grade grade;
+
+    public enum Grade{
+        KARSHENASI,
+        ARSHAD,
+        DOCTORA
+    }
 
 }

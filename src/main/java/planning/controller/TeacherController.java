@@ -1,6 +1,6 @@
 package planning.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import planning.exception.ResourceNotFoundException;
@@ -17,19 +17,16 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/teacher")
+@AllArgsConstructor
 public class TeacherController {
 
     private final TeacherCRUD teacherCRUD;
-
-    @Autowired
-    public TeacherController(TeacherCRUD teacherCRUD) {
-        this.teacherCRUD = teacherCRUD;
-    }
+    private final TeacherService teacherService;
 
     @GetMapping(value = "")
     public ResponseEntity<Result<List<TeacherVO>>> getAllTeachers() {
         return ResponseEntity.ok(ResFact.<List<TeacherVO>>build()
-                .setResult(TeacherService.getTeacherVOs(teacherCRUD.getAllTeachers()))
+                .setResult(teacherService.getTeacherVOs(teacherCRUD.getAllTeachers()))
                 .get());
     }
 
@@ -41,7 +38,7 @@ public class TeacherController {
             throw ResourceNotFoundException.getInstance(TeacherMessage.getTeacherNotFound(teacherId.toString()));
 
         return ResponseEntity.ok(ResFact.<TeacherVO>build()
-                .setResult(TeacherService.getTeacherVO(teacher))
+                .setResult(teacherService.getTeacherVO(teacher))
                 .get());
     }
 
@@ -52,7 +49,7 @@ public class TeacherController {
         if(teacher == null)
             throw ResourceNotFoundException.getInstance(TeacherMessage.getTeacherNotFound(teacherId.toString()));
 
-        teacherCRUD.deleteTeacher(teacher);
+        teacherService.deleteTeacher(teacher);
 
         return ResponseEntity.ok(ResFact.<Boolean>build()
                 .setResult(true)

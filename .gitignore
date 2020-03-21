@@ -11,7 +11,7 @@
 .classpath
 .factorypath
 .gradle
-.idea
+.idea/*
 .metadata
 .project
 .recommenders
@@ -38,3 +38,4 @@ transaction-logs
 secrets.yml
 .gradletasknamecache
 .sts4-cache
+data/*

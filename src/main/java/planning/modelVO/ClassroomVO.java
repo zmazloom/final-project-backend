@@ -15,13 +15,11 @@ import java.util.Date;
 public class ClassroomVO {
 
     private Long id;
+    private Date created;
+    private boolean removed;
 
     @NotNull
     @NotEmpty
     private String name;
-
-    private Date created;
-
-    private boolean removed;
 
 }

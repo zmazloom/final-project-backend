@@ -49,7 +49,8 @@ public class ClassroomService {
 
     public Classroom updateClassroom(Classroom classroom, ClassroomVO classroomVO) {
         if(classroomVO != null) {
-            classroom.setName(classroomVO.getName());
+            if(classroomVO.getName() != null)
+                classroom.setName(classroomVO.getName());
             return classroomCRUD.saveAndFlush(classroom);
         }
 

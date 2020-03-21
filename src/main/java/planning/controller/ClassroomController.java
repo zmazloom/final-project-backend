@@ -1,7 +1,8 @@
 package planning.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import planning.exception.ResourceConflictException;
 import planning.exception.ResourceNotFoundException;
@@ -18,31 +19,28 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/classroom")
+@AllArgsConstructor
 public class ClassroomController {
 
     private final ClassroomCRUD classroomCRUD;
-
-    @Autowired
-    public ClassroomController(ClassroomCRUD classroomCRUD) {
-        this.classroomCRUD = classroomCRUD;
-    }
+    private final ClassroomService classroomService;
 
     @PostMapping(value = "")
-    public ResponseEntity<Result<ClassroomVO>> addClassroom(@RequestBody @NotNull ClassroomVO classroomVO) {
+    public ResponseEntity<Result<ClassroomVO>> addClassroom(@RequestBody @NotNull @Validated ClassroomVO classroomVO) {
         if(classroomCRUD.getClassroomByName(classroomVO.getName()) != null)
             throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
 
-        Classroom classroom = classroomCRUD.addClassroom(classroomVO);
+        Classroom classroom = classroomService.addClassroom(classroomVO);
 
         return ResponseEntity.ok(ResFact.<ClassroomVO>build()
-                .setResult(ClassroomService.getClassroomVO(classroom))
+                .setResult(classroomService.getClassroomVO(classroom))
                 .get());
     }
 
     @GetMapping(value = "")
     public ResponseEntity<Result<List<ClassroomVO>>> getAllClassrooms() {
         return ResponseEntity.ok(ResFact.<List<ClassroomVO>>build()
-                .setResult(ClassroomService.getClassroomVOs(classroomCRUD.getAllClassrooms()))
+                .setResult(classroomService.getClassroomVOs(classroomCRUD.getAllClassrooms()))
                 .get());
     }
 
@@ -54,7 +52,7 @@ public class ClassroomController {
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
 
         return ResponseEntity.ok(ResFact.<ClassroomVO>build()
-                .setResult(ClassroomService.getClassroomVO(classroom))
+                .setResult(classroomService.getClassroomVO(classroom))
                 .get());
     }
 
@@ -65,7 +63,7 @@ public class ClassroomController {
         if(classroom == null)
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
 
-        classroomCRUD.deleteClassroom(classroom);
+        classroomService.deleteClassroom(classroom);
 
         return ResponseEntity.ok(ResFact.<Boolean>build()
                 .setResult(true)
@@ -74,7 +72,7 @@ public class ClassroomController {
     }
 
     @PutMapping("/{classId}")
-    public ResponseEntity<Result<ClassroomVO>> updateClassroom(@PathVariable("classId") @NotNull Long classId, @RequestBody ClassroomVO classroomVO) {
+    public ResponseEntity<Result<ClassroomVO>> updateClassroom(@PathVariable("classId") @NotNull Long classId, @RequestBody @NotNull @Validated ClassroomVO classroomVO) {
         Classroom classroom = classroomCRUD.getClassroomById(classId);
 
         if(classroom == null)
@@ -83,10 +81,10 @@ public class ClassroomController {
         if(classroomCRUD.checkDuplicateClassName(classId, classroomVO.getName()) != null)
             throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
 
-        Classroom changedClassroom = classroomCRUD.updateClassroom(classroom, classroomVO);
+        Classroom changedClassroom = classroomService.updateClassroom(classroom, classroomVO);
 
         return ResponseEntity.ok(ResFact.<ClassroomVO>build()
-                .setResult(ClassroomService.getClassroomVO(changedClassroom))
+                .setResult(classroomService.getClassroomVO(changedClassroom))
                 .get());
     }
 

@@ -12,16 +12,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "classroom")
-public class Classroom {
+@Table(name = "plan")
+public class Plan {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column
-    private String name;
 
     @Column(updatable = false)
     @CreationTimestamp
@@ -29,5 +26,8 @@ public class Classroom {
 
     @Column
     private boolean removed;
+
+    @Column
+    private String name;
 
 }

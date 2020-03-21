@@ -7,27 +7,30 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "classroom")
-public class Classroom {
+@Table(name = "teacher_time")
+public class TeacherTime {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String name;
-
     @Column(updatable = false)
     @CreationTimestamp
     private Date created;
 
-    @Column
-    private boolean removed;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Plan plan;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Teacher teacher;
+
+    @Column
+    private String time;
 }

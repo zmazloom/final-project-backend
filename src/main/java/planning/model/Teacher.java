@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -20,6 +19,10 @@ public class Teacher {
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 
+    @Column(updatable = false)
+    @CreationTimestamp
+    private Date created;
+
 	@Column
 	private String firstName;
 
@@ -27,7 +30,7 @@ public class Teacher {
 	private String lastName;
 
 	@Column
-    private String prefix;
+    private TeacherPrefix prefix;
 
     @Column
     private String username;
@@ -41,8 +44,11 @@ public class Teacher {
 	@Column
     private boolean removed;
 
-    @Column(updatable = false)
-    @CreationTimestamp
-    private Date created;
+    public enum TeacherPrefix{
+        DOCTOR,
+        OSTAD_TAMAM,
+        OSTAD,
+        MOHANDES
+    }
 
 }

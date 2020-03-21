@@ -68,7 +68,8 @@ public class LessonController {
     }
 
     @PutMapping("/{lessonId}")
-    public ResponseEntity<Result<LessonVO>> updateLesson(@PathVariable("lessonId") @NotNull Long lessonId, @RequestBody LessonVO lessonVO) {
+    public ResponseEntity<Result<LessonVO>> updateLesson(@PathVariable("lessonId") @NotNull Long lessonId,
+                                                         @RequestBody LessonVO lessonVO) {
         Lesson lesson = lessonCRUD.getLessonById(lessonId);
 
         if(lesson == null)

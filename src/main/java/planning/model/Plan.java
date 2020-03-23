@@ -30,4 +30,12 @@ public class Plan {
     @Column
     private String name;
 
+    @Column
+    @Enumerated
+    private TimeType timeType;
+
+    public enum TimeType {
+        TWO_HOURS,
+        ONE_THIRTY_HOURS
+    }
 }

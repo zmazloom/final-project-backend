@@ -31,6 +31,6 @@ public class TeacherTime {
     @ManyToOne(fetch = FetchType.LAZY)
     private Teacher teacher;
 
-    @Column
-    private String time;
+    @Enumerated
+    private Time time;
 }

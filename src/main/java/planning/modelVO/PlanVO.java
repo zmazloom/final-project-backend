@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import planning.model.Lesson;
+import planning.model.Plan;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonVO {
+public class PlanVO {
 
     private long id;
     private Date created;
@@ -23,14 +23,6 @@ public class LessonVO {
     @NotEmpty
     private String name;
 
-    private String code;
-
-    private String number;
-
     @NotNull
-    private Lesson.Unit unit;
-
-    @NotNull
-    private Lesson.Grade grade;
-
+    private Plan.TimeType timeType;
 }

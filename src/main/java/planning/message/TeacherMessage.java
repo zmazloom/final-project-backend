@@ -16,6 +16,11 @@ public class TeacherMessage {
 
     private static final String FA_INVALID_SIZE_AVATAR = "اندازه تصویر باید کمتر از 1 مگابایت باشد.";
 
+    private static final String FA_ADD_TEACHER_TIME = "زمان با موفقیت اضافه شد.";
+
+    private static final String FA_INVALID_TWO_TIME = "بازه زمان باید دو ساعت یک بار باشد.";
+    private static final String FA_INVALID_ONE_THIRTY_TIME = "بازه زمان باید یک ساعت و نیم یک بار باشد.";
+
 
     public static String getTeacherNotFound(String teacherId) {
         return FA_TEACHER_NOT_FOUND.replace("{TEACHERID}", teacherId);
@@ -43,5 +48,17 @@ public class TeacherMessage {
 
     public static String getInvalidSizeAvatar() {
         return FA_INVALID_SIZE_AVATAR;
+    }
+
+    public static String getAddTeacherTime() {
+        return FA_ADD_TEACHER_TIME;
+    }
+
+    public static String getInvalidTwoTime() {
+        return FA_INVALID_TWO_TIME;
+    }
+
+    public static String getInvalidOneThirtyTime() {
+        return FA_INVALID_ONE_THIRTY_TIME;
     }
 }

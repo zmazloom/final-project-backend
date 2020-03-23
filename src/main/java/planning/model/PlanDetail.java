@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -23,19 +24,29 @@ public class PlanDetail {
     @CreationTimestamp
     private Date created;
 
-    @Column
-    private Long planId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Plan plan;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Lesson lesson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Teacher teacher;
 
     @Column
-    private Long lessonId;
+    @Enumerated
+    private Time time;
 
-    @Column
-    private Long teacherId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Classroom classroom;
 
-    @Column
-    private String timeId;
+    @Enumerated
+    private WeekType weekType;
 
-    @Column
-    private Long classId;
+    public enum WeekType {
+        ZOJ,
+        FARD,
+        HAR
+    }
 
 }

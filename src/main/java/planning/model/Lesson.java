@@ -36,7 +36,7 @@ public class Lesson {
     private String number;
 
     @Column
-    private int unit;
+    private Unit unit;
 
     @Enumerated
     private Grade grade;
@@ -45,6 +45,14 @@ public class Lesson {
         KARSHENASI,
         ARSHAD,
         DOCTORA
+    }
+
+    public enum Unit{
+        ZERO,
+        ONE,
+        TWO,
+        THREE,
+        FOUR
     }
 
 }

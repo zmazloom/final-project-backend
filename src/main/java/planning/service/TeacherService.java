@@ -233,42 +233,30 @@ public class TeacherService {
         twoHourList.add(Time.SHANBE14T);
         twoHourList.add(Time.SHANBE16T);
         twoHourList.add(Time.SHANBE18T);
-        twoHourList.add(Time.SHANBE20T);
         twoHourList.add(Time.YEKSHANBE8T);
         twoHourList.add(Time.YEKSHANBE10T);
         twoHourList.add(Time.YEKSHANBE12T);
         twoHourList.add(Time.YEKSHANBE14T);
         twoHourList.add(Time.YEKSHANBE16T);
         twoHourList.add(Time.YEKSHANBE18T);
-        twoHourList.add(Time.YEKSHANBE20T);
         twoHourList.add(Time.DOSHANBE8T);
         twoHourList.add(Time.DOSHANBE10T);
         twoHourList.add(Time.DOSHANBE12T);
         twoHourList.add(Time.DOSHANBE14T);
         twoHourList.add(Time.DOSHANBE16T);
         twoHourList.add(Time.DOSHANBE18T);
-        twoHourList.add(Time.DOSHANBE20T);
         twoHourList.add(Time.SESHANBE8T);
         twoHourList.add(Time.SESHANBE10T);
         twoHourList.add(Time.SESHANBE12T);
         twoHourList.add(Time.SESHANBE14T);
         twoHourList.add(Time.SESHANBE16T);
         twoHourList.add(Time.SESHANBE18T);
-        twoHourList.add(Time.SESHANBE20T);
         twoHourList.add(Time.CHARSHANBE8T);
         twoHourList.add(Time.CHARSHANBE10T);
         twoHourList.add(Time.CHARSHANBE12T);
         twoHourList.add(Time.CHARSHANBE14T);
         twoHourList.add(Time.CHARSHANBE16T);
         twoHourList.add(Time.CHARSHANBE18T);
-        twoHourList.add(Time.CHARSHANBE20T);
-        twoHourList.add(Time.PANJSHANBE8T);
-        twoHourList.add(Time.PANJSHANBE10T);
-        twoHourList.add(Time.PANJSHANBE12T);
-        twoHourList.add(Time.PANJSHANBE14T);
-        twoHourList.add(Time.PANJSHANBE16T);
-        twoHourList.add(Time.PANJSHANBE18T);
-        twoHourList.add(Time.PANJSHANBE20T);
 
         return twoHourList;
     }
@@ -315,14 +303,6 @@ public class TeacherService {
         oneThirtyHourList.add(Time.CHARSHANBE15O);
         oneThirtyHourList.add(Time.CHARSHANBE1630O);
         oneThirtyHourList.add(Time.CHARSHANBE18O);
-        oneThirtyHourList.add(Time.PANJSHANBE730O);
-        oneThirtyHourList.add(Time.PANJSHANBE9O);
-        oneThirtyHourList.add(Time.PANJSHANBE1030O);
-        oneThirtyHourList.add(Time.PANJSHANBE12O);
-        oneThirtyHourList.add(Time.PANJSHANBE1330O);
-        oneThirtyHourList.add(Time.PANJSHANBE15O);
-        oneThirtyHourList.add(Time.PANJSHANBE1630O);
-        oneThirtyHourList.add(Time.PANJSHANBE18O);
 
         return oneThirtyHourList;
     }

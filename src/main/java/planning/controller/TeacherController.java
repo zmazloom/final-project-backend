@@ -28,7 +28,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/teacher")
+@RequestMapping(value = "/api/teacher")
 @AllArgsConstructor
 public class TeacherController {
 

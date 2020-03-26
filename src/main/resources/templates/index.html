@@ -1,24 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
-      layout:decorate="~{layouts/layout}">
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
 <head>
-    <title>Home Page</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link th:href="@{/css/core.css}" rel="stylesheet" media="screen"/>
+
 </head>
-<body>
-<div class="container">
-    <div class="row">
-        <div class="col-2" layout:fragment="sidebar">
-            <h1>Sidebar</h1>
-            <a href="#">Login</a>
-        </div>
-        <div class="col" layout:fragment="content">
-            <h1>Welcome to the Index page</h1>
-            <br>This content is replacing the content of the layout:fragment="content"<br>
-            placeholder in layout.html</p>
-        </div>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/layout :: header"></header>
+    <aside th:replace="layouts/layout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                داشبورد
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> داشبورد</a></li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+            <!--------------------------
+              | Your Page Content Here |
+              -------------------------->
+
+        </section>
+        <!-- /.content -->
     </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/layout :: footer"></aside>
+    <aside th:replace="layouts/layout :: settings"></aside>
+    <aside th:replace="layouts/layout :: sidebar"></aside>
 </div>
+
+
+<!-- REQUIRED JS SCRIPTS -->
+<!-- jQuery 3 -->
+<script th:src="@{/static/bower_components/jquery/dist/jquery.min.js}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{/static/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{/static/dist/js/adminlte.min.js}"></script>
+
 </body>
 </html>

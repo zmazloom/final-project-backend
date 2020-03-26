@@ -25,7 +25,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/plan")
+@RequestMapping(value = "/api/plan")
 public class PlanController {
 
     private final PlanCRUD planCRUD;

@@ -18,7 +18,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/lesson")
+@RequestMapping(value = "/api/lesson")
 public class LessonController {
 
     private final LessonCRUD lessonCRUD;

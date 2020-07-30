@@ -1,6 +1,8 @@
 package planning.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +40,9 @@ public class ClassroomController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Result<List<ClassroomVO>>> getAllClassrooms() {
-        return ResponseEntity.ok(ResFact.<List<ClassroomVO>>build()
-                .setResult(classroomService.getClassroomVOs(classroomCRUD.getAllClassrooms()))
+    public ResponseEntity<Result<Page<Classroom>>> getAllClassrooms(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(ResFact.<Page<Classroom>>build()
+                .setResult(classroomCRUD.getAllClassrooms(PageRequest.of(page, size)))
                 .get());
     }
 

@@ -62,6 +62,12 @@
             <artifactId>gson</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.sbahmani</groupId>
+            <artifactId>jalcal</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!--web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

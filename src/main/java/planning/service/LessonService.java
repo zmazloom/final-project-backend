@@ -1,5 +1,6 @@
 package planning.service;
 
+import com.github.sbahmani.jalcal.util.JalCal;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,9 @@ public class LessonService {
         if (lesson == null)
             return null;
 
-        return modelMapper.map(lesson, LessonVO.class);
+        LessonVO lessonVO = modelMapper.map(lesson, LessonVO.class);
+        lessonVO.setCreated(JalCal.gregorianToJalaliTime(lesson.getCreated()));
+        return lessonVO;
     }
 
     public List<LessonVO> getLessonVOs(List<Lesson> lessons) {

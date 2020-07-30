@@ -2,6 +2,7 @@ package planning.service;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import planning.model.Classroom;
 import planning.modelVO.ClassroomVO;
@@ -25,7 +26,7 @@ public class ClassroomService {
         return modelMapper.map(classroom, ClassroomVO.class);
     }
 
-    public List<ClassroomVO> getClassroomVOs(List<Classroom> classrooms) {
+    public List<ClassroomVO> getClassroomVOs(Page<Classroom> classrooms) {
         List<ClassroomVO> vos = new ArrayList<>();
         classrooms.stream().filter(Objects::nonNull).forEach(classroom -> vos.add(getClassroomVO(classroom)));
 

@@ -16,7 +16,7 @@ import java.util.Date;
 public class LessonVO {
 
     private long id;
-    private Date created;
+    private String created;
     private boolean removed;
 
     @NotNull

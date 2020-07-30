@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}">
+<head>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/layout :: header"></header>
+    <aside th:replace="layouts/layout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                داشبورد
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> داشبورد</a></li>
+                <li class="active">کلاس</li>
+            </ol>
+        </section>
+
+
+        <script th:inline="javascript">
+            function addClassroom($id) {
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/api/classroom",
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+
+                        console.log("inn");
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "json",
+                            url: "/classroom",
+                            dataType: 'json',
+                            cache: false,
+                            timeout: 600000,
+                            success: function (data) {
+                                Console.log(data);
+                                $('classrooms').html(data);
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        });
+
+                        var jsonData = JSON.stringify(data, null, 4);
+                        $('#feedback').html(jsonData);
+                    },
+                    error: function (ex) {
+                        console.log("ERROR : ", ex);
+                        var requestException = ex.responseText;
+                        $('#feedback').html(requestException);
+                    }
+                });
+
+            }
+        </script>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+
+            <div class="container my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="container my-5">
+                            <p class="my-5">
+                                <a href="/edit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus ml-2"> افزودن کلاس </i></a>
+                            </p>
+                            <div class="col-md-10">
+                                <h2 th:case="null">کلاسی پیدا نشد!</h2>
+                                <div th:case="*">
+                                    <table class="table table-striped table-responsive-md">
+                                        <thead>
+                                        <tr>
+                                            <th>شناسه</th>
+                                            <th>نام کلاس</th>
+                                            <th>تاریخ ایجاد</th>
+                                            <th>ویرایش</th>
+                                            <th>حذف</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="classroom : ${classrooms}">
+                                            <td th:text="${classroom.id}"></td>
+                                            <td th:text="${classroom.name}"></td>
+                                            <td th:text="${classroom.created}"></td>
+                                            <td>
+                                                <a th:href="@{/api/classroom/{id}(id=${classroom.id})}"
+                                                   class="btn btn-primary">
+                                                    <i class="fas fa-user-edit ml-2"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary" type="button" th:onclick="'deleteClassroom(\''+ ${classroom.id} +'\');'">
+                                                    <i class="fas fa-user-times ml-2"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/layout :: footer"></aside>
+    <aside th:replace="layouts/layout :: settings"></aside>
+    <aside th:replace="layouts/layout :: sidebar"></aside>
+</div>
+
+
+
+<!-- REQUIRED JS SCRIPTS -->
+<!-- jQuery 3 -->
+<script th:src="@{/static/bower_components/jquery/dist/jquery.min.js}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{/static/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{/static/dist/js/adminlte.min.js}"></script>
+
+</body>
+</html>

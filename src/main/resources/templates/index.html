@@ -2,6 +2,12 @@
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
 <head>
 
+    <script>
+        $(document).ready(function () {
+            $('#base-sidebar li:eq(1)').addClass('active');
+        });
+    </script>
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -39,8 +45,6 @@
 
 
 <!-- REQUIRED JS SCRIPTS -->
-<!-- jQuery 3 -->
-<script th:src="@{/static/bower_components/jquery/dist/jquery.min.js}"></script>
 <!-- Bootstrap 3.3.7 -->
 <script th:src="@{/static/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
 <!-- App -->

@@ -3,14 +3,62 @@
       layout:decorate="~{layouts/layout}">
 <head>
 
+    <style>
+        #datatable_wrapper{
+            width: 80%;
+            margin: auto;
+        }
+        .pagination{
+            float: left;
+        }
+        #datatable{
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #datatable th, #datatable td{
+            padding: 10px;
+        }
+        #datatable tr{
+            border-radius: 10px;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
+            $('#base-sidebar li:eq(2)').addClass('active');
+
+            $(function () {
+                $("#datatable").dataTable({
+                    "language": {
+                        "paginate": {
+                            "next": "بعدی",
+                            "previous" : "قبلی"
+                        },
+                        "sSearch": "جستجو ",
+                        "sEmptyTable": "کلاسی وجود ندارد.",
+                        "sLengthMenu": 'تعداد ' + '<select>'+
+                            '<option value="10">10</option>'+
+                            '<option value="20">20</option>'+
+                            '<option value="30">30</option>'+
+                            '<option value="40">40</option>'+
+                            '<option value="50">50</option>'+
+                            '<option value="-1">همه</option>'+
+                            '</select>',
+                        "sLoadingRecords": "در حال بارگذاری اطلاعات...",
+                        "sZeroRecords": "داده ای برای نمایش نیست."
+                    },
+                    "info" : false,
+                    "bSort": false
+                });
+
+            });
+
             $('.nBtn, .table .eBtn').on('click', function (event) {
                 event.preventDefault();
                 var href = $(this).attr('href');
-                var text = $(this).text();
+                var text = $(this).attr('name');
                 //for update user
-                if (text == 'Edit') {
+                if (text == 'edit') {
                     $.get(href, function (classroom, status) {
                         console.log(classroom);
                         if(classroom != null) {
@@ -96,40 +144,43 @@
         </script>
 
         <!-- Main content -->
-        <section class="content container-fluid" style="padding: 30px; margin-top: 10px; margin-bottom: 10px;">
-
-            <button class="btn btn-success nBtn"> New user</button>
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
 
             <div class="card">
-                <div class="card-block">
-                    <table class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>شناسه</th>
-                            <th>نام</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="classroom :${classrooms}">
-                            <td th:text="${classroom.id}"></td>
-                            <td th:text="${classroom.name}"></td>
-                            <td>
-                                <a th:href="@{classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn">Delete</a>
-                                <a th:href="@{classroom/one/(id=${classroom.id})}" class="btn btn-primary eBtn">Edit</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <hr/>
-                    <ul class="nav nav-pills">
-                        <li class="nav item" th:each="i : ${#numbers.sequence(0, classrooms.totalPages - 1)}">
-                            <a th:href="@{classroom(page=${i})}" th:text="${i}" class="nav-link"
-                               th:classappend="${currentPage}==${i}?'active':''"></a>
-                        </li>
-                    </ul>
-
+                <div class="row" style="width: 80%; outline: none; margin: 0 auto 20px auto;">
+                    <div class="col-sm-12" style="padding: 0;">
+                        <button class="btn btn-primary nBtn">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <span style="margin: 5px;">کلاس جدید</span>
+                        </button>
+                    </div>
                 </div>
+
+                <table id="datatable" class="table table-striped table-hover " style="margin: 10px auto 0 auto;">
+                    <thead style="background-color: #a7b6bf;">
+                    <tr>
+                        <th>شناسه</th>
+                        <th>نام</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="classroom :${classrooms}">
+                        <td th:text="${classroom.id}"></td>
+                        <td th:text="${classroom.name}"></td>
+                        <td>
+                            <a th:href="@{classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn"><i
+                                    class="fa fa-trash-o"></i></a>
+                        </td>
+                        <td>
+                            <a th:href="@{classroom/one/(id=${classroom.id})}" class="btn btn-primary eBtn" name="edit"><i
+                                    class="fa fa-pencil"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
             </div>
 
             <!--#Modal form for user update-->
@@ -225,9 +276,6 @@
 </div>
 
 
-<!-- REQUIRED JS SCRIPTS -->
-<!-- jQuery 3 -->
-<script th:src="@{bower_components/jquery/dist/jquery.min.js}"></script>
 <!-- Bootstrap 3.3.7 -->
 <script th:src="@{bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
 <!-- App -->

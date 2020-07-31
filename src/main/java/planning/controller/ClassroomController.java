@@ -1,8 +1,6 @@
 package planning.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +13,7 @@ import planning.modelVO.ClassroomVO;
 import planning.model.ResFact;
 import planning.repository.ClassroomCRUD;
 import planning.service.ClassroomService;
+
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class ClassroomController {
 
     @PostMapping(value = "")
     public ResponseEntity<Result<ClassroomVO>> addClassroom(@RequestBody @NotNull @Validated ClassroomVO classroomVO) {
-        if(classroomCRUD.getClassroomByName(classroomVO.getName()) != null)
+        if (classroomCRUD.getClassroomByName(classroomVO.getName()) != null)
             throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
 
         Classroom classroom = classroomService.addClassroom(classroomVO);
@@ -40,9 +39,9 @@ public class ClassroomController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Result<Page<Classroom>>> getAllClassrooms(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(ResFact.<Page<Classroom>>build()
-                .setResult(classroomCRUD.getAllClassrooms(PageRequest.of(page, size)))
+    public ResponseEntity<Result<List<ClassroomVO>>> getAllClassrooms() {
+        return ResponseEntity.ok(ResFact.<List<ClassroomVO>>build()
+                .setResult(classroomService.getClassroomVOs(classroomCRUD.getAllClassrooms()))
                 .get());
     }
 
@@ -50,7 +49,7 @@ public class ClassroomController {
     public ResponseEntity<Result<ClassroomVO>> getClassroomById(@PathVariable("classId") @NotNull Long classId) {
         Classroom classroom = classroomCRUD.getClassroomById(classId);
 
-        if(classroom == null)
+        if (classroom == null)
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
 
         return ResponseEntity.ok(ResFact.<ClassroomVO>build()
@@ -62,7 +61,7 @@ public class ClassroomController {
     public ResponseEntity<Result<Boolean>> deleteClassroom(@PathVariable("classId") @NotNull Long classId) {
         Classroom classroom = classroomCRUD.getClassroomById(classId);
 
-        if(classroom == null)
+        if (classroom == null)
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
 
         classroomService.deleteClassroom(classroom);
@@ -77,10 +76,10 @@ public class ClassroomController {
     public ResponseEntity<Result<ClassroomVO>> updateClassroom(@PathVariable("classId") @NotNull Long classId, @RequestBody @NotNull @Validated ClassroomVO classroomVO) {
         Classroom classroom = classroomCRUD.getClassroomById(classId);
 
-        if(classroom == null)
+        if (classroom == null)
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
 
-        if(classroomCRUD.checkDuplicateClassName(classId, classroomVO.getName()) != null)
+        if (classroomCRUD.checkDuplicateClassName(classId, classroomVO.getName()) != null)
             throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
 
         Classroom changedClassroom = classroomService.updateClassroom(classroom, classroomVO);

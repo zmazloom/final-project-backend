@@ -1,12 +1,10 @@
 package planning.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import planning.model.Classroom;
 import planning.model.Result;
 import planning.modelVO.ClassroomVO;
 
@@ -32,10 +30,9 @@ public class PanelController {
     }
 
     @GetMapping("/classroom")
-    public String getAllClassrooms(Model model, HttpServletRequest request,
-                                   @RequestParam(defaultValue = "0") int page) {
+    public String getAllClassrooms(Model model, HttpServletRequest request) {
         try {
-            ResponseEntity<Result<Page<Classroom>>> classroomVOList = classroomController.getAllClassrooms(page, 2);
+            ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
 
             if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null && !classroomVOList.getBody().getResult().isEmpty())
                 model.addAttribute("classrooms", classroomVOList.getBody().getResult());
@@ -48,8 +45,6 @@ public class PanelController {
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
             return "classroom::#classroom-list";
-
-        model.addAttribute("currentPage", page);
 
         return "classroom";
     }
@@ -92,7 +87,7 @@ public class PanelController {
 
     @GetMapping("/classroom/one")
     @ResponseBody
-    public Optional<ClassroomVO> findOneClassroom(Model model, HttpServletRequest request, long id)   {
+    public Optional<ClassroomVO> findOneClassroom(Model model, HttpServletRequest request, long id) {
         try {
             ResponseEntity<Result<ClassroomVO>> classroom = classroomController.getClassroomById(id);
 

@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import planning.model.Lesson;
+import planning.model.Grade;
+import planning.model.Unit;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @Data
 @Builder
@@ -28,9 +29,9 @@ public class LessonVO {
     private String number;
 
     @NotNull
-    private Lesson.Unit unit;
+    private Unit unit;
 
     @NotNull
-    private Lesson.Grade grade;
+    private Grade grade;
 
 }

@@ -21,11 +21,14 @@
         #datatable tr{
             border-radius: 10px;
         }
+        .form-group{
+            margin: 20px 0;
+        }
     </style>
 
     <script>
         $(document).ready(function () {
-            $('#base-sidebar li:eq(2)').addClass('active');
+            $('#base-sidebar li:eq(4)').addClass('active');
 
             $(function () {
                 $("#datatable").dataTable({
@@ -35,7 +38,7 @@
                             "previous" : "قبلی"
                         },
                         "sSearch": "جستجو ",
-                        "sEmptyTable": "کلاسی وجود ندارد.",
+                        "sEmptyTable": "درسی وجود ندارد.",
                         "sLengthMenu": 'تعداد ' + '<select>'+
                             '<option value="10">10</option>'+
                             '<option value="20">20</option>'+
@@ -59,16 +62,24 @@
                 var text = $(this).attr('name');
                 //for update user
                 if (text == 'edit') {
-                    $.get(href, function (classroom, status) {
-                        if(classroom != null) {
-                            $('.myFormUpdate #id').val(classroom.id);
-                            $('.myFormUpdate #name').val(classroom.name);
+                    $.get(href, function (lesson, status) {
+                        if(lesson != null) {
+                            $('.myFormUpdate #id').val(lesson.id);
+                            $('.myFormUpdate #name').val(lesson.name);
+                            $('.myFormUpdate #code').val(lesson.code);
+                            $('.myFormUpdate #number').val(lesson.number);
+                            $('.myFormUpdate #unit').val(lesson.unit);
+                            $('.myFormUpdate #grade').val(lesson.grade);
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
                 } else {
                     //for creating user
                     $('.myFormCreate #name').val('');
+                    $('.myFormCreate #code').val('');
+                    $('.myFormCreate #number').val('');
+                    $('.myFormCreate #unit').val('THREE');
+                    $('.myFormCreate #grade').val('KARSHENASI');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -93,54 +104,14 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                کلاس
+                درس
             </h1>
             <ol class="breadcrumb">
                 <li><a th:href="@{/dashboard}"><i class="fa fa-dashboard"></i> داشبورد</a></li>
-                <li class="active">کلاس</li>
+                <li class="active">درس</li>
             </ol>
         </section>
 
-
-        <script th:inline="javascript">
-            function deleteClassroom($id) {
-                var deleteResult = confirm("آیا از حذف کلاس مطمئن هستید؟");
-                if (deleteResult != null && deleteResult === true) {
-                    $.ajax({
-                        type: "DELETE",
-                        contentType: "application/json",
-                        url: "/api/classroom/" + $id,
-                        dataType: 'json',
-                        cache: false,
-                        timeout: 600000,
-                        success: function (data) {
-                            $.ajax({
-                                type: "GET",
-                                contentType: "text",
-                                url: "/classroom",
-                                dataType: 'text',
-                                cache: false,
-                                timeout: 600000,
-                                success: function (data) {
-                                    $('#classroom-list').replaceWith(data);
-                                },
-                                error: function (e) {
-                                    console.log(e);
-                                }
-                            });
-
-                            var jsonData = JSON.stringify(data, null, 4);
-                            $('#feedback').html(jsonData);
-                        },
-                        error: function (ex) {
-                            console.log("ERROR : ", ex);
-                            var requestException = ex.responseText;
-                            $('#feedback').html(requestException);
-                        }
-                    });
-                }
-            }
-        </script>
 
         <!-- Main content -->
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
@@ -150,7 +121,7 @@
                     <div class="col-sm-12" style="padding: 0;">
                         <button class="btn btn-primary nBtn">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span style="margin: 5px;">کلاس جدید</span>
+                            <span style="margin: 5px;">درس جدید</span>
                         </button>
                     </div>
                 </div>
@@ -160,21 +131,41 @@
                     <tr>
                         <th>شناسه</th>
                         <th>نام</th>
+                        <th>گروه</th>
+                        <th>شماره درس</th>
+                        <th>تعداد واحد</th>
+                        <th>مقطع</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="classroom :${classrooms}">
-                        <td th:text="${classroom.id}"></td>
-                        <td th:text="${classroom.name}"></td>
+                    <tr th:each="lesson :${lessons}">
+                        <td th:text="${lesson.id}"></td>
+                        <td th:text="${lesson.name}"></td>
+                        <td th:text="${lesson.code}"></td>
+                        <td th:text="${lesson.number}"></td>
                         <td>
-                            <a th:href="@{classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn"><i
-                                    class="fa fa-trash-o"></i></a>
+                            <div th:switch="${lesson.unit}">
+                                <span th:case="${T(planning.model.Unit).ZERO}">0</span>
+                                <span th:case="${T(planning.model.Unit).ONE}">1</span>
+                                <span th:case="${T(planning.model.Unit).TWO}">2</span>
+                                <span th:case="${T(planning.model.Unit).THREE}">3</span>
+                                <span th:case="${T(planning.model.Unit).FOUR}">4</span>
+                            </div>
                         </td>
                         <td>
-                            <a th:href="@{classroom/one/(id=${classroom.id})}" class="btn btn-primary eBtn" name="edit"><i
-                                    class="fa fa-pencil"></i></a>
+                            <div th:switch="${lesson.grade}">
+                                <span th:case="${T(planning.model.Grade).KARSHENASI}">کارشناسی</span>
+                                <span th:case="${T(planning.model.Grade).ARSHAD}">کارشناسی ارشد</span>
+                                <span th:case="${T(planning.model.Grade).DOCTORA}">دکترا</span>
+                            </div>
+                        </td>
+                        <td>
+                            <a th:href="@{lesson/delete/(id=${lesson.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                        <td>
+                            <a th:href="@{lesson/one/(id=${lesson.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil"></i></a>
                         </td>
                     </tr>
                     </tbody>
@@ -182,14 +173,14 @@
 
             </div>
 
-            <!--#Modal form for class update-->
+            <!--#Modal form for lesson update-->
             <div class="myFormUpdate">
-                <form th:action="@{/classroom/update}" method="post">
+                <form th:action="@{/lesson/update}" method="post">
                     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش کلاس</h5>
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش درس</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -201,6 +192,38 @@
                                     <div class="form-group">
                                         <label for="name" class="col-form-label">نام</label>
                                         <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="code" class="col-form-label">گروه</label>
+                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="number" class="col-form-label">شماره درس</label>
+                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="grade" class="col-form-label">مقطع</label>
+                                                <select name="grade" id="grade">
+                                                    <option value="KARSHENASI">کارشناسی</option>
+                                                    <option value="ARSHAD">کارشناسی ارشد</option>
+                                                    <option value="DOCTORA">دکترا</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="unit" class="col-form-label">تعداد واحد</label>
+                                                <select name="unit" id="unit">
+                                                    <option value="ZERO">0</option>
+                                                    <option value="ONE">1</option>
+                                                    <option value="TWO">2</option>
+                                                    <option value="THREE">3</option>
+                                                    <option value="FOUR">4</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -214,15 +237,15 @@
             </div>
             <!--End update form-->
 
-            <!--#Modal for class create-->
+            <!--#Modal for lesson create-->
             <div class="myFormCreate">
-                <form th:action="@{/classroom/add}" method="post">
+                <form th:action="@{/lesson/add}" method="post">
                     <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">کلاس جدید</h5>
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">درس جدید</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -231,6 +254,38 @@
                                     <div class="form-group">
                                         <label for="name" class="col-form-label">نام</label>
                                         <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="code" class="col-form-label">گروه</label>
+                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="number" class="col-form-label">شماره درس</label>
+                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="grade" class="col-form-label">مقطع</label>
+                                                <select name="grade" id="grade">
+                                                    <option value="KARSHENASI">کارشناسی</option>
+                                                    <option value="ARSHAD">کارشناسی ارشد</option>
+                                                    <option value="DOCTORA">دکترا</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="unit" class="col-form-label">تعداد واحد</label>
+                                                <select name="unit" id="unit">
+                                                    <option value="ZERO">0</option>
+                                                    <option value="ONE">1</option>
+                                                    <option value="TWO">2</option>
+                                                    <option value="THREE">3</option>
+                                                    <option value="FOUR">4</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer" style="padding: 15px 0;">
                                         <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
@@ -244,18 +299,18 @@
             </div>
             <!--End form-->
 
-            <!-- #Modal for removing class -->
+            <!-- #Modal for removing lesson -->
             <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                         <div class="modal-header" style="background-color: #ecebeb;">
-                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف کلاس</h5>
+                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف درس</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>آیا از حذف کلاس اطمینان دارید؟</p>
+                            <p>آیا از حذف درس اطمینان دارید؟</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>

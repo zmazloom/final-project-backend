@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -40,19 +41,5 @@ public class Lesson {
 
     @Enumerated
     private Grade grade;
-
-    public enum Grade{
-        KARSHENASI,
-        ARSHAD,
-        DOCTORA
-    }
-
-    public enum Unit{
-        ZERO,
-        ONE,
-        TWO,
-        THREE,
-        FOUR
-    }
 
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import planning.model.Classroom;
 import planning.modelVO.ClassroomVO;
 import planning.repository.ClassroomCRUD;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class ClassroomService {
     }
 
     public void deleteClassroom(Classroom classroom) {
-        if(classroom != null) {
+        if (classroom != null) {
             classroom.setRemoved(true);
 
             classroomCRUD.saveAndFlush(classroom);
@@ -48,8 +49,8 @@ public class ClassroomService {
     }
 
     public Classroom updateClassroom(Classroom classroom, ClassroomVO classroomVO) {
-        if(classroomVO != null) {
-            if(classroomVO.getName() != null)
+        if (classroomVO != null) {
+            if (classroomVO.getName() != null)
                 classroom.setName(classroomVO.getName());
             return classroomCRUD.saveAndFlush(classroom);
         }

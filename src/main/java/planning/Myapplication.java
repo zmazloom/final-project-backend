@@ -8,7 +8,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.thymeleaf.spring5.view.ThymeleafView;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -29,5 +31,4 @@ public class Myapplication {
     public LayoutDialect layoutDialect() {
         return new LayoutDialect();
     }
-
 }

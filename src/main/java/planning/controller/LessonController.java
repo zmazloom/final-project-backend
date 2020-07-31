@@ -2,6 +2,7 @@ package planning.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import planning.exception.ResourceNotFoundException;
@@ -16,13 +17,14 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @CrossOrigin
-@RestController
+@Controller
 @AllArgsConstructor
 @RequestMapping(value = "/api/lesson")
 public class LessonController {
 
     private final LessonCRUD lessonCRUD;
     private final LessonService lessonService;
+
 
     @PostMapping(value = "")
     public ResponseEntity<Result<LessonVO>> addLesson(@RequestBody @NotNull @Validated LessonVO lessonVO) {

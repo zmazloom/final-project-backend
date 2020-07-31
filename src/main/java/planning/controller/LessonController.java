@@ -36,7 +36,7 @@ public class LessonController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Result<List<LessonVO>>> getAllClassrooms() {
+    public ResponseEntity<Result<List<LessonVO>>> getAllLessons() {
         return ResponseEntity.ok(ResFact.<List<LessonVO>>build()
                 .setResult(lessonService.getLessonVOs(lessonCRUD.getAllLessons()))
                 .get());

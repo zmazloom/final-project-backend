@@ -44,11 +44,4 @@ public class Teacher {
 	@Column
     private boolean removed;
 
-    public enum TeacherPrefix{
-        DOCTOR,
-        OSTAD_TAMAM,
-        OSTAD,
-        MOHANDES
-    }
-
 }

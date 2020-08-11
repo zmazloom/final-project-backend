@@ -21,14 +21,11 @@
         #datatable tr{
             border-radius: 10px;
         }
-        .form-group{
-            margin: 20px 0;
-        }
     </style>
 
     <script>
         $(document).ready(function () {
-            $('#base-sidebar li:eq(4)').addClass('active');
+            $('#base-sidebar li:eq(3)').addClass('active');
 
             $(function () {
                 $("#datatable").dataTable({
@@ -38,7 +35,7 @@
                             "previous" : "قبلی"
                         },
                         "sSearch": "جستجو ",
-                        "sEmptyTable": "درسی وجود ندارد.",
+                        "sEmptyTable": "استادی وجود ندارد.",
                         "sLengthMenu": 'تعداد ' + '<select>'+
                             '<option value="10">10</option>'+
                             '<option value="20">20</option>'+
@@ -60,30 +57,30 @@
                 event.preventDefault();
                 var href = $(this).attr('href');
                 var text = $(this).attr('name');
-                //for update lesson
+                //for update teacher
                 if (text == 'edit') {
-                    $.get(href, function (lesson, status) {
-                        if(lesson != null) {
-                            $('.myFormUpdate #id').val(lesson.id);
-                            $('.myFormUpdate #name').val(lesson.name);
-                            $('.myFormUpdate #code').val(lesson.code);
-                            $('.myFormUpdate #number').val(lesson.number);
-                            $('.myFormUpdate #unit').val(lesson.unit);
-                            $('.myFormUpdate #grade').val(lesson.grade);
+                    $.get(href, function (teacher, status) {
+                        if(teacher != null) {
+                            $('.myFormUpdate #id').val(teacher.id);
+                            $('.myFormUpdate #firstName').val(teacher.firstName);
+                            $('.myFormUpdate #lastName').val(teacher.lastName);
+                            $('.myFormUpdate #prefix').val(teacher.prefix);
+                            $('.myFormUpdate #username').val(teacher.username);
+                            $('.myFormUpdate #password').val(teacher.password);
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
                 } else {
-                    //for creating lesson
-                    $('.myFormCreate #name').val('');
-                    $('.myFormCreate #code').val('');
-                    $('.myFormCreate #number').val('');
-                    $('.myFormCreate #unit').val('THREE');
-                    $('.myFormCreate #grade').val('KARSHENASI');
+                    //for creating teacher
+                    $('.myFormCreate #firstName').val('');
+                    $('.myFormCreate #lastName').val('');
+                    $('.myFormCreate #prefix').val('');
+                    $('.myFormCreate #username').val('');
+                    $('.myFormCreate #password').val('');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
-            //for delete lesson
+            //for delete teacher
             $('.table .delBtn').on('click', function (event) {
                 event.preventDefault();
                 var href = $(this).attr('href');
@@ -94,6 +91,7 @@
     </script>
 
 </head>
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
@@ -104,11 +102,11 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                درس
+                استاد
             </h1>
             <ol class="breadcrumb">
                 <li><a th:href="@{/dashboard}"><i class="fa fa-dashboard"></i> داشبورد</a></li>
-                <li class="active">درس</li>
+                <li class="active">استاد</li>
             </ol>
         </section>
 
@@ -121,7 +119,7 @@
                     <div class="col-sm-12" style="padding: 0;">
                         <button class="btn btn-primary nBtn">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span style="margin: 5px;">درس جدید</span>
+                            <span style="margin: 5px;">استاد جدید</span>
                         </button>
                     </div>
                 </div>
@@ -130,42 +128,35 @@
                     <thead style="background-color: #a7b6bf;">
                     <tr>
                         <th>شناسه</th>
+                        <th>سطح</th>
                         <th>نام</th>
-                        <th>گروه</th>
-                        <th>شماره درس</th>
-                        <th>تعداد واحد</th>
-                        <th>مقطع</th>
+                        <th>نام خانوادگی</th>
+                        <th>نام کاربری</th>
+                        <th>پسورد</th>
                         <th></th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="lesson :${lessons}">
-                        <td th:text="${lesson.id}"></td>
-                        <td th:text="${lesson.name}"></td>
-                        <td th:text="${lesson.code}"></td>
-                        <td th:text="${lesson.number}"></td>
+                    <tr th:each="teacher :${teachers}">
+                        <td th:text="${teacher.id}"></td>
                         <td>
-                            <div th:switch="${lesson.unit}">
-                                <span th:case="${T(planning.model.Unit).ZERO}">0</span>
-                                <span th:case="${T(planning.model.Unit).ONE}">1</span>
-                                <span th:case="${T(planning.model.Unit).TWO}">2</span>
-                                <span th:case="${T(planning.model.Unit).THREE}">3</span>
-                                <span th:case="${T(planning.model.Unit).FOUR}">4</span>
+                            <div th:switch="${teacher.prefix}">
+                                <span th:case="${T(planning.model.TeacherPrefix).DOCTOR}">دکتر</span>
+                                <span th:case="${T(planning.model.TeacherPrefix).OSTAD_TAMAM}">استاد تمام</span>
+                                <span th:case="${T(planning.model.TeacherPrefix).OSTAD}">استاد</span>
+                                <span th:case="${T(planning.model.TeacherPrefix).MOHANDES}">مهندس</span>
                             </div>
                         </td>
+                        <td th:text="${teacher.firstName}"></td>
+                        <td th:text="${teacher.lastName}"></td>
+                        <td th:text="${teacher.username}"></td>
+                        <td th:text="${teacher.password}"></td>
                         <td>
-                            <div th:switch="${lesson.grade}">
-                                <span th:case="${T(planning.model.Grade).KARSHENASI}">کارشناسی</span>
-                                <span th:case="${T(planning.model.Grade).ARSHAD}">کارشناسی ارشد</span>
-                                <span th:case="${T(planning.model.Grade).DOCTORA}">دکترا</span>
-                            </div>
+                            <a th:href="@{teacher/delete/(id=${teacher.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{lesson/delete/(id=${lesson.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o"></i></a>
-                        </td>
-                        <td>
-                            <a th:href="@{lesson/one/(id=${lesson.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil"></i></a>
+                            <a th:href="@{teacher/one/(id=${teacher.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil"></i></a>
                         </td>
                     </tr>
                     </tbody>
@@ -173,14 +164,14 @@
 
             </div>
 
-            <!--#Modal form for lesson update-->
+            <!--#Modal form for teacher update-->
             <div class="myFormUpdate">
-                <form th:action="@{/lesson/update}" method="post">
+                <form th:action="@{/teacher/update}" method="post">
                     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش درس</h5>
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش استاد</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -190,40 +181,29 @@
                                         <input type="hidden" class="form-control" id="id" name="id" value=""/>
                                     </div>
                                     <div class="form-group">
-                                        <label for="name" class="col-form-label">نام</label>
-                                        <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" />
+                                        <label for="prefix" class="col-form-label">سطح</label>
+                                        <select name="prefix" id="prefix">
+                                            <option value="DOCTOR">دکتر</option>
+                                            <option value="OSTAD_TAMAM">استاد تمام</option>
+                                            <option value="OSTAD">استاد</option>
+                                            <option value="MOHANDES">مهندس</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="code" class="col-form-label">گروه</label>
-                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
+                                        <label for="firstName" class="col-form-label">نام</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" value="" style="border-radius: 2px;" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="number" class="col-form-label">شماره درس</label>
-                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                        <label for="lastName" class="col-form-label">نام خانوادگی</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" value="" style="border-radius: 2px;" />
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="grade" class="col-form-label">مقطع</label>
-                                                <select name="grade" id="grade">
-                                                    <option value="KARSHENASI">کارشناسی</option>
-                                                    <option value="ARSHAD">کارشناسی ارشد</option>
-                                                    <option value="DOCTORA">دکترا</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="unit" class="col-form-label">تعداد واحد</label>
-                                                <select name="unit" id="unit">
-                                                    <option value="ZERO">0</option>
-                                                    <option value="ONE">1</option>
-                                                    <option value="TWO">2</option>
-                                                    <option value="THREE">3</option>
-                                                    <option value="FOUR">4</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="username" class="col-form-label">نام کاربری</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="col-form-label">پسورد</label>
+                                        <input type="text" class="form-control" id="password" name="password" value="" style="border-radius: 2px;" />
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -237,55 +217,44 @@
             </div>
             <!--End update form-->
 
-            <!--#Modal for lesson create-->
+            <!--#Modal for teacher create-->
             <div class="myFormCreate">
-                <form th:action="@{/lesson/add}" method="post">
+                <form th:action="@{/teacher/add}" method="post">
                     <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">درس جدید</h5>
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">استاد جدید</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="name" class="col-form-label">نام</label>
-                                        <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" />
+                                        <label for="prefix" class="col-form-label">سطح</label>
+                                        <select name="prefix" id="prefix">
+                                            <option value="DOCTOR">دکتر</option>
+                                            <option value="OSTAD_TAMAM">استاد تمام</option>
+                                            <option value="OSTAD">استاد</option>
+                                            <option value="MOHANDES">مهندس</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="code" class="col-form-label">گروه</label>
-                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
+                                        <label for="firstName" class="col-form-label">نام</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" value="" style="border-radius: 2px;" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="number" class="col-form-label">شماره درس</label>
-                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                        <label for="lastName" class="col-form-label">نام خانوادگی</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" value="" style="border-radius: 2px;" />
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="grade" class="col-form-label">مقطع</label>
-                                                <select name="grade" id="grade">
-                                                    <option value="KARSHENASI">کارشناسی</option>
-                                                    <option value="ARSHAD">کارشناسی ارشد</option>
-                                                    <option value="DOCTORA">دکترا</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="unit" class="col-form-label">تعداد واحد</label>
-                                                <select name="unit" id="unit">
-                                                    <option value="ZERO">0</option>
-                                                    <option value="ONE">1</option>
-                                                    <option value="TWO">2</option>
-                                                    <option value="THREE">3</option>
-                                                    <option value="FOUR">4</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="username" class="col-form-label">نام کاربری</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="" style="border-radius: 2px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="col-form-label">پسورد</label>
+                                        <input type="text" class="form-control" id="password" name="password" value="" style="border-radius: 2px;" />
                                     </div>
                                     <div class="modal-footer" style="padding: 15px 0;">
                                         <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
@@ -299,18 +268,18 @@
             </div>
             <!--End form-->
 
-            <!-- #Modal for removing lesson -->
+            <!-- #Modal for removing teacher -->
             <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                         <div class="modal-header" style="background-color: #ecebeb;">
-                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف درس</h5>
+                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف استاد</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>آیا از حذف درس اطمینان دارید؟</p>
+                            <p>آیا از حذف استاد اطمینان دارید؟</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>

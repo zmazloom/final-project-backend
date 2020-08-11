@@ -1,13 +1,16 @@
 package planning.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import planning.model.Result;
 import planning.modelVO.ClassroomVO;
 import planning.modelVO.LessonVO;
+import planning.modelVO.TeacherVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -16,7 +19,6 @@ import java.util.Optional;
 
 @CrossOrigin
 @Controller
-@AllArgsConstructor
 @RequestMapping(value = "")
 public class PanelController {
 
@@ -25,6 +27,15 @@ public class PanelController {
 
     private final ClassroomController classroomController;
     private final LessonController lessonController;
+    private final TeacherController teacherController;
+
+    public PanelController(ClassroomController classroomController, LessonController lessonController, TeacherController teacherController) {
+        this.classroomController = classroomController;
+        this.lessonController = lessonController;
+        this.teacherController = teacherController;
+    }
+
+//    private ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping(value = {"/", "/dashboard"})
     public String getIndexPage() {
@@ -187,6 +198,85 @@ public class PanelController {
     public String deleteLesson(long id) {
         lessonController.deleteLesson(id);
         return "redirect:/lesson";
+    }
+    /******************** end *********************/
+
+    /******************** teacher *********************/
+    @GetMapping("/teacher")
+    public String getAllTeachers(Model model, HttpServletRequest request) {
+        try {
+            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
+
+            if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null && !teacherVOList.getBody().getResult().isEmpty())
+                model.addAttribute("teachers", teacherVOList.getBody().getResult());
+            else
+                model.addAttribute("teachers", new ArrayList<TeacherVO>());
+        } catch (Exception ex) {
+            model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "teacher::#teacher-list";
+
+        return "teacher";
+    }
+
+    @PostMapping("/teacher/add")
+    public String addTeacher(Model model, HttpServletRequest request, TeacherVO teacherVO) {
+        try {
+            ResponseEntity<Result<TeacherVO>> teacher = teacherController.addTeacher(teacherVO.toString(), null);
+
+            if (teacher.getBody() != null && teacher.getBody().getResult() != null)
+                return "redirect:/teacher";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "redirect:/teacher";
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "teacher::#teacher-list";
+
+        return "redirect:/teacher";
+    }
+
+    @PostMapping("/teacher/update")
+    public String editTeacher(Model model, HttpServletRequest request, TeacherVO teacherVO) {
+        try {
+            ResponseEntity<Result<TeacherVO>> changedTeacher = teacherController.updateTeacher(teacherVO.getId(), teacherVO.toString(), null);
+
+            if (changedTeacher.getBody() != null && changedTeacher.getBody().getResult() != null)
+                return "redirect:/teacher";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "redirect:/teacher";
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "teacher::#teacher-list";
+
+        return "redirect:/teacher";
+    }
+
+    @GetMapping("/teacher/one")
+    @ResponseBody
+    public Optional<TeacherVO> findOneTeacher(Model model, HttpServletRequest request, long id) {
+        try {
+            ResponseEntity<Result<TeacherVO>> teacher = teacherController.getTeacherById(id);
+
+            if (teacher.getBody() != null && teacher.getBody().getResult() != null)
+                return Optional.of(teacher.getBody().getResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
+
+        return Optional.empty();
+    }
+
+    @GetMapping("/teacher/delete")
+    public String deleteTeacher(long id) {
+        teacherController.deleteTeacherById(id);
+        return "redirect:/teacher";
     }
     /******************** end *********************/
 }

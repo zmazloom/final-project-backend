@@ -57,7 +57,7 @@
                 event.preventDefault();
                 var href = $(this).attr('href');
                 var text = $(this).attr('name');
-                //for update user
+                //for update classroom
                 if (text == 'edit') {
                     $.get(href, function (classroom, status) {
                         if(classroom != null) {
@@ -67,12 +67,12 @@
                         }
                     });
                 } else {
-                    //for creating user
+                    //for creating classroom
                     $('.myFormCreate #name').val('');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
-            //for delete user
+            //for delete classroom
             $('.table .delBtn').on('click', function (event) {
                 event.preventDefault();
                 var href = $(this).attr('href');

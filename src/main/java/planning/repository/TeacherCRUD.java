@@ -10,7 +10,7 @@ import planning.model.Teacher;
 @Repository
 public interface TeacherCRUD extends JpaRepository<Teacher, Long> {
 
-    @Query("from Teacher t where t.removed = false order by t.lastName")
+    @Query("from Teacher t where t.removed = false order by t.id")
     List<Teacher> getAllTeachers();
 
     @Query("from Teacher t where t.id = :teacherId and t.removed = false")

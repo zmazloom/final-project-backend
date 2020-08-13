@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import planning.model.Teacher;
+import planning.model.TeacherPrefix;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -23,7 +24,7 @@ public class TeacherAddVO {
     @NotEmpty
     private String lastName;
 
-    private Teacher.TeacherPrefix prefix;
+    private TeacherPrefix prefix;
 
     @NotNull
     @NotEmpty

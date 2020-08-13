@@ -133,8 +133,8 @@ public class PlanService {
         return planWarnings;
     }
 
-    private void checkPlanTime(Plan.TimeType planTypeTime, List<PlanDetailVO> planDetailVOS) {
-        if (planTypeTime.equals(Plan.TimeType.TWO_HOURS)) {
+    private void checkPlanTime(TimeType planTypeTime, List<PlanDetailVO> planDetailVOS) {
+        if (planTypeTime.equals(TimeType.TWO_HOURS)) {
 
             List<Time> twoHourTimes = TeacherService.getTwoHourTimes();
 

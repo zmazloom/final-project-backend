@@ -1,15 +1,13 @@
 package planning.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import planning.model.Result;
 import planning.modelVO.ClassroomVO;
 import planning.modelVO.LessonVO;
+import planning.modelVO.PlanVO;
 import planning.modelVO.TeacherVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,14 +26,17 @@ public class PanelController {
     private final ClassroomController classroomController;
     private final LessonController lessonController;
     private final TeacherController teacherController;
+    private final PlanController planController;
 
-    public PanelController(ClassroomController classroomController, LessonController lessonController, TeacherController teacherController) {
+    public PanelController(ClassroomController classroomController,
+                           LessonController lessonController,
+                           TeacherController teacherController,
+                           PlanController planController) {
         this.classroomController = classroomController;
         this.lessonController = lessonController;
         this.teacherController = teacherController;
+        this.planController = planController;
     }
-
-//    private ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping(value = {"/", "/dashboard"})
     public String getIndexPage() {
@@ -277,6 +278,85 @@ public class PanelController {
     public String deleteTeacher(long id) {
         teacherController.deleteTeacherById(id);
         return "redirect:/teacher";
+    }
+    /******************** end *********************/
+
+    /******************** plans *********************/
+    @GetMapping("/plan")
+    public String getAllPlans(Model model, HttpServletRequest request) {
+        try {
+            ResponseEntity<Result<List<PlanVO>>> planVOList = planController.getAllPlans();
+
+            if (planVOList.getBody() != null && planVOList.getBody().getResult() != null && !planVOList.getBody().getResult().isEmpty())
+                model.addAttribute("plans", planVOList.getBody().getResult());
+            else
+                model.addAttribute("plans", new ArrayList<PlanVO>());
+        } catch (Exception ex) {
+            model.addAttribute("plans", new ArrayList<PlanVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "plan::#plan-list";
+
+        return "plan";
+    }
+
+    @PostMapping("/plan/add")
+    public String addPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        try {
+            ResponseEntity<Result<PlanVO>> plan = planController.addPlan(planVO);
+
+            if (plan.getBody() != null && plan.getBody().getResult() != null)
+                return "redirect:/plan";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "redirect:/plan";
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "plan::#plan-list";
+
+        return "redirect:/plan";
+    }
+
+    @PostMapping("/plan/update")
+    public String editPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        try {
+            ResponseEntity<Result<PlanVO>> changedPlan = planController.updatePlan(planVO.getId(), planVO.getName());
+
+            if (changedPlan.getBody() != null && changedPlan.getBody().getResult() != null)
+                return "redirect:/plan";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "redirect:/plan";
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "plan::#plan-list";
+
+        return "redirect:/plan";
+    }
+
+    @GetMapping("/plan/one")
+    @ResponseBody
+    public Optional<PlanVO> findOnePlan(Model model, HttpServletRequest request, long id) {
+        try {
+            ResponseEntity<Result<PlanVO>> plan = planController.getPlanById(id);
+
+            if (plan.getBody() != null && plan.getBody().getResult() != null)
+                return Optional.of(plan.getBody().getResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
+
+        return Optional.empty();
+    }
+
+    @GetMapping("/plan/delete")
+    public String deletePlan(long id) {
+        planController.deletePlanById(id);
+        return "redirect:/plan";
     }
     /******************** end *********************/
 }

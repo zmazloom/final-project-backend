@@ -34,7 +34,7 @@ public class PlanController {
 
     @PostMapping(value = "")
     public ResponseEntity<Result<PlanVO>> addPlan(@RequestBody @Validated @NotNull PlanVO planVO) {
-        if(planCRUD.getPlanByName(planVO.getName()) != null)
+        if (planCRUD.getPlanByName(planVO.getName()) != null)
             throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(planVO.getName()));
 
         Plan plan = planService.addPlan(planVO);
@@ -49,14 +49,26 @@ public class PlanController {
                                                      @RequestBody @NotNull @NotEmpty String name) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
-        if(planCRUD.checkDuplicatePlanName(planId, name) != null)
+        if (planCRUD.checkDuplicatePlanName(planId, name) != null)
             throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()
                 .setResult(planService.getPlanVO(planService.updatePlan(plan, name)))
+                .get());
+    }
+
+    @GetMapping(value = "/{planId}")
+    public ResponseEntity<Result<PlanVO>> getPlanById(@PathVariable("planId") @NotNull Long planId) {
+        Plan plan = planCRUD.getPlanById(planId);
+
+        if (plan == null)
+            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
+
+        return ResponseEntity.ok(ResFact.<PlanVO>build()
+                .setResult(planService.getPlanVO(plan))
                 .get());
     }
 
@@ -65,10 +77,10 @@ public class PlanController {
                                                    @RequestBody @NotNull @NotEmpty String name) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
-        if(planCRUD.checkDuplicatePlanName(planId, name) != null)
+        if (planCRUD.checkDuplicatePlanName(planId, name) != null)
             throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()
@@ -80,7 +92,7 @@ public class PlanController {
     public ResponseEntity<Result<Boolean>> deletePlanById(@PathVariable("planId") @NotNull Long planId) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
         planService.deletePlan(plan);
@@ -96,7 +108,7 @@ public class PlanController {
                                                        @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
         planService.savePlanning(plan, planDetailVOList);
@@ -108,10 +120,10 @@ public class PlanController {
 
     @PostMapping(value = "/{planId}/check")
     public ResponseEntity<Result<HashMap<String, List<String>>>> checkPlanning(@PathVariable("planId") @NotNull Long planId,
-                                                       @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
+                                                                               @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
         return ResponseEntity.ok(ResFact.<HashMap<String, List<String>>>build()
@@ -130,7 +142,7 @@ public class PlanController {
     public ResponseEntity<Result<List<PlanDetail>>> getPlanDetails(@PathVariable("planId") @NotNull Long planId) {
         Plan plan = planCRUD.getPlanById(planId);
 
-        if(plan == null)
+        if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
         return ResponseEntity.ok(ResFact.<List<PlanDetail>>build()

@@ -15,7 +15,7 @@ public interface PlanCRUD extends JpaRepository<Plan, Long> {
     @Query("from Plan p where p.id = :planId and p.removed = false")
     Plan getPlanById(long planId);
 
-    @Query("from Plan p where p.removed = false order by p.created desc")
+    @Query("from Plan p where p.removed = false order by p.id")
     List<Plan> getAllPlans();
 
     @Query("from Plan p where p.id <> :planId and p.name = :name")

@@ -8,10 +8,7 @@ import planning.exception.InternalServerException;
 import planning.exception.InvalidRequestException;
 import planning.message.CommonMessage;
 import planning.message.TeacherMessage;
-import planning.model.Plan;
-import planning.model.Teacher;
-import planning.model.TeacherTime;
-import planning.model.Time;
+import planning.model.*;
 import planning.modelVO.TeacherAddVO;
 import planning.modelVO.TeacherTimeVO;
 import planning.modelVO.TeacherVO;
@@ -201,9 +198,9 @@ public class TeacherService {
         }
     }
 
-    private void validateTeacherTimes(Plan.TimeType planTypeTime, List<Time> times) {
+    private void validateTeacherTimes(TimeType planTypeTime, List<Time> times) {
         if(times != null && !times.isEmpty()) {
-            if (planTypeTime.equals(Plan.TimeType.TWO_HOURS)) {
+            if (planTypeTime.equals(TimeType.TWO_HOURS)) {
 
                 List<Time> twoHourTimes = getTwoHourTimes();
 

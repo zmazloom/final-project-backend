@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import planning.model.Plan;
+import planning.model.TimeType;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -24,5 +25,5 @@ public class PlanVO {
     private String name;
 
     @NotNull
-    private Plan.TimeType timeType;
+    private TimeType timeType;
 }

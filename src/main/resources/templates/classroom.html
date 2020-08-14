@@ -169,12 +169,10 @@
                         <td th:text="${classroom.id}"></td>
                         <td th:text="${classroom.name}"></td>
                         <td>
-                            <a th:href="@{classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn"><i
-                                    class="fa fa-trash-o"></i></a>
+                            <a th:href="@{classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف کلاس"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{classroom/one/(id=${classroom.id})}" class="btn btn-primary eBtn" name="edit"><i
-                                    class="fa fa-pencil"></i></a>
+                            <a th:href="@{classroom/one/(id=${classroom.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil" title="ویرایش کلاس"></i></a>
                         </td>
                     </tr>
                     </tbody>

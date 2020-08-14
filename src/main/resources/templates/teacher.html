@@ -153,10 +153,10 @@
                         <td th:text="${teacher.username}"></td>
                         <td th:text="${teacher.password}"></td>
                         <td>
-                            <a th:href="@{teacher/delete/(id=${teacher.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o"></i></a>
+                            <a th:href="@{teacher/delete/(id=${teacher.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف استاد"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{teacher/one/(id=${teacher.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil"></i></a>
+                            <a th:href="@{teacher/one/(id=${teacher.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil" title="ویرایش استاد"></i></a>
                         </td>
                     </tr>
                     </tbody>

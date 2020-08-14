@@ -358,5 +358,23 @@ public class PanelController {
         planController.deletePlanById(id);
         return "redirect:/plan";
     }
+
+    @PostMapping("/plan/copy")
+    public String copyPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        try {
+            ResponseEntity<Result<PlanVO>> copiedPlan = planController.copyPlan(planVO.getId(), planVO.getName());
+
+            if (copiedPlan.getBody() != null && copiedPlan.getBody().getResult() != null)
+                return "redirect:/plan";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "redirect:/plan";
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "plan::#plan-list";
+
+        return "redirect:/plan";
+    }
     /******************** end *********************/
 }

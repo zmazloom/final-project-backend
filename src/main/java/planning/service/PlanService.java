@@ -73,6 +73,44 @@ public class PlanService {
         return copyPlan;
     }
 
+    public List<PlanDetailGet> getPlanDetails(Plan plan) {
+        List<PlanDetail> planDetails = planDetailCRUD.getPlanDetails(plan);
+        List<PlanDetailGet> planDetailGets = new ArrayList<>();
+        if(planDetails != null && !planDetails.isEmpty()) {
+            for(PlanDetail planDetail : planDetails) {
+                PlanDetailGet planDetailGet = new PlanDetailGet();
+
+                if(planDetail.getTeacher() != null) {
+                    planDetailGet.setFirstName(planDetail.getTeacher().getFirstName());
+                    planDetailGet.setLastName(planDetail.getTeacher().getLastName());
+                    planDetailGet.setUsername(planDetail.getTeacher().getUsername());
+                    planDetailGet.setPrefix(planDetail.getTeacher().getPrefix());
+                    planDetailGet.setTeacherId(planDetail.getTeacher().getId());
+                }
+                if(planDetail.getLesson() != null) {
+                    planDetailGet.setName(planDetail.getLesson().getName());
+                    planDetailGet.setCode(planDetail.getLesson().getCode());
+                    planDetailGet.setNumber(planDetail.getLesson().getNumber());
+                    planDetailGet.setGrade(planDetail.getLesson().getGrade());
+                    planDetailGet.setUnit(planDetail.getLesson().getUnit());
+                    planDetailGet.setLessonId(planDetail.getLesson().getId());
+                }
+                if(planDetail.getClassroom() != null) {
+                    planDetailGet.setClassroomName(planDetail.getClassroom().getName());
+                    planDetailGet.setClassroomId(planDetail.getClassroom().getId());
+                }
+
+                planDetailGet.setId(planDetail.getId());
+                planDetailGet.setTime(planDetail.getTime());
+                planDetailGet.setWeekType(planDetail.getWeekType());
+
+                planDetailGets.add(planDetailGet);
+            }
+        }
+
+        return planDetailGets;
+    }
+
     public void savePlanning(Plan plan, List<PlanDetailVO> planDetailVOS) {
         List<PlanDetail> planDetails = planDetailCRUD.getPlanDetails(plan);
 

@@ -7,14 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import planning.exception.ResourceConflictException;
 import planning.exception.ResourceNotFoundException;
 import planning.message.PlanMessage;
-import planning.model.Plan;
-import planning.model.PlanDetail;
-import planning.model.ResFact;
-import planning.model.Result;
+import planning.model.*;
 import planning.modelVO.PlanDetailVO;
 import planning.modelVO.PlanVO;
 import planning.repository.PlanCRUD;
-import planning.repository.PlanDetailCRUD;
 import planning.service.PlanService;
 
 import javax.validation.constraints.NotEmpty;
@@ -29,7 +25,6 @@ import java.util.List;
 public class PlanController {
 
     private final PlanCRUD planCRUD;
-    private final PlanDetailCRUD planDetailCRUD;
     private final PlanService planService;
 
     @PostMapping(value = "")
@@ -139,14 +134,14 @@ public class PlanController {
     }
 
     @GetMapping(value = "/{planId}/detail")
-    public ResponseEntity<Result<List<PlanDetail>>> getPlanDetails(@PathVariable("planId") @NotNull Long planId) {
+    public ResponseEntity<Result<List<PlanDetailGet>>> getPlanDetails(@PathVariable("planId") @NotNull Long planId) {
         Plan plan = planCRUD.getPlanById(planId);
 
         if (plan == null)
             throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
 
-        return ResponseEntity.ok(ResFact.<List<PlanDetail>>build()
-                .setResult(planDetailCRUD.getPlanDetails(plan))
+        return ResponseEntity.ok(ResFact.<List<PlanDetailGet>>build()
+                .setResult(planService.getPlanDetails(plan))
                 .get());
     }
 }

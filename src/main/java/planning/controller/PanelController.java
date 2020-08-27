@@ -376,5 +376,25 @@ public class PanelController {
 
         return "redirect:/plan";
     }
+
+    @GetMapping("/planning/{id}")
+    public String getDetailsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        try {
+            ResponseEntity<Result<PlanVO>> planVOList = planController.getPlanById(id);
+
+            if (planVOList.getBody() != null && planVOList.getBody().getResult() != null)
+                model.addAttribute("plans", planVOList.getBody().getResult());
+            else
+                model.addAttribute("plans", new ArrayList<PlanVO>());
+        } catch (Exception ex) {
+            model.addAttribute("plans", new ArrayList<PlanVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "planning::#plan-list";
+
+        return "planning";
+    }
     /******************** end *********************/
 }

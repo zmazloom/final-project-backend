@@ -8,17 +8,17 @@
     <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">برنامه ریزی درسی</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" th:href="@{dist/css/bootstrap-theme.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../dist/css/bootstrap-theme.css}" media="screen" />
     <!-- Bootstrap rtl -->
-    <link rel="stylesheet" th:href="@{dist/css/rtl.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../dist/css/rtl.css}" media="screen" />
     <!-- Font Awesome -->
-    <link rel="stylesheet" th:href="@{bower_components/font-awesome/css/font-awesome.min.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../bower_components/font-awesome/css/font-awesome.min.css}" media="screen" />
     <!-- Ionicons -->
-    <link rel="stylesheet" th:href="@{bower_components/Ionicons/css/ionicons.min.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../bower_components/Ionicons/css/ionicons.min.css}" media="screen" />
     <!-- Theme style -->
-    <link rel="stylesheet" th:href="@{dist/css/AdminLTE.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../dist/css/AdminLTE.css}" media="screen" />
     <!-- Skins -->
-    <link rel="stylesheet" th:href="@{dist/css/skins/skin-blue.min.css}" media="screen" />
+    <link rel="stylesheet" th:href="@{../dist/css/skins/skin-blue.min.css}" media="screen" />
     <!-- Google Font -->
     <link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic}">
     <!--jquery -->
@@ -126,7 +126,7 @@
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel">
                 <div class="pull-right image">
-                    <img src="dist/img/FUM_Logo.png" class="img-circle" alt="Ferdowsi">
+                    <img src="../dist/img/FUM_Logo.png" class="img-circle" alt="Ferdowsi">
                 </div>
                 <div class="pull-right info" style="margin: 10px;">
                     <p>دانشگاه فردوسی</p>
@@ -142,18 +142,7 @@
                 <li><a th:href="@{/classroom}"><i class="fa fa-cube"></i> <span>کلاس</span></a></li>
                 <li><a th:href="@{/teacher}"><i class="fa fa-user-o"></i> <span>استاد</span></a></li>
                 <li><a th:href="@{/lesson}"><i class="fa fa-book"></i> <span>درس</span></a></li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-edit"></i> <span>برنامه</span>
-                        <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
-              </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a th:href="@{/plan}">برنامه ها</a></li>
-
-                        <li><a href="#">برنامه ریزی</a></li>
-                    </ul>
-                </li>
+                <li><a th:href="@{/plan}"><i class="fa fa-edit"></i> <span>برنامه</span></a></li>
             </ul>
             <!-- /.sidebar-menu -->
         </section>
@@ -222,9 +211,9 @@
 
 <!-- REQUIRED JS SCRIPTS -->
 <!-- Bootstrap 3.3.7 -->
-<script th:src="@{bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
 <!-- App -->
-<script th:src="@{dist/js/adminlte.min.js}"></script>
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
 
 </body>
 </html>

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import planning.model.PlanDetailGet;
 import planning.model.Result;
 import planning.modelVO.ClassroomVO;
 import planning.modelVO.LessonVO;
@@ -395,6 +396,26 @@ public class PanelController {
             return "planning::#plan-list";
 
         return "planning";
+    }
+
+    @GetMapping("/reports/{id}")
+    public String getReportsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        try {
+            ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
+
+            if (planVOList.getBody() != null && planVOList.getBody().getResult() != null)
+                model.addAttribute("reports", planVOList.getBody().getResult());
+            else
+                model.addAttribute("reports", new ArrayList<PlanVO>());
+        } catch (Exception ex) {
+            model.addAttribute("reports", new ArrayList<PlanVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "reports::#report-list";
+
+        return "reports";
     }
     /******************** end *********************/
 }

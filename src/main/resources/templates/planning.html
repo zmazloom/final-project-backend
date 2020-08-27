@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
-      layout:decorate="~{layouts/layout}">
+      layout:decorate="~{layouts/planninglayout}">
 <head>
 
     <style>
@@ -372,9 +372,11 @@
         ];
         var selectedTimes = [];
         $(document).ready(function () {
+            document.getElementById("sidebar-toggle-link").click();
+
             create_default_plan();
             set_options();
-            $('#base-sidebar li:eq(4)').addClass('active');
+            $('#base-sidebar li:eq(3)').addClass('active');
             $(function () {
                 $("#datatable").dataTable({
                     "language": {
@@ -707,18 +709,18 @@
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-    <header th:replace="layouts/layout :: header"></header>
-    <aside th:replace="layouts/layout :: links"></aside>
+    <header th:replace="layouts/planninglayout :: header"></header>
+    <aside th:replace="layouts/planninglayout :: links"></aside>
 
     <div class="content-wrapper" layout:fragment="content">
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                برنامه
+                برنامه ریزی
             </h1>
             <ol class="breadcrumb">
-                <li><a th:href="@{/dashboard}"><i class="fa fa-dashboard"></i> داشبورد</a></li>
-                <li class="active">برنامه</li>
+                <li><a th:href="@{/plan}"><i class="fa fa-edit"></i> برنامه</a></li>
+                <li class="active">برنامه ریزی</li>
             </ol>
         </section>
 
@@ -731,7 +733,7 @@
                     <div class="col-sm-12" style="padding: 0;">
                         <button class="btn btn-primary nBtn">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span style="margin: 5px;">برنامه جدید</span>
+                            <span style="margin: 5px;">ادامه برنامه ریزی</span>
                         </button>
                     </div>
                 </div>
@@ -928,9 +930,9 @@
     </div>
     <!-- /.content-wrapper -->
 
-    <aside th:replace="layouts/layout :: footer"></aside>
-    <aside th:replace="layouts/layout :: settings"></aside>
-    <aside th:replace="layouts/layout :: sidebar"></aside>
+    <aside th:replace="layouts/planninglayout :: footer"></aside>
+    <aside th:replace="layouts/planninglayout :: settings"></aside>
+    <aside th:replace="layouts/planninglayout :: sidebar"></aside>
 </div>
 
 

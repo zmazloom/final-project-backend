@@ -127,265 +127,109 @@
             top: 0;
         }
 
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .multiselect {
+            margin: 8px 0;
+        }
+
+        #checkboxes1, #checkboxes2, #checkboxes3 {
+            display: none;
+            border: 1px #dadada solid;
+            background-color: #e2f7f7;
+        }
+        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label {
+            display: block;
+        }
+        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover {
+            background-color: #1e90ff;
+        }
     </style>
 
     <script type="text/javascript" th:inline="javascript">
-        const result = [
-            {
-                "id": 1,
-                "weekType": "ZOJ",
-                "day": "SHANBE",
-                "time": "8T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 2,
-                "weekType": "FARD",
-                "day": "SHANBE",
-                "time": "10T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 3,
-                "weekType": "FARD",
-                "day": "CHARSHANBE",
-                "time": "12T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 4,
-                "weekType": "FARD",
-                "day": "SHANBE",
-                "time": "8T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 5,
-                "weekType": "FARD",
-                "day": "SESHANBE",
-                "time": "16T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 6,
-                "weekType": "ZOJ",
-                "day": "SESHANBE",
-                "time": "10T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 7,
-                "weekType": "FARD",
-                "day": "YEKSHANBE",
-                "time": "16T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 4,
-                "classroomName": "b34"
-            },
-            {
-                "id": 8,
-                "weekType": "FARD",
-                "day": "DOSHANBE",
-                "time": "10T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 9,
-                "weekType": "ZOJ",
-                "day": "SHANBE",
-                "time": "10T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 10,
-                "weekType": "ZOJ",
-                "day": "CHARSHANBE",
-                "time": "12T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 11,
-                "weekType": "ZOJ",
-                "day": "SESHANBE",
-                "time": "16T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 12,
-                "weekType": "ZOJ",
-                "day": "YEKSHANBE",
-                "time": "16T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 4,
-                "classroomName": "b34"
-            },
-        ];
-        const times = ["8T", "10T", "12T", "14T", "16T", "18T"];
-        const persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
-        const days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
-        const persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
-        const classroom = ["b31", "b32", "b33", "b34", "b35", "b36"];
-        const lessons = [
+        var times = ["8T", "10T", "12T", "14T", "16T", "18T"];
+        var persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
+        var days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
+        var classroom = [[${classrooms}]];
+        var lessons = [
             {id: "2", name: "name darss"},
             {id: "2", name: "name darss"}
         ];
-        const teachers = [
+        var teachers = [
             {id: "2", name: "name ostad"},
             {id: "2", name: "name ostad"}
         ];
-        var selectedTimes = [];
+
+        //valid resources
+        var validMaghta = ["KARSHENASI", "ARSHAD", "DOCTORA"];
+        var validClasses = [[${classroomIds}]];
+        var validTeachers = [[${teacherIds}]];
+        var validTerms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+        //full report
+        var reports = [[${reports}]];
+
         $(document).ready(function () {
             document.getElementById("sidebar-toggle-link").click();
 
+            var checkboxes = $( ':checkbox' );
+            checkboxes.prop( 'checked', true );
+
             create_default_plan();
-            set_options();
             $('#base-sidebar li:eq(4)').addClass('active');
+
+            $('.nBtn').on('click', function (event) {
+                event.preventDefault();
+
+                validMaghta = [];
+                validClasses = [];
+                validTeachers = [];
+
+                if($('#karshenasi-id').is(':checked')) {
+                    validMaghta.push("KARSHENASI");
+                }
+                if($('#arshad-id').is(':checked')) {
+                    validMaghta.push("ARSHAD");
+                }
+                if($('#doctora-id').is(':checked')) {
+                    validMaghta.push("DOCTORA");
+                }
+
+                $('[id^=idclassroom]').each( function () {
+                    if($(this).is(':checked'))
+                        validClasses.push(parseInt($(this).val()));
+                });
+
+                $('[id^=idteacher]').each( function () {
+                    if($(this).is(':checked'))
+                        validTeachers.push(parseInt($(this).val()));
+                });
+
+                create_default_plan();
+            });
         });
 
         function create_default_plan() {
-            var reports = [[${reports}]];
-
             var defaultPlan = document.getElementById("default-plan");
+
+            defaultPlan.innerHTML = "";
+
             //create thead
             var header = defaultPlan.createTHead();
             var row = header.insertRow(0);
@@ -395,13 +239,16 @@
             row.style.zIndex = "900";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
             cell.rowSpan = 2;
             var cell2 = row.insertCell(0);
             cell2.innerHTML = "کلاس";
+            cell2.style.fontWeight = "bold";
             cell2.rowSpan = 2;
             for (var i = 0; i < times.length; i++) {
                 var cell3 = row.insertCell(0);
                 cell3.innerHTML = persianTimes[i];
+                cell3.style.fontWeight = "bold";
                 cell3.style.backgroundColor = "rgb(178 251 255)";
                 cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
@@ -414,7 +261,9 @@
             for (var j = 0; j < times.length; j++) {
                 var cell4 = row2.insertCell(0);
                 cell4.innerHTML = "زوج";
+                cell4.style.fontWeight = "bold";
                 var cell5 = row2.insertCell(0);
+                cell5.style.fontWeight = "bold";
                 cell5.innerHTML = "فرد";
             }
             //create tbody
@@ -425,9 +274,11 @@
                     cell6.innerHTML = persianDays[n];
                     cell6.style.position = "sticky";
                     cell6.style.right = "0px";
+                    cell6.style.fontWeight = "bold";
                     cell6.style.backgroundColor = "antiquewhite";
                     var cell7 = row3.insertCell(0);
-                    cell7.innerHTML = classroom[m];
+                    cell7.innerHTML = classroom[m].name;
+                    cell7.style.fontWeight = "bold";
                     cell7.style.position = "sticky";
                     cell7.style.right = "48px";
                     cell7.style.backgroundColor = "antiquewhite";
@@ -435,11 +286,14 @@
                         var cell8 = row3.insertCell(0);
                         var cell9 = row3.insertCell(0);
                         for (var b = 0; b < reports.length; b++) {          //loop on result
-                            if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m]) {
-                                if (reports[b].weekType === "ZOJ") {
-                                    cell8.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
-                                } else if (reports[b].weekType === "FARD") {
-                                    cell9.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                            if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m].name) {
+                                if(validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
+                                    validTeachers.includes(reports[b].teacherId)) {
+                                    if (reports[b].weekType === "ZOJ") {
+                                        cell8.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                    } else if (reports[b].weekType === "FARD") {
+                                        cell9.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                    }
                                 }
                             }
 
@@ -451,33 +305,38 @@
             }
         }
 
-        function set_options() {
-            var selectLesson = document.getElementById("lesson");
-            for (var i = 0; i < lessons.length; i++) {
-                var option = document.createElement("option");
-                option.text = lessons[i].name;
-                option.value = lessons[i].id;
-                selectLesson.add(option);
-            }
+        var expanded = false;
 
-            var selectTeacher = document.getElementById("teacher");
-            for (var i = 0; i < teachers.length; i++) {
-                var option = document.createElement("option");
-                option.text = teachers[i].name;
-                option.value = lessons[i].id;
-                selectTeacher.add(option);
+        function showCheckboxes1() {
+            var checkboxes = document.getElementById("checkboxes1");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
             }
-
-            var selectDay = document.getElementById("day");
-            for (var i = 0; i < days.length; i++) {
-                var option = document.createElement("option");
-                option.text = days[i];
-                option.value = days[i];
-                selectDay.add(option);
-            }
-
         }
-
+        function showCheckboxes2() {
+            var checkboxes = document.getElementById("checkboxes2");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+        function showCheckboxes3() {
+            var checkboxes = document.getElementById("checkboxes3");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
     </script>
 
 </head>
@@ -494,7 +353,7 @@
                 گزارش
             </h1>
             <ol class="breadcrumb">
-                <li><a th:href="@{/plan}"><i class="fa fa-edit"></i> برنامه</a></li>
+                <li><a th:href="@{/plan}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
                 <li class="active">گزارش</li>
             </ol>
         </section>
@@ -504,21 +363,61 @@
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
 
             <div class="card">
-                <div class="row" style="width: 80%; outline: none; margin: 0 auto 20px auto;">
-                    <div class="col-sm-12" style="padding: 0;">
-                        <button class="btn btn-primary nBtn">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span style="margin: 5px;">ادامه برنامه ریزی</span>
-                        </button>
+                <div class="row">
+                    <div class="col-sm-2" style="font-size: 0.8em;">
+                        <div style="padding: 0;">
+                            <button class="btn btn-primary nBtn" style="width: 100%">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                                <span style="margin: 5px;">فیلتر</span>
+                            </button>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes1()">
+                                <select>
+                                    <option>فیلتر بر اساس مقطع</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes1">
+                                <label for="karshenasi-id"><input type="checkbox" id="karshenasi-id" value="KARSHENASI" /> کارشناسی</label>
+                                <label for="arshad-id"><input type="checkbox" id="arshad-id" value="ARSHAD" /> کارشناسی ارشد</label>
+                                <label for="doctora-id"><input type="checkbox" id="doctora-id" value="DOCTORA" /> دکترا</label>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes2()">
+                                <select>
+                                    <option>فیلتر بر اساس کلاس</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes2">
+                                <th th:each="classroom :${classrooms}">
+                                    <label th:for="'idclassroom' + ${classroom.id}"><input type="checkbox" th:id="'idclassroom' + ${classroom.id}" th:value="${classroom.id}" th:text="' ' + ${classroom.name}" /></label>
+                                </th>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes3()">
+                                <select>
+                                    <option>فیلتر بر اساس استاد</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes3">
+                                <th th:each="teacher :${teachers}">
+                                    <label th:for="'idteacher' + ${teacher.id}"><input type="checkbox" th:id="'idteacher' + ${teacher.id}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}" /></label>
+                                </th>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div style="overflow-x:auto;overflow-y: auto;height: 90vh">
-                    <table id="default-plan" style="direction: ltr;text-align: center">
-                    </table>
-                </div>
-
-
+                    <div class="col-sm-10">
+                        <div style="overflow-x:auto;overflow-y: auto;">
+                            <table id="default-plan" style="direction: ltr;text-align: center; margin: 0 auto;">
+                            </table>
+                        </div>
+                    </div>
             </div>
 
         </section>

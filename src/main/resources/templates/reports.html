@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/planninglayout}">
+<head>
+
+    <style>
+        #datatable_wrapper {
+            width: 80%;
+            margin: auto;
+        }
+
+        .pagination {
+            float: left;
+        }
+
+        #datatable {
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #datatable th, #datatable td {
+            padding: 10px;
+        }
+
+        #datatable tr {
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        .form-style-1 {
+            max-width: 400px;
+            padding: 20px 12px 10px 20px;
+            font-size: 13px;
+        }
+
+        .form-style-1 li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 10px 0 0 0;
+        }
+
+        .form-style-1 label {
+            margin: 0 0 3px 0;
+            padding: 0px;
+            display: block;
+            font-weight: bold;
+        }
+
+        select {
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            border: 1px solid #BEBEBE;
+            padding: 7px;
+            margin: 0px;
+            -webkit-transition: all 0.30s ease-in-out;
+            -moz-transition: all 0.30s ease-in-out;
+            -ms-transition: all 0.30s ease-in-out;
+            -o-transition: all 0.30s ease-in-out;
+            outline: none;
+        }
+
+        form-style-1 .field-divided {
+            width: 49%;
+        }
+
+        .form-style-1 .field-long {
+            width: 100%;
+        }
+
+        .form-style-1 .field-select {
+            width: 100%;
+        }
+
+        .form-style-1 .field-textarea {
+            height: 100px;
+        }
+
+
+        #plan-table, #default-plan {
+            border: solid thin;
+            font-size: 9px;
+        }
+
+        table {
+            border-collapse: unset !important;
+        }
+
+        #plan-table caption, #default-plan caption {
+            padding-bottom: 0.5em;
+        }
+
+        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+            border: solid thin;
+            padding: 0.5rem 0.5rem;
+        }
+
+        #plan-table td, #default-plan td {
+            white-space: nowrap;
+        }
+
+        #plan-table th, #default-plan th {
+            font-weight: normal;
+        }
+
+        #plan-table td, #default-plan td {
+            vertical-align: top;
+        }
+
+        #plan-table th, #default-plan th {
+            padding: 0.2em;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+            content: leader(". ");
+        '
+        }
+
+        table tr:first-child > td {
+            position: sticky;
+            top: 0;
+        }
+
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .multiselect {
+            margin: 8px 0;
+        }
+
+        #checkboxes1, #checkboxes2, #checkboxes3 {
+            display: none;
+            border: 1px #dadada solid;
+            background-color: #e2f7f7;
+        }
+        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label {
+            display: block;
+        }
+        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover {
+            background-color: #1e90ff;
+        }
+    </style>
+
+    <script type="text/javascript" th:inline="javascript">
+        var times = ["8T", "10T", "12T", "14T", "16T", "18T"];
+        var persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
+        var days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
+        var classroom = [[${classrooms}]];
+        var lessons = [
+            {id: "2", name: "name darss"},
+            {id: "2", name: "name darss"}
+        ];
+        var teachers = [
+            {id: "2", name: "name ostad"},
+            {id: "2", name: "name ostad"}
+        ];
+
+        //valid resources
+        var validMaghta = ["KARSHENASI", "ARSHAD", "DOCTORA"];
+        var validClasses = [[${classroomIds}]];
+        var validTeachers = [[${teacherIds}]];
+        var validTerms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+        //full report
+        var reports = [[${reports}]];
+
+        $(document).ready(function () {
+            document.getElementById("sidebar-toggle-link").click();
+
+            var checkboxes = $( ':checkbox' );
+            checkboxes.prop( 'checked', true );
+
+            create_default_plan();
+            $('#base-sidebar li:eq(4)').addClass('active');
+
+            $('.nBtn').on('click', function (event) {
+                event.preventDefault();
+
+                validMaghta = [];
+                validClasses = [];
+                validTeachers = [];
+
+                if($('#karshenasi-id').is(':checked')) {
+                    validMaghta.push("KARSHENASI");
+                }
+                if($('#arshad-id').is(':checked')) {
+                    validMaghta.push("ARSHAD");
+                }
+                if($('#doctora-id').is(':checked')) {
+                    validMaghta.push("DOCTORA");
+                }
+
+                $('[id^=idclassroom]').each( function () {
+                    if($(this).is(':checked'))
+                        validClasses.push(parseInt($(this).val()));
+                });
+
+                $('[id^=idteacher]').each( function () {
+                    if($(this).is(':checked'))
+                        validTeachers.push(parseInt($(this).val()));
+                });
+
+                create_default_plan();
+            });
+        });
+
+        function create_default_plan() {
+            var defaultPlan = document.getElementById("default-plan");
+
+            defaultPlan.innerHTML = "";
+
+            //create thead
+            var header = defaultPlan.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "rgb(178 251 255)";
+            row.style.zIndex = "900";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
+            cell.rowSpan = 2;
+            var cell2 = row.insertCell(0);
+            cell2.innerHTML = "کلاس";
+            cell2.style.fontWeight = "bold";
+            cell2.rowSpan = 2;
+            for (var i = 0; i < times.length; i++) {
+                var cell3 = row.insertCell(0);
+                cell3.innerHTML = persianTimes[i];
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "rgb(178 251 255)";
+                cell3.style.direction = "rtl";
+                cell3.colSpan = 2;
+            }
+            var row2 = header.insertRow(1);
+            row2.style.position = "sticky";
+            row2.style.top = "30px";
+            row2.style.backgroundColor = "#a9caf4";
+            row2.style.zIndex = "900";
+            for (var j = 0; j < times.length; j++) {
+                var cell4 = row2.insertCell(0);
+                cell4.innerHTML = "زوج";
+                cell4.style.fontWeight = "bold";
+                var cell5 = row2.insertCell(0);
+                cell5.style.fontWeight = "bold";
+                cell5.innerHTML = "فرد";
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
+                    var row3 = defaultPlan.insertRow();
+                    var cell6 = row3.insertCell(0);
+                    cell6.innerHTML = persianDays[n];
+                    cell6.style.position = "sticky";
+                    cell6.style.right = "0px";
+                    cell6.style.fontWeight = "bold";
+                    cell6.style.backgroundColor = "antiquewhite";
+                    var cell7 = row3.insertCell(0);
+                    cell7.innerHTML = classroom[m].name;
+                    cell7.style.fontWeight = "bold";
+                    cell7.style.position = "sticky";
+                    cell7.style.right = "48px";
+                    cell7.style.backgroundColor = "antiquewhite";
+                    for (var t = 0; t < times.length; t++) {         //loop on times
+                        var cell8 = row3.insertCell(0);
+                        var cell9 = row3.insertCell(0);
+                        for (var b = 0; b < reports.length; b++) {          //loop on result
+                            if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m].name) {
+                                if(validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
+                                    validTeachers.includes(reports[b].teacherId)) {
+                                    if (reports[b].weekType === "ZOJ") {
+                                        cell8.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                    } else if (reports[b].weekType === "FARD") {
+                                        cell9.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        var expanded = false;
+
+        function showCheckboxes1() {
+            var checkboxes = document.getElementById("checkboxes1");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+        function showCheckboxes2() {
+            var checkboxes = document.getElementById("checkboxes2");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+        function showCheckboxes3() {
+            var checkboxes = document.getElementById("checkboxes3");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+    </script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/planninglayout :: header"></header>
+    <aside th:replace="layouts/planninglayout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                گزارش
+            </h1>
+            <ol class="breadcrumb">
+                <li><a th:href="@{/plan}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
+                <li class="active">گزارش</li>
+            </ol>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+
+            <div class="card">
+                <div class="row">
+                    <div class="col-sm-2" style="font-size: 0.8em;">
+                        <div style="padding: 0;">
+                            <button class="btn btn-primary nBtn" style="width: 100%">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                                <span style="margin: 5px;">فیلتر</span>
+                            </button>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes1()">
+                                <select>
+                                    <option>فیلتر بر اساس مقطع</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes1">
+                                <label for="karshenasi-id"><input type="checkbox" id="karshenasi-id" value="KARSHENASI" /> کارشناسی</label>
+                                <label for="arshad-id"><input type="checkbox" id="arshad-id" value="ARSHAD" /> کارشناسی ارشد</label>
+                                <label for="doctora-id"><input type="checkbox" id="doctora-id" value="DOCTORA" /> دکترا</label>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes2()">
+                                <select>
+                                    <option>فیلتر بر اساس کلاس</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes2">
+                                <th th:each="classroom :${classrooms}">
+                                    <label th:for="'idclassroom' + ${classroom.id}"><input type="checkbox" th:id="'idclassroom' + ${classroom.id}" th:value="${classroom.id}" th:text="' ' + ${classroom.name}" /></label>
+                                </th>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes3()">
+                                <select>
+                                    <option>فیلتر بر اساس استاد</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes3">
+                                <th th:each="teacher :${teachers}">
+                                    <label th:for="'idteacher' + ${teacher.id}"><input type="checkbox" th:id="'idteacher' + ${teacher.id}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}" /></label>
+                                </th>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-10">
+                        <div style="overflow-x:auto;overflow-y: auto;">
+                            <table id="default-plan" style="direction: ltr;text-align: center; margin: 0 auto;">
+                            </table>
+                        </div>
+                    </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/planninglayout :: footer"></aside>
+    <aside th:replace="layouts/planninglayout :: settings"></aside>
+    <aside th:replace="layouts/planninglayout :: sidebar"></aside>
+</div>
+
+
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
+
+</body>
+
+</html>

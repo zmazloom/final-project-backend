@@ -28,7 +28,7 @@
 
     <script>
         $(document).ready(function () {
-            $('#base-sidebar li:eq(4)').addClass('active');
+            $('#base-sidebar li:eq(5)').addClass('active');
 
             $(function () {
                 $("#datatable").dataTable({
@@ -81,7 +81,7 @@
                         }
                     });
                 }
-                else {
+                else if (text == 'add') {
                     //for creating plan
                     $('.myFormCreate #name').val('');
                     $('.myFormCreate #timeType').val('TWO_HOURS');
@@ -124,7 +124,7 @@
             <div class="card">
                 <div class="row" style="width: 80%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-12" style="padding: 0;">
-                        <button class="btn btn-primary nBtn">
+                        <button class="btn btn-primary nBtn" name="add">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                             <span style="margin: 5px;">برنامه جدید</span>
                         </button>
@@ -137,6 +137,7 @@
                         <th>شناسه</th>
                         <th>نام</th>
                         <th>زمانبندی</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -160,6 +161,9 @@
                         </td>
                         <td>
                             <a th:href="@{plan/one/(id=${plan.id})}" class="btn btn-warning eBtn" name="copy"><i class="fa fa-files-o" aria-hidden="true" title="کپی برنامه"></i></a>
+                        </td>
+                        <td>
+                            <a th:href="@{planning/{id}(id = ${plan.id})}" class="btn btn-success planBtn" name="planning"><i class="fa fa-edit" aria-hidden="true" title="برنامه ریزی"></i></a>
                         </td>
                     </tr>
                     </tbody>

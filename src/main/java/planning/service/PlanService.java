@@ -199,7 +199,8 @@ public class PlanService {
             for (int j = i + 1; j < planDetailVOS.size(); j++) {
                 if (teacherId == planDetailVOS.get(j).getTeacherId()) {
                     if (planDetailVOS.get(i).getTime().equals(planDetailVOS.get(j).getTime()) &&
-                            (planDetailVOS.get(i).getWeekType().equals(PlanDetail.WeekType.HAR) ||
+                            (
+//                                    planDetailVOS.get(i).getWeekType().equals(PlanDetail.WeekType.HAR) ||
                                     planDetailVOS.get(i).getWeekType().equals(planDetailVOS.get(j).getWeekType()))) {
                         Teacher teacher = teacherCRUD.getTeacherById(teacherId);
                         planWarnings.get("teacher_time").add(PlanMessage.getInvalidTeacherTime(teacher.getFirstName() + " " + teacher.getLastName(), TimeService.getTimePersian(planDetailVOS.get(i).getTime())));
@@ -221,9 +222,9 @@ public class PlanService {
 
                 for (int j = i; j < planDetailVOS.size(); j++) {
                     if (lesson.getId().equals(planDetailVOS.get(j).getLessonId())) {
-                        if (planDetailVOS.get(j).getWeekType().equals(PlanDetail.WeekType.HAR))
-                            lessonNum += 2;
-                        else
+//                        if (planDetailVOS.get(j).getWeekType().equals(PlanDetail.WeekType.HAR))
+//                            lessonNum += 2;
+//                        else
                             lessonNum++;
                     }
                 }
@@ -266,7 +267,8 @@ public class PlanService {
             for (int j = i + 1; j < planDetailVOS.size(); j++) {
                 if (classroomId == planDetailVOS.get(j).getClassroomId()) {
                     if (planDetailVOS.get(i).getTime().equals(planDetailVOS.get(j).getTime()) &&
-                            (planDetailVOS.get(i).getWeekType().equals(PlanDetail.WeekType.HAR) ||
+                            (
+//                                    planDetailVOS.get(i).getWeekType().equals(PlanDetail.WeekType.HAR) ||
                                     planDetailVOS.get(i).getWeekType().equals(planDetailVOS.get(j).getWeekType()))) {
                         Classroom classroom = classroomCRUD.getClassroomById(classroomId);
                         planWarnings.get("class_time").add(PlanMessage.getInvalidClassTime(classroom.getName(), TimeService.getTimePersian(planDetailVOS.get(i).getTime())));

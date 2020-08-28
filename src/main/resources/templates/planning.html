@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/planninglayout}">
+<head>
+
+    <style>
+        #datatable_wrapper {
+            width: 80%;
+            margin: auto;
+        }
+
+        .pagination {
+            float: left;
+        }
+
+        #datatable {
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #datatable th, #datatable td {
+            padding: 10px;
+        }
+
+        #datatable tr {
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        .form-style-1 {
+            max-width: 400px;
+            padding: 20px 12px 10px 20px;
+            font-size: 13px;
+        }
+
+        .form-style-1 li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 10px 0 0 0;
+        }
+
+        .form-style-1 label {
+            margin: 0 0 3px 0;
+            padding: 0px;
+            display: block;
+            font-weight: bold;
+        }
+
+        select {
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            border: 1px solid #BEBEBE;
+            padding: 7px;
+            margin: 0px;
+            -webkit-transition: all 0.30s ease-in-out;
+            -moz-transition: all 0.30s ease-in-out;
+            -ms-transition: all 0.30s ease-in-out;
+            -o-transition: all 0.30s ease-in-out;
+            outline: none;
+        }
+
+        form-style-1 .field-divided {
+            width: 49%;
+        }
+
+        .form-style-1 .field-long {
+            width: 100%;
+        }
+
+        .form-style-1 .field-select {
+            width: 100%;
+        }
+
+        .form-style-1 .field-textarea {
+            height: 100px;
+        }
+
+
+        #plan-table, #default-plan {
+            border: solid thin;
+        }
+
+        table {
+            border-collapse: unset !important;
+        }
+
+        #plan-table caption, #default-plan caption {
+            padding-bottom: 0.5em;
+        }
+
+        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+            border: solid thin;
+            padding: 0.5rem 2rem;
+        }
+
+        #plan-table td, #default-plan td {
+            white-space: nowrap;
+        }
+
+        #plan-table th, #default-plan th {
+            font-weight: normal;
+        }
+
+        #plan-table td, #default-plan td {
+            vertical-align: top;
+        }
+
+        #plan-table th, #default-plan th {
+            padding: 0.2em;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+            content: leader(". ");
+        '
+        }
+
+        table tr:first-child > td {
+            position: sticky;
+            top: 0;
+        }
+
+    </style>
+
+    <script>
+        const result = [
+            {
+                "id": 1,
+                "weekType": "ZOJ",
+                "day": "SHANBE",
+                "time": "8T",
+                "teacherId": 1,
+                "firstName": "firstName1",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username1",
+                "lessonId": 1,
+                "name": "lesson1",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 1,
+                "classroomName": "b31"
+            },
+            {
+                "id": 2,
+                "weekType": "FARD",
+                "day": "SHANBE",
+                "time": "10T",
+                "teacherId": 1,
+                "firstName": "firstName1",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username1",
+                "lessonId": 1,
+                "name": "lesson1",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 1,
+                "classroomName": "b31"
+            },
+            {
+                "id": 3,
+                "weekType": "FARD",
+                "day": "CHARSHANBE",
+                "time": "12T",
+                "teacherId": 2,
+                "firstName": "firstName2",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username2",
+                "lessonId": 2,
+                "name": "lesson2",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 2,
+                "classroomName": "b32"
+            },
+            {
+                "id": 4,
+                "weekType": "FARD",
+                "day": "SHANBE",
+                "time": "8T",
+                "teacherId": 2,
+                "firstName": "firstName2",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username2",
+                "lessonId": 2,
+                "name": "lesson2",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 2,
+                "classroomName": "b32"
+            },
+            {
+                "id": 5,
+                "weekType": "FARD",
+                "day": "SESHANBE",
+                "time": "16T",
+                "teacherId": 3,
+                "firstName": "firstName3",
+                "lastName": "lastName3",
+                "prefix": "OSTAD",
+                "username": "username3",
+                "lessonId": 3,
+                "name": "lesson3",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 3,
+                "classroomName": "b33"
+            },
+            {
+                "id": 6,
+                "weekType": "ZOJ",
+                "day": "SESHANBE",
+                "time": "10T",
+                "teacherId": 3,
+                "firstName": "firstName3",
+                "lastName": "lastName3",
+                "prefix": "OSTAD",
+                "username": "username3",
+                "lessonId": 3,
+                "name": "lesson3",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 2,
+                "classroomName": "b32"
+            },
+            {
+                "id": 7,
+                "weekType": "FARD",
+                "day": "YEKSHANBE",
+                "time": "16T",
+                "teacherId": 4,
+                "firstName": "firstName4",
+                "lastName": "lastName4",
+                "prefix": "OSTAD",
+                "username": "username4",
+                "lessonId": 4,
+                "name": "lesson4",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 4,
+                "classroomName": "b34"
+            },
+            {
+                "id": 8,
+                "weekType": "FARD",
+                "day": "DOSHANBE",
+                "time": "10T",
+                "teacherId": 4,
+                "firstName": "firstName4",
+                "lastName": "lastName4",
+                "prefix": "OSTAD",
+                "username": "username4",
+                "lessonId": 4,
+                "name": "lesson4",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 3,
+                "classroomName": "b33"
+            },
+            {
+                "id": 9,
+                "weekType": "ZOJ",
+                "day": "SHANBE",
+                "time": "10T",
+                "teacherId": 1,
+                "firstName": "firstName1",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username1",
+                "lessonId": 1,
+                "name": "lesson1",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 1,
+                "classroomName": "b31"
+            },
+            {
+                "id": 10,
+                "weekType": "ZOJ",
+                "day": "CHARSHANBE",
+                "time": "12T",
+                "teacherId": 2,
+                "firstName": "firstName2",
+                "lastName": "lastName2",
+                "prefix": "OSTAD",
+                "username": "username2",
+                "lessonId": 2,
+                "name": "lesson2",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 2,
+                "classroomName": "b32"
+            },
+            {
+                "id": 11,
+                "weekType": "ZOJ",
+                "day": "SESHANBE",
+                "time": "16T",
+                "teacherId": 3,
+                "firstName": "firstName3",
+                "lastName": "lastName3",
+                "prefix": "OSTAD",
+                "username": "username3",
+                "lessonId": 3,
+                "name": "lesson3",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 3,
+                "classroomName": "b33"
+            },
+            {
+                "id": 12,
+                "weekType": "ZOJ",
+                "day": "YEKSHANBE",
+                "time": "16T",
+                "teacherId": 4,
+                "firstName": "firstName4",
+                "lastName": "lastName4",
+                "prefix": "OSTAD",
+                "username": "username4",
+                "lessonId": 4,
+                "name": "lesson4",
+                "code": null,
+                "number": null,
+                "unit": "THREE",
+                "grade": "KARSHENASI",
+                "classroomId": 4,
+                "classroomName": "b34"
+            },
+        ];
+        const times = ["8T", "10T", "12T", "14T", "16T"];
+        const days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE"];
+        const classroom = ["b31", "b32", "b33", "b34", "b35", "b36"];
+        const lessons = [
+            {id: "2", name: "name darss"},
+            {id: "2", name: "name darss"}
+        ];
+        const teachers = [
+            {id: "2", name: "name ostad"},
+            {id: "2", name: "name ostad"}
+        ];
+        var selectedTimes = [];
+        $(document).ready(function () {
+            document.getElementById("sidebar-toggle-link").click();
+
+            create_default_plan();
+            set_options();
+            $('#base-sidebar li:eq(3)').addClass('active');
+            $(function () {
+                $("#datatable").dataTable({
+                    "language": {
+                        "paginate": {
+                            "next": "بعدی",
+                            "previous": "قبلی"
+                        },
+                        "sSearch": "جستجو ",
+                        "sEmptyTable": "برنامه ای وجود ندارد.",
+                        "sLengthMenu": 'تعداد ' + '<select>' +
+                            '<option value="10">10</option>' +
+                            '<option value="20">20</option>' +
+                            '<option value="30">30</option>' +
+                            '<option value="40">40</option>' +
+                            '<option value="50">50</option>' +
+                            '<option value="-1">همه</option>' +
+                            '</select>',
+                        "sLoadingRecords": "در حال بارگذاری اطلاعات...",
+                        "sZeroRecords": "داده ای برای نمایش نیست."
+                    },
+                    "info": false,
+                    "bSort": false
+                });
+            });
+            $('.nBtn, .table .eBtn').on('click', function (event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                var text = $(this).attr('name');
+                //for update plan
+                if (text == 'edit') {
+                    $.get(href, function (plan, status) {
+                        if (plan != null) {
+                            $('.myFormUpdate #id').val(plan.id);
+                            $('.myFormUpdate #name').val(plan.name);
+                            $('.myFormUpdate #timeType').val(plan.timeType);
+                            $('.myFormUpdate #updateModal').modal();
+                        }
+                    });
+                } else if (text == 'copy') {
+                    $.get(href, function (plan, status) {
+                        if (plan != null) {
+                            $('.myFormCopy #id').val(plan.id);
+                            $('.myFormCopy #name').val('');
+                            $('.myFormCopy #timeType').val(plan.timeType);
+                            $('.myFormCopy #copyModal').modal();
+                        }
+                    });
+                } else {
+                    //for creating plan
+                    $('.myFormCreate #lesson').val('');
+                    $('.myFormCreate #teacher').val('');
+                    $('.myFormCreate #day').val('');
+                    // selectedTimes is array of selected times
+                    $('.myFormCreate #myModalCreate').modal();
+                }
+            });
+            //for delete plan
+            $('.table .delBtn').on('click', function (event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                $('#removeModalCenter #delRef').attr('href', href);
+                $('#removeModalCenter').modal();
+            });
+        });
+
+
+        function highlight_cell() {
+            var table = document.getElementById('plan-table');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                // Take each cell
+                var cell = cells[i];
+                // do something on onclick event for cell
+                cell.onclick = function () {
+                    // Get the row id where the cell exists
+                    var rowId = this.parentNode.rowIndex;
+
+                    if (rowId >= 2 && this.cellIndex < 2 * times.length && this.innerHTML === "") {
+                        var classroomName = classroom[rowId - 2];
+                        var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
+                        var day = document.getElementById("day").value;
+                        var weekType = '';
+                        if (this.cellIndex % 2 === 0)
+                            weekType = "FARD";
+                        else weekType = "ZOJ";
+                        var highlightTime = {classroomName: classroomName, time: time, weekType: weekType, day: day};
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroomName &&
+                            selectedTime.time === time && selectedTime.weekType === weekType && selectedTime.day === day));
+                        // if this time is not selected, then select
+                        if (!checkTime.length) {
+                            this.style.backgroundColor = "yellow";
+                            selectedTimes.push(highlightTime);
+                            show_selected_times(day, classroomName, time, weekType);
+                            console.log(selectedTimes);
+                        }
+                        // if this time is selected before, then deselect (double click = deselect)
+                        else {
+                            this.style.backgroundColor = "white";
+                            var index;
+                            selectedTimes.some(function(entry, i) {
+                                if (entry.classroomName === classroomName && entry.time === time && entry.weekType === weekType
+                                    && entry.day === day) {
+                                    index = i;
+                                    return true;
+                                }
+                            });
+                            delete proxy[index];
+                        }
+                    }
+                }
+            }
+        }
+
+        // "delete" is triggered when an element is removed from the selectedTimes array.
+        var proxy = new Proxy(selectedTimes, {
+            deleteProperty: function (target, property) {
+                // property is index of deselected time in selectedTimes array
+                console.log('deselected time is: ');
+                console.log(selectedTimes[property]);
+                // remove deselected time
+                var ul = document.getElementById('selectedTimesList');
+                var lis = ul.getElementsByTagName("li");
+                for (var i = 0; i < lis.length; i++) {
+                    if (lis[i].innerHTML.includes(target[property].day) && lis[i].innerHTML.includes(target[property].time)
+                        && lis[i].innerHTML.includes(target[property].classroomName) && lis[i].innerHTML.includes(target[property].weekType))
+                        ul.removeChild(ul.children[i]);
+                }
+                if (target.length === 0)
+                    ul.removeChild(ul.children[0]);
+
+                delete target[property];
+                return true;
+            },
+        });
+
+        function create_default_plan() {
+            var defaultPlan = document.getElementById("default-plan");
+            //create thead
+            var header = defaultPlan.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "#91f0d0";
+            row.style.zIndex = "900";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.rowSpan = 2;
+            var cell2 = row.insertCell(0);
+            cell2.innerHTML = "شماره کلاس";
+            cell2.rowSpan = 2;
+            for (var i = 0; i < times.length; i++) {
+                var cell3 = row.insertCell(0);
+                cell3.innerHTML = times[i];
+                cell3.colSpan = 2;
+            }
+            var row2 = header.insertRow(1);
+            row2.style.position = "sticky";
+            row2.style.top = "30px";
+            row2.style.backgroundColor = "#a9caf4";
+            row2.style.zIndex = "900";
+            for (var j = 0; j < times.length; j++) {
+                var cell4 = row2.insertCell(0);
+                cell4.innerHTML = "زوج";
+                var cell5 = row2.insertCell(0);
+                cell5.innerHTML = "فرد";
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
+                    var row3 = defaultPlan.insertRow();
+                    var cell6 = row3.insertCell(0);
+                    cell6.innerHTML = days[n];
+                    cell6.style.position = "sticky";
+                    cell6.style.right = "0px";
+                    cell6.style.backgroundColor = "antiquewhite";
+                    var cell7 = row3.insertCell(0);
+                    cell7.innerHTML = classroom[m];
+                    cell7.style.position = "sticky";
+                    cell7.style.right = "138px";
+                    cell7.style.backgroundColor = "antiquewhite";
+                    for (var t = 0; t < times.length; t++) {         //loop on times
+                        var cell8 = row3.insertCell(0);
+                        var cell9 = row3.insertCell(0);
+                        for (var b = 0; b < result.length; b++) {          //loop on result
+                            if (result[b].day === days[n] && result[b].classroomName === classroom[m] && result[b].time === times[t]) {
+                                if (result[b].weekType === "ZOJ") {
+                                    cell8.innerHTML = result[b].name + " " + result[b].lastName;
+                                } else if (result[b].weekType === "FARD") {
+                                    cell9.innerHTML = result[b].name + " " + result[b].lastName;
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        function set_options() {
+            var selectLesson = document.getElementById("lesson");
+            for (var i = 0; i < lessons.length; i++) {
+                var option = document.createElement("option");
+                option.text = lessons[i].name;
+                option.value = lessons[i].id;
+                selectLesson.add(option);
+            }
+
+            var selectTeacher = document.getElementById("teacher");
+            for (var i = 0; i < teachers.length; i++) {
+                var option = document.createElement("option");
+                option.text = teachers[i].name;
+                option.value = lessons[i].id;
+                selectTeacher.add(option);
+            }
+
+            var selectDay = document.getElementById("day");
+            for (var i = 0; i < days.length; i++) {
+                var option = document.createElement("option");
+                option.text = days[i];
+                option.value = days[i];
+                selectDay.add(option);
+            }
+
+        }
+
+        function create_plan_table() {
+            var planTable = document.getElementById("plan-table");
+            planTable.deleteTHead();
+            //create thead
+            var header = planTable.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "#91f0d0";
+            row.style.zIndex = "99999";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.rowSpan = 2;
+            var cell2 = row.insertCell(0);
+            cell2.innerHTML = "شماره کلاس";
+            cell2.rowSpan = 2;
+            for (var i = 0; i < times.length; i++) {
+                var cell3 = row.insertCell(0);
+                cell3.innerHTML = times[i];
+                cell3.colSpan = 2;
+            }
+            var row2 = header.insertRow(1);
+            row2.style.position = "sticky";
+            row2.style.top = "30px";
+            row2.style.backgroundColor = "#a9caf4";
+            row2.style.zIndex = "9999";
+            for (var j = 0; j < times.length; j++) {
+                var cell4 = row2.insertCell(0);
+                cell4.innerHTML = "زوج";
+                var cell5 = row2.insertCell(0);
+                cell5.innerHTML = "فرد";
+
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                if (days[n] === document.getElementById('day').value) {
+                    for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
+                        var row3 = planTable.insertRow();
+                        var cell6 = row3.insertCell(0);
+                        cell6.innerHTML = days[n];
+                        cell6.style.position = "sticky";
+                        cell6.style.right = "0px";
+                        cell6.style.backgroundColor = "antiquewhite";
+                        var cell7 = row3.insertCell(0);
+                        cell7.innerHTML = classroom[m];
+                        cell7.style.position = "sticky";
+                        cell7.style.right = "99px";
+                        cell7.style.backgroundColor = "antiquewhite";
+                        for (var t = 0; t < times.length; t++) {         //loop on times
+                            var cell8 = row3.insertCell(0);
+                            var cell9 = row3.insertCell(0);
+                            for (var b = 0; b < result.length; b++) {          //loop on result
+                                if (result[b].day === days[n] && result[b].classroomName === classroom[m] && result[b].time === times[t]) {
+                                    if (result[b].weekType === "ZOJ") {
+                                        cell8.innerHTML = result[b].name + " " + result[b].lastName;
+                                    } else if (result[b].weekType === "FARD") {
+                                        cell9.innerHTML = result[b].name + " " + result[b].lastName;
+                                    }
+                                }
+                            }
+                            // if now select then highlight
+                            var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroom[m] &&
+                                selectedTime.time === times[t] && selectedTime.day === days[n]));
+                            if (checkTime.length) {
+                                for (var k=0;k<checkTime.length;k++){
+                                    if (checkTime[k].weekType === 'ZOJ')
+                                        cell8.style.backgroundColor = "yellow";
+                                    else cell9.style.backgroundColor = "yellow";
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            highlight_cell();
+        }
+
+        function show_selected_times(day, classroomName, time, weekType) {
+            //create selectedTimesList for the first time
+            if (selectedTimes.length === 1) {
+                var ul = document.createElement('ul');
+                ul.setAttribute('id', 'selectedTimesList');
+                document.getElementById('showSelectedTimes').appendChild(ul);
+                var li = document.createElement('li');
+                li.setAttribute('class', 'item');
+                ul.appendChild(li);
+                li.innerHTML = "زمانهای انتخابی : ";
+            } else
+                var ul = document.getElementById('selectedTimesList');
+            var li = document.createElement('li');
+            li.setAttribute('class', 'item');
+            ul.appendChild(li);
+            li.innerHTML = li.innerHTML + day + " " + " کلاس : " + classroomName + " ساعت : " + time + " هفته " + weekType;
+
+        }
+
+
+    </script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/planninglayout :: header"></header>
+    <aside th:replace="layouts/planninglayout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                برنامه ریزی
+            </h1>
+            <ol class="breadcrumb">
+                <li><a th:href="@{/plan}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
+                <li class="active">برنامه ریزی</li>
+            </ol>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+
+            <div class="card">
+                <div class="row" style="width: 80%; outline: none; margin: 0 auto 20px auto;">
+                    <div class="col-sm-12" style="padding: 0;">
+                        <button class="btn btn-primary nBtn">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <span style="margin: 5px;">ادامه برنامه ریزی</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;overflow-y: auto;height: 90vh">
+                    <table id="default-plan" style="direction: ltr;text-align: center">
+                    </table>
+                </div>
+
+
+            </div>
+
+            <!--#Modal form for plan update-->
+            <div class="myFormUpdate">
+                <form th:action="@{/plan/update}" method="post">
+                    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog"
+                         aria-labelledby="updateModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش
+                                        برنامه</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <input type="hidden" class="form-control" id="id" name="id" value=""/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name" class="col-form-label">نام</label>
+                                        <input type="text" class="form-control" id="name" name="name" value=""
+                                               style="border-radius: 2px;"/>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="timeType" class="col-form-label">زمانبندی</label>
+                                                <select name="timeType" id="timeType" disabled>
+                                                    <option value="TWO_HOURS">2 ساعت</option>
+                                                    <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">
+                                        انصراف
+                                    </button>
+                                    <input type="submit" class="btn btn-primary" value="ویرایش" style="outline: none;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End update form-->
+
+            <!--#Modal for plan create-->
+            <div class="myFormCreate">
+                <form th:action="@{/plan/add}" method="post">
+                    <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
+                         aria-labelledby="modalLabelCreate" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">برنامه
+                                        جدید</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <ul class="form-style-1">
+                                        <li>
+                                            <label>درس </label>
+                                            <select id="lesson" name="lesson" class="field-select">
+                                                <option value=""></option>
+                                            </select>
+                                        </li>
+                                        <li>
+                                            <label>استاد </label>
+                                            <select id="teacher" name="teacher" class="field-select">
+                                                <option value=""></option>
+                                            </select>
+                                        </li>
+                                        <li>
+                                            <label>روز هفته </label>
+                                            <select id="day" name="day" class="field-select"
+                                                    onchange="create_plan_table()">
+                                            </select>
+                                        </li>
+                                    </ul>
+
+                                    <div style="overflow-x:auto;">
+                                        <table id="plan-table" style="direction: ltr;text-align: center">
+                                        </table>
+                                    </div>
+                                    <div id="showSelectedTimes"></div>
+                                    <div class="modal-footer" style="padding: 15px 0;">
+                                        <button type="button" class="btn btn" data-dismiss="modal"
+                                                style="outline: none;">انصراف
+                                        </button>
+                                        <input type="submit" class="btn btn-primary" value="ذخیره"
+                                               style="outline: none;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End form-->
+
+            <!-- #Modal for removing plan -->
+            <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog"
+                 aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                        <div class="modal-header" style="background-color: #ecebeb;">
+                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف برنامه</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    style="outline: none;">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>آیا از حذف برنامه اطمینان دارید؟</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف
+                            </button>
+                            <a href="" class="btn btn-primary" id="delRef" style="outline: none;">تایید</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--#Modal form for plan copy-->
+            <div class="myFormCopy">
+                <form th:action="@{/plan/copy}" method="post">
+                    <div class="modal fade" id="copyModal" tabindex="-1" role="dialog" aria-labelledby="copyModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="copyModalLabel" style="display: inline;">کپی برنامه</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <input type="hidden" class="form-control" id="id" name="id" value=""/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name" class="col-form-label">نام برنامه جدید</label>
+                                        <input type="text" class="form-control" id="name" name="name" value=""
+                                               style="border-radius: 2px;"/>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="timeType" class="col-form-label">زمانبندی</label>
+                                                <select name="timeType" id="timeType" disabled>
+                                                    <option value="TWO_HOURS">2 ساعت</option>
+                                                    <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">
+                                        انصراف
+                                    </button>
+                                    <input type="submit" class="btn btn-primary" value="کپی" style="outline: none;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End copy form-->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/planninglayout :: footer"></aside>
+    <aside th:replace="layouts/planninglayout :: settings"></aside>
+    <aside th:replace="layouts/planninglayout :: sidebar"></aside>
+</div>
+
+
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
+
+</body>
+
+</html>

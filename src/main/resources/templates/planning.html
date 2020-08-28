@@ -33,7 +33,7 @@
         .form-style-1 {
             max-width: 400px;
             padding: 20px 12px 10px 20px;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         .form-style-1 li {
@@ -48,20 +48,6 @@
             padding: 0px;
             display: block;
             font-weight: bold;
-        }
-
-        select {
-            box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            border: 1px solid #BEBEBE;
-            padding: 7px;
-            margin: 0px;
-            -webkit-transition: all 0.30s ease-in-out;
-            -moz-transition: all 0.30s ease-in-out;
-            -ms-transition: all 0.30s ease-in-out;
-            -o-transition: all 0.30s ease-in-out;
-            outline: none;
         }
 
         form-style-1 .field-divided {
@@ -83,6 +69,7 @@
 
         #plan-table, #default-plan {
             border: solid thin;
+            font-size: 9px;
         }
 
         table {
@@ -95,7 +82,7 @@
 
         #plan-table th, #plan-table td, #default-plan th, #default-plan td {
             border: solid thin;
-            padding: 0.5rem 2rem;
+            padding: 0.5rem 0.5rem;
         }
 
         #plan-table td, #default-plan td {
@@ -126,254 +113,31 @@
             top: 0;
         }
 
+        .select2-selection__rendered, .select2-results__option {
+            direction: rtl;
+            text-align: right;
+            font-size: 11px;
+        }
+
     </style>
 
-    <script>
-        const result = [
-            {
-                "id": 1,
-                "weekType": "ZOJ",
-                "day": "SHANBE",
-                "time": "8T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 2,
-                "weekType": "FARD",
-                "day": "SHANBE",
-                "time": "10T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 3,
-                "weekType": "FARD",
-                "day": "CHARSHANBE",
-                "time": "12T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 4,
-                "weekType": "FARD",
-                "day": "SHANBE",
-                "time": "8T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 5,
-                "weekType": "FARD",
-                "day": "SESHANBE",
-                "time": "16T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 6,
-                "weekType": "ZOJ",
-                "day": "SESHANBE",
-                "time": "10T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 7,
-                "weekType": "FARD",
-                "day": "YEKSHANBE",
-                "time": "16T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 4,
-                "classroomName": "b34"
-            },
-            {
-                "id": 8,
-                "weekType": "FARD",
-                "day": "DOSHANBE",
-                "time": "10T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 9,
-                "weekType": "ZOJ",
-                "day": "SHANBE",
-                "time": "10T",
-                "teacherId": 1,
-                "firstName": "firstName1",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username1",
-                "lessonId": 1,
-                "name": "lesson1",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 1,
-                "classroomName": "b31"
-            },
-            {
-                "id": 10,
-                "weekType": "ZOJ",
-                "day": "CHARSHANBE",
-                "time": "12T",
-                "teacherId": 2,
-                "firstName": "firstName2",
-                "lastName": "lastName2",
-                "prefix": "OSTAD",
-                "username": "username2",
-                "lessonId": 2,
-                "name": "lesson2",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 2,
-                "classroomName": "b32"
-            },
-            {
-                "id": 11,
-                "weekType": "ZOJ",
-                "day": "SESHANBE",
-                "time": "16T",
-                "teacherId": 3,
-                "firstName": "firstName3",
-                "lastName": "lastName3",
-                "prefix": "OSTAD",
-                "username": "username3",
-                "lessonId": 3,
-                "name": "lesson3",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 3,
-                "classroomName": "b33"
-            },
-            {
-                "id": 12,
-                "weekType": "ZOJ",
-                "day": "YEKSHANBE",
-                "time": "16T",
-                "teacherId": 4,
-                "firstName": "firstName4",
-                "lastName": "lastName4",
-                "prefix": "OSTAD",
-                "username": "username4",
-                "lessonId": 4,
-                "name": "lesson4",
-                "code": null,
-                "number": null,
-                "unit": "THREE",
-                "grade": "KARSHENASI",
-                "classroomId": 4,
-                "classroomName": "b34"
-            },
-        ];
-        const times = ["8T", "10T", "12T", "14T", "16T"];
-        const days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE"];
-        const classroom = ["b31", "b32", "b33", "b34", "b35", "b36"];
-        const lessons = [
-            {id: "2", name: "name darss"},
-            {id: "2", name: "name darss"}
-        ];
-        const teachers = [
-            {id: "2", name: "name ostad"},
-            {id: "2", name: "name ostad"}
-        ];
+    <script type="text/javascript" th:inline="javascript">
+        //full report
+        var result = [[${reports}]];
+
+        var times = ["8T", "10T", "12T", "14T", "16T", "18T"];
+        var persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
+        var days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
+        var classroom = [[${classrooms}]];
+        var lessons = [[${lessons}]];
+        var teachers = [[${teachers}]];
+
         var selectedTimes = [];
         $(document).ready(function () {
-            document.getElementById("sidebar-toggle-link").click();
-
+            $("select").select2({
+                dropdownParent: $("#myModalCreate")
+            });
             create_default_plan();
             set_options();
             $('#base-sidebar li:eq(3)').addClass('active');
@@ -456,7 +220,7 @@
                     var rowId = this.parentNode.rowIndex;
 
                     if (rowId >= 2 && this.cellIndex < 2 * times.length && this.innerHTML === "") {
-                        var classroomName = classroom[rowId - 2];
+                        var classroomName = classroom[rowId - 2].name;
                         var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
                         var day = document.getElementById("day").value;
                         var weekType = '';
@@ -520,17 +284,22 @@
             var row = header.insertRow(0);
             row.style.position = "sticky";
             row.style.top = "0px";
-            row.style.backgroundColor = "#91f0d0";
+            row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "900";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
             cell.rowSpan = 2;
             var cell2 = row.insertCell(0);
-            cell2.innerHTML = "شماره کلاس";
+            cell2.innerHTML = "کلاس";
+            cell2.style.fontWeight = "bold";
             cell2.rowSpan = 2;
             for (var i = 0; i < times.length; i++) {
                 var cell3 = row.insertCell(0);
-                cell3.innerHTML = times[i];
+                cell3.innerHTML = persianTimes[i];
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "rgb(178 251 255)";
+                cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
             }
             var row2 = header.insertRow(1);
@@ -541,32 +310,36 @@
             for (var j = 0; j < times.length; j++) {
                 var cell4 = row2.insertCell(0);
                 cell4.innerHTML = "زوج";
+                cell4.style.fontWeight = "bold";
                 var cell5 = row2.insertCell(0);
                 cell5.innerHTML = "فرد";
+                cell5.style.fontWeight = "bold";
             }
             //create tbody
             for (var n = 0; n < days.length; n++) {                     //loop on days
                 for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
                     var row3 = defaultPlan.insertRow();
                     var cell6 = row3.insertCell(0);
-                    cell6.innerHTML = days[n];
+                    cell6.innerHTML = persianDays[n];
                     cell6.style.position = "sticky";
                     cell6.style.right = "0px";
+                    cell6.style.fontWeight = "bold";
                     cell6.style.backgroundColor = "antiquewhite";
                     var cell7 = row3.insertCell(0);
-                    cell7.innerHTML = classroom[m];
+                    cell7.innerHTML = classroom[m].name;
                     cell7.style.position = "sticky";
-                    cell7.style.right = "138px";
+                    cell7.style.right = "48px";
+                    cell7.style.fontWeight = "bold";
                     cell7.style.backgroundColor = "antiquewhite";
                     for (var t = 0; t < times.length; t++) {         //loop on times
                         var cell8 = row3.insertCell(0);
                         var cell9 = row3.insertCell(0);
                         for (var b = 0; b < result.length; b++) {          //loop on result
-                            if (result[b].day === days[n] && result[b].classroomName === classroom[m] && result[b].time === times[t]) {
+                            if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
                                 if (result[b].weekType === "ZOJ") {
-                                    cell8.innerHTML = result[b].name + " " + result[b].lastName;
+                                    cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
                                 } else if (result[b].weekType === "FARD") {
-                                    cell9.innerHTML = result[b].name + " " + result[b].lastName;
+                                    cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
                                 }
                             }
 
@@ -584,21 +357,22 @@
                 var option = document.createElement("option");
                 option.text = lessons[i].name;
                 option.value = lessons[i].id;
+                option.style.textAlign = "right";
                 selectLesson.add(option);
             }
 
             var selectTeacher = document.getElementById("teacher");
             for (var i = 0; i < teachers.length; i++) {
                 var option = document.createElement("option");
-                option.text = teachers[i].name;
-                option.value = lessons[i].id;
+                option.text = teachers[i].firstName + ' ' + teachers[i].lastName;
+                option.value = teachers[i].id;
                 selectTeacher.add(option);
             }
 
             var selectDay = document.getElementById("day");
             for (var i = 0; i < days.length; i++) {
                 var option = document.createElement("option");
-                option.text = days[i];
+                option.text = persianDays[i];
                 option.value = days[i];
                 selectDay.add(option);
             }
@@ -613,17 +387,23 @@
             var row = header.insertRow(0);
             row.style.position = "sticky";
             row.style.top = "0px";
-            row.style.backgroundColor = "#91f0d0";
+            row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "99999";
+            row.style.fontWeight = "bold";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
             cell.rowSpan = 2;
             var cell2 = row.insertCell(0);
-            cell2.innerHTML = "شماره کلاس";
+            cell2.innerHTML = "کلاس";
+            cell2.style.fontWeight = "bold";
             cell2.rowSpan = 2;
             for (var i = 0; i < times.length; i++) {
                 var cell3 = row.insertCell(0);
-                cell3.innerHTML = times[i];
+                cell3.innerHTML = persianTimes[i];
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "rgb(178 251 255)";
+                cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
             }
             var row2 = header.insertRow(1);
@@ -634,7 +414,9 @@
             for (var j = 0; j < times.length; j++) {
                 var cell4 = row2.insertCell(0);
                 cell4.innerHTML = "زوج";
+                cell4.style.fontWeight = "bold";
                 var cell5 = row2.insertCell(0);
+                cell5.style.fontWeight = "bold";
                 cell5.innerHTML = "فرد";
 
             }
@@ -644,29 +426,31 @@
                     for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
                         var row3 = planTable.insertRow();
                         var cell6 = row3.insertCell(0);
-                        cell6.innerHTML = days[n];
+                        cell6.innerHTML = persianDays[n];
                         cell6.style.position = "sticky";
                         cell6.style.right = "0px";
+                        cell6.style.fontWeight = "bold";
                         cell6.style.backgroundColor = "antiquewhite";
                         var cell7 = row3.insertCell(0);
-                        cell7.innerHTML = classroom[m];
+                        cell7.innerHTML = classroom[m].name;
+                        cell7.style.fontWeight = "bold";
                         cell7.style.position = "sticky";
                         cell7.style.right = "99px";
                         cell7.style.backgroundColor = "antiquewhite";
                         for (var t = 0; t < times.length; t++) {         //loop on times
                             var cell8 = row3.insertCell(0);
                             var cell9 = row3.insertCell(0);
-                            for (var b = 0; b < result.length; b++) {          //loop on result
-                                if (result[b].day === days[n] && result[b].classroomName === classroom[m] && result[b].time === times[t]) {
+                            for (var b = 0; b < result.length; b++) {//loop on result
+                                if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
                                     if (result[b].weekType === "ZOJ") {
-                                        cell8.innerHTML = result[b].name + " " + result[b].lastName;
+                                        cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
                                     } else if (result[b].weekType === "FARD") {
-                                        cell9.innerHTML = result[b].name + " " + result[b].lastName;
+                                        cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
                                     }
                                 }
                             }
                             // if now select then highlight
-                            var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroom[m] &&
+                            var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroom[m].name &&
                                 selectedTime.time === times[t] && selectedTime.day === days[n]));
                             if (checkTime.length) {
                                 for (var k=0;k<checkTime.length;k++){
@@ -692,7 +476,7 @@
                 var li = document.createElement('li');
                 li.setAttribute('class', 'item');
                 ul.appendChild(li);
-                li.innerHTML = "زمانهای انتخابی : ";
+                li.innerHTML = "زمان های انتخاب شده : ";
             } else
                 var ul = document.getElementById('selectedTimesList');
             var li = document.createElement('li');
@@ -716,10 +500,10 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                برنامه ریزی
+                برنامه
             </h1>
             <ol class="breadcrumb">
-                <li><a th:href="@{/plan}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
+                <li><a th:href="@{/dashboard}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
                 <li class="active">برنامه ریزی</li>
             </ol>
         </section>
@@ -729,16 +513,15 @@
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
 
             <div class="card">
-                <div class="row" style="width: 80%; outline: none; margin: 0 auto 20px auto;">
+                <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-12" style="padding: 0;">
                         <button class="btn btn-primary nBtn">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span style="margin: 5px;">ادامه برنامه ریزی</span>
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                            <span style="margin: 5px;">ویرایش برنامه ریزی</span>
                         </button>
                     </div>
                 </div>
-
-                <div style="overflow-x:auto;overflow-y: auto;height: 90vh">
+                <div style="overflow-x:auto;overflow-y: auto;">
                     <table id="default-plan" style="direction: ltr;text-align: center">
                     </table>
                 </div>
@@ -752,7 +535,7 @@
                     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog"
                          aria-labelledby="updateModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
-                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
                                     <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش
                                         برنامه</h5>
@@ -798,44 +581,48 @@
             <!--#Modal for plan create-->
             <div class="myFormCreate">
                 <form th:action="@{/plan/add}" method="post">
-                    <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
+                    <div class="modal fade" id="myModalCreate" tabindex="-1"  role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                        <div class="modal-dialog" role="document" style="width: 95%;">
+                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">برنامه
-                                        جدید</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                            style="outline: none;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش برنامه ریزی</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body" style="padding: 25px 10px;">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="form-style-1">
+                                                <div style="margin-bottom: 15px;">
+                                                    <label>درس </label>
+                                                    <select id="lesson" name="lesson" data-width="80%">
+                                                        <option value="">یک درس را انتخاب کنید...</option>
+                                                    </select>
+                                                </div>
+                                                <div style="margin-bottom: 15px;">
+                                                    <label>استاد </label>
+                                                    <select id="teacher" name="teacher"  data-width="80%">
+                                                        <option value="">یک استاد را انتخاب کنید...</option>
+                                                    </select>
+                                                </div>
+                                                <div style="margin-bottom: 15px;">
+                                                    <label>روز هفته </label>
+                                                    <select id="day" name="day" data-width="80%"
+                                                            onchange="create_plan_table()">
+                                                        <option value="">یک روز را انتخاب کنید...</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <div style="overflow-x:auto;">
+                                                <table id="plan-table" style="direction: ltr;text-align: center; margin: 0 auto;">
 
-                                    <ul class="form-style-1">
-                                        <li>
-                                            <label>درس </label>
-                                            <select id="lesson" name="lesson" class="field-select">
-                                                <option value=""></option>
-                                            </select>
-                                        </li>
-                                        <li>
-                                            <label>استاد </label>
-                                            <select id="teacher" name="teacher" class="field-select">
-                                                <option value=""></option>
-                                            </select>
-                                        </li>
-                                        <li>
-                                            <label>روز هفته </label>
-                                            <select id="day" name="day" class="field-select"
-                                                    onchange="create_plan_table()">
-                                            </select>
-                                        </li>
-                                    </ul>
-
-                                    <div style="overflow-x:auto;">
-                                        <table id="plan-table" style="direction: ltr;text-align: center">
-                                        </table>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div id="showSelectedTimes"></div>
                                     <div class="modal-footer" style="padding: 15px 0;">
@@ -877,7 +664,7 @@
                 </div>
             </div>
 
-            <!--#Modal form for plan copy-->
+            <!--#Modal form for update planning-->
             <div class="myFormCopy">
                 <form th:action="@{/plan/copy}" method="post">
                     <div class="modal fade" id="copyModal" tabindex="-1" role="dialog" aria-labelledby="copyModalLabel"

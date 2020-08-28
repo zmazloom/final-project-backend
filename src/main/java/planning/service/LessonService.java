@@ -26,7 +26,8 @@ public class LessonService {
             return null;
 
         LessonVO lessonVO = modelMapper.map(lesson, LessonVO.class);
-        lessonVO.setCreated(JalCal.gregorianToJalaliTime(lesson.getCreated()));
+        if(lessonVO.getCreated() != null && !lessonVO.getCreated().equals(""))
+            lessonVO.setCreated(JalCal.gregorianToJalaliTime(lesson.getCreated()));
         return lessonVO;
     }
 

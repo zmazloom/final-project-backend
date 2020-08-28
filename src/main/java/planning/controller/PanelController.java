@@ -381,19 +381,60 @@ public class PanelController {
     @GetMapping("/planning/{id}")
     public String getDetailsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
         try {
-            ResponseEntity<Result<PlanVO>> planVOList = planController.getPlanById(id);
+            ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
+            ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
+            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
+            ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
+            List<Long> classroomIds = new ArrayList<>();
+            List<Long> teacherIds = new ArrayList<>();
 
             if (planVOList.getBody() != null && planVOList.getBody().getResult() != null)
-                model.addAttribute("plans", planVOList.getBody().getResult());
+                model.addAttribute("reports", planVOList.getBody().getResult());
             else
-                model.addAttribute("plans", new ArrayList<PlanVO>());
+                model.addAttribute("reports", new ArrayList<PlanVO>());
+
+            if (lessonVOList.getBody() != null && lessonVOList.getBody().getResult() != null)
+                model.addAttribute("lessons", lessonVOList.getBody().getResult());
+            else
+                model.addAttribute("lessons", new ArrayList<LessonVO>());
+
+            if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null) {
+                model.addAttribute("classrooms", classroomVOList.getBody().getResult());
+                for(ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
+                    classroomIds.add(classroomVO.getId());
+                }
+                model.addAttribute("classroomIds", classroomIds);
+            }
+            else {
+                model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
+                model.addAttribute("classroomIds", new ArrayList<Long>());
+            }
+
+            if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null) {
+                model.addAttribute("teachers", teacherVOList.getBody().getResult());
+                for(TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
+                    teacherIds.add(teacherVO.getId());
+                }
+                model.addAttribute("teacherIds", teacherIds);
+            }
+            else {
+                model.addAttribute("teachers", new ArrayList<TeacherVO>());
+                model.addAttribute("teacherIds", new ArrayList<Long>());
+            }
+
+
         } catch (Exception ex) {
-            model.addAttribute("plans", new ArrayList<PlanVO>());
+            model.addAttribute("reports", new ArrayList<PlanVO>());
+            model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
+            model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            model.addAttribute("lessons", new ArrayList<LessonVO>());
+            model.addAttribute("teacherIds", new ArrayList<Long>());
+            model.addAttribute("classroomIds", new ArrayList<Long>());
             model.addAttribute("errorMessage", ex.getMessage());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "planning::#plan-list";
+            return "reports::#report-list";
 
         return "planning";
     }

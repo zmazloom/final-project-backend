@@ -4,12 +4,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import planning.model.AllTeacherTimeGet;
 import planning.model.PlanDetailGet;
 import planning.model.Result;
-import planning.modelVO.ClassroomVO;
-import planning.modelVO.LessonVO;
-import planning.modelVO.PlanVO;
-import planning.modelVO.TeacherVO;
+import planning.model.Time;
+import planning.modelVO.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -491,6 +490,34 @@ public class PanelController {
             return "reports::#report-list";
 
         return "reports";
+    }
+
+    @GetMapping("/teachertime/{id}")
+    public String getTeacherTime(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        try {
+            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
+            ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
+
+            model.addAttribute("planId", id);
+
+            if (teacherTimeVOList.getBody() != null && teacherTimeVOList.getBody().getResult() != null)
+                model.addAttribute("teachertimes", teacherTimeVOList.getBody().getResult());
+            else
+                model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
+
+            if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null)
+                model.addAttribute("teachers", teacherVOList.getBody().getResult());
+            else
+                model.addAttribute("teachers", new ArrayList<TeacherVO>());
+
+        } catch (Exception ex) {
+            model.addAttribute("planId", id);
+            model.addAttribute("teachertimes", new ArrayList<Time>());
+            model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "teachertime";
     }
     /******************** end *********************/
 }

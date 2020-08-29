@@ -141,30 +141,7 @@
             create_default_plan();
             set_options();
             $('#base-sidebar li:eq(3)').addClass('active');
-            $(function () {
-                $("#datatable").dataTable({
-                    "language": {
-                        "paginate": {
-                            "next": "بعدی",
-                            "previous": "قبلی"
-                        },
-                        "sSearch": "جستجو ",
-                        "sEmptyTable": "برنامه ای وجود ندارد.",
-                        "sLengthMenu": 'تعداد ' + '<select>' +
-                            '<option value="10">10</option>' +
-                            '<option value="20">20</option>' +
-                            '<option value="30">30</option>' +
-                            '<option value="40">40</option>' +
-                            '<option value="50">50</option>' +
-                            '<option value="-1">همه</option>' +
-                            '</select>',
-                        "sLoadingRecords": "در حال بارگذاری اطلاعات...",
-                        "sZeroRecords": "داده ای برای نمایش نیست."
-                    },
-                    "info": false,
-                    "bSort": false
-                });
-            });
+
             $('.nBtn, .table .eBtn').on('click', function (event) {
                 event.preventDefault();
                 var href = $(this).attr('href');

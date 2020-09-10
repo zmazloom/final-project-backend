@@ -379,6 +379,8 @@ public class PanelController {
 
     @GetMapping("/planning/{id}")
     public String getDetailsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        model.addAttribute("planId", id);
+
         try {
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
@@ -440,6 +442,8 @@ public class PanelController {
 
     @GetMapping("/reports/{id}")
     public String getReportsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        model.addAttribute("planId", id);
+
         try {
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
@@ -494,6 +498,8 @@ public class PanelController {
 
     @GetMapping("/teachertime/{id}")
     public String getTeacherTime(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        model.addAttribute("planId", id);
+
         try {
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
@@ -518,6 +524,12 @@ public class PanelController {
         }
 
         return "teachertime";
+    }
+    @GetMapping("/plandashboard/{id}")
+    public String getPlanDashboard(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        model.addAttribute("planId", id);
+
+        return "plandashboard";
     }
     /******************** end *********************/
 }

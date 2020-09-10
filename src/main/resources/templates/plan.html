@@ -154,16 +154,16 @@
                             </div>
                         </td>
                         <td>
-                            <a th:href="@{plan/delete/(id=${plan.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف برنامه"></i></a>
+                            <a th:href="@{/plan/delete/(id=${plan.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف برنامه"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{plan/one/(id=${plan.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil" title="ویرایش برنامه"></i></a>
+                            <a th:href="@{/plan/one/(id=${plan.id})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil" title="ویرایش برنامه"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{plan/one/(id=${plan.id})}" class="btn btn-warning eBtn" name="copy"><i class="fa fa-files-o" aria-hidden="true" title="کپی برنامه"></i></a>
+                            <a th:href="@{/plan/one/(id=${plan.id})}" class="btn btn-warning eBtn" name="copy"><i class="fa fa-files-o" aria-hidden="true" title="کپی برنامه"></i></a>
                         </td>
                         <td>
-                            <a th:href="@{planning/{id}(id = ${plan.id})}" class="btn btn-success planBtn" name="planning"><i class="fa fa-edit" aria-hidden="true" title="برنامه ریزی"></i></a>
+                            <a th:href="@{/plandashboard/{id}(id = ${plan.id})}" class="btn btn-success planBtn" name="planning"><i class="fa fa-edit" aria-hidden="true" title="برنامه ریزی"></i></a>
                         </td>
                     </tr>
                     </tbody>

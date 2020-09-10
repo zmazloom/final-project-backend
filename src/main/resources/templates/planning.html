@@ -138,9 +138,10 @@
             $("select").select2({
                 dropdownParent: $("#myModalCreate")
             });
+            $('#base-sidebar li:eq(3)').addClass('active');
+
             create_default_plan();
             set_options();
-            $('#base-sidebar li:eq(3)').addClass('active');
 
             $('.nBtn, .table .eBtn').on('click', function (event) {
                 event.preventDefault();
@@ -256,6 +257,7 @@
 
         function create_default_plan() {
             var defaultPlan = document.getElementById("default-plan");
+            console.log(defaultPlan);
             //create thead
             var header = defaultPlan.createTHead();
             var row = header.insertRow(0);
@@ -502,7 +504,6 @@
                     <table id="default-plan" style="direction: ltr;text-align: center">
                     </table>
                 </div>
-
 
             </div>
 

@@ -20,4 +20,7 @@ public interface PlanCRUD extends JpaRepository<Plan, Long> {
 
     @Query("from Plan p where p.id <> :planId and p.name = :name")
     Plan checkDuplicatePlanName(long planId, String name);
+
+    @Query("select count(p) from Plan p where p.removed = false")
+    Long getPlansCount();
 }

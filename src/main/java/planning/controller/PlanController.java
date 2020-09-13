@@ -144,4 +144,11 @@ public class PlanController {
                 .setResult(planService.getPlanDetails(plan))
                 .get());
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Result<Long>> getPlansCount() {
+        return ResponseEntity.ok(ResFact.<Long>build()
+                .setResult(planCRUD.getPlansCount())
+                .get());
+    }
 }

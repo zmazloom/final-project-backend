@@ -190,4 +190,11 @@ public class TeacherController {
                 .setResult(allTeacherTimeGets)
                 .get());
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Result<Long>> getTeachersCount() {
+        return ResponseEntity.ok(ResFact.<Long>build()
+                .setResult(teacherCRUD.getTeachersCount())
+                .get());
+    }
 }

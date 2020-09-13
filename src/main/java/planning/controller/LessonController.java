@@ -84,4 +84,11 @@ public class LessonController {
                 .get());
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Result<Long>> getLessonsCount() {
+        return ResponseEntity.ok(ResFact.<Long>build()
+                .setResult(lessonCRUD.getLessonsCount())
+                .get());
+    }
+
 }

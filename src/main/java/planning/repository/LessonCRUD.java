@@ -14,4 +14,7 @@ public interface LessonCRUD extends JpaRepository<Lesson, Long> {
 
     @Query("from Lesson l where l.id = :lessonId and l.removed = false")
     Lesson getLessonById(long lessonId);
+
+    @Query("select count(l) from Lesson l where l.removed = false")
+    Long getLessonsCount();
 }

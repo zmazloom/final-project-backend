@@ -21,4 +21,7 @@ public interface TeacherCRUD extends JpaRepository<Teacher, Long> {
 
     @Query("from Teacher t where t.id <> :teacherId and t.username = :username and t.removed = false")
     Teacher checkDuplicateTeacherUsername(long teacherId, String username);
+
+    @Query("select count(t) from Teacher t where t.removed = false")
+    Long getTeachersCount();
 }

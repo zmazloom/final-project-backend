@@ -16,6 +16,9 @@ public interface ClassroomCRUD extends JpaRepository<Classroom, Long> {
     @Query("from Classroom c where c.removed = false order by c.id")
     List<Classroom> getAllClassrooms();
 
+    @Query("select count(c) from Classroom c where c.removed = false")
+    Long getClassroomsCount();
+
     @Query("from Classroom c where c.id = :classId and c.removed = false")
     Classroom getClassroomById(long classId);
 

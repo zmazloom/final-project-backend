@@ -2,6 +2,15 @@
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
 <head>
 
+    <style>
+        .small-box {
+            border-radius: 6px;
+        }
+        .box-body h5 {
+            margin: 20px 0;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
             $('#base-sidebar li:eq(1)').addClass('active');
@@ -29,9 +38,93 @@
         <!-- Main content -->
         <section class="content container-fluid">
 
-            <!--------------------------
-              | Your Page Content Here |
-              -------------------------->
+            <div class="row">
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <h3 th:text="${classrooms}"></h3>
+
+                            <p>تعداد کلاس ها</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-ios-albums"></i>
+                        </div>
+                        <a th:href="@{/classroom}" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3 th:text="${teachers}"></h3>
+
+                            <p>تعداد اساتید</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-person"></i>
+                        </div>
+                        <a th:href="@{/teacher}" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3 th:text="${lessons}"></h3>
+
+                            <p>تعداد دروس</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-ios-book"></i>
+                        </div>
+                        <a th:href="@{/lesson}" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-red">
+                        <div class="inner">
+                            <h3 th:text="${plans}"></h3>
+
+                            <p>تعداد برنامه ها</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a th:href="@{/plan}" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+
+            <div class="row">
+                <section class="col-lg-12 col-md-12">
+                    <div class="box box-info">
+                        <div class="box-header">
+                            <i class="fa fa-info-circle"></i>
+                            <h3 class="box-title">راهنمای بخش اول</h3>
+                            <!-- tools box -->
+                            <div class="pull-left box-tools">
+                                <button type="button" class="btn bg-info btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <!-- /. tools -->
+                        </div>
+                        <div class="box-body">
+                            <h5><b>برای انجام پیش نیازهای برنامه ریزی، مراحل زیر را انجام دهید:</b></h5>
+                            <h5>۱- لیست کلاس ها را در بخش "کلاس" وارد نمایید.</h5>
+                            <h5>۲- لیست اساتید را در بخش "استاد" وارد نمایید.</h5>
+                            <h5>۳- لیست دروس را در بخش "درس" وارد نمایید.</h5>
+                            <h5>۴- لیست برنامه ها را در بخش "برنامه" وارد نمایید.</h5>
+                            <h5>۵- در بخش "برنامه"، گزینه برنامه ریزی را برای برنامه مورد نظر خود انتخاب کنید.</h5>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
         </section>
         <!-- /.content -->

@@ -89,4 +89,11 @@ public class ClassroomController {
                 .get());
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Result<Long>> getClassroomsCount() {
+        return ResponseEntity.ok(ResFact.<Long>build()
+                .setResult(classroomCRUD.getClassroomsCount())
+                .get());
+    }
+
 }

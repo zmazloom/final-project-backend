@@ -39,7 +39,38 @@ public class PanelController {
     }
 
     @RequestMapping(value = {"/", "/dashboard"})
-    public String getIndexPage() {
+    public String getIndexPage(Model model) {
+        try {
+            ResponseEntity<Result<Long>> classroomsCount = classroomController.getClassroomsCount();
+            ResponseEntity<Result<Long>> teachersCount = teacherController.getTeachersCount();
+            ResponseEntity<Result<Long>> lessonsCount = lessonController.getLessonsCount();
+            ResponseEntity<Result<Long>> plansCount = planController.getPlansCount();
+
+            if (classroomsCount.getBody() != null && classroomsCount.getBody().getResult() != null)
+                model.addAttribute("classrooms", classroomsCount.getBody().getResult());
+            else
+                model.addAttribute("classrooms", 0);
+
+            if (teachersCount.getBody() != null && teachersCount.getBody().getResult() != null)
+                model.addAttribute("teachers", teachersCount.getBody().getResult());
+            else
+                model.addAttribute("teachers", 0);
+            if (lessonsCount.getBody() != null && lessonsCount.getBody().getResult() != null)
+                model.addAttribute("lessons", lessonsCount.getBody().getResult());
+            else
+                model.addAttribute("lessons", 0);
+            if (plansCount.getBody() != null && plansCount.getBody().getResult() != null)
+                model.addAttribute("plans", plansCount.getBody().getResult());
+            else
+                model.addAttribute("plans", 0);
+        } catch (Exception ex) {
+            model.addAttribute("classrooms", 0);
+            model.addAttribute("teachers", 0);
+            model.addAttribute("lessons", 0);
+            model.addAttribute("plans", 0);
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
         return "index";
     }
 

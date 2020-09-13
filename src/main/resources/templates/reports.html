@@ -297,36 +297,38 @@
             }
         }
 
-        var expanded = false;
+        var expanded1 = false;
+        var expanded2 = false;
+        var expanded3 = false;
 
         function showCheckboxes1() {
             var checkboxes = document.getElementById("checkboxes1");
-            if (!expanded) {
+            if (!expanded1) {
                 checkboxes.style.display = "block";
-                expanded = true;
+                expanded1 = true;
             } else {
                 checkboxes.style.display = "none";
-                expanded = false;
+                expanded1 = false;
             }
         }
         function showCheckboxes2() {
             var checkboxes = document.getElementById("checkboxes2");
-            if (!expanded) {
+            if (!expanded2) {
                 checkboxes.style.display = "block";
-                expanded = true;
+                expanded2 = true;
             } else {
                 checkboxes.style.display = "none";
-                expanded = false;
+                expanded2 = false;
             }
         }
         function showCheckboxes3() {
             var checkboxes = document.getElementById("checkboxes3");
-            if (!expanded) {
+            if (!expanded3) {
                 checkboxes.style.display = "block";
-                expanded = true;
+                expanded3 = true;
             } else {
                 checkboxes.style.display = "none";
-                expanded = false;
+                expanded3 = false;
             }
         }
     </script>

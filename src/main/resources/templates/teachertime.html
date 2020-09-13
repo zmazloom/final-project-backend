@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/planninglayout}">
+<head>
+
+    <style>
+        #datatable {
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #datatable th, #datatable td {
+            padding: 10px;
+        }
+
+        #datatable tr {
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        .form-style-1 {
+            max-width: 400px;
+            padding: 20px 12px 10px 20px;
+            font-size: 11px;
+        }
+
+        .form-style-1 li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 10px 0 0 0;
+        }
+
+        .form-style-1 label {
+            margin: 0 0 3px 0;
+            padding: 0px;
+            display: block;
+            font-weight: bold;
+        }
+
+        form-style-1 .field-divided {
+            width: 49%;
+        }
+
+        .form-style-1 .field-long {
+            width: 100%;
+        }
+
+        .form-style-1 .field-select {
+            width: 100%;
+        }
+
+        .form-style-1 .field-textarea {
+            height: 100px;
+        }
+
+
+        #plan-table, #default-plan {
+            border: solid thin;
+            font-size: 11px;
+        }
+
+        table {
+            border-collapse: unset !important;
+        }
+
+        #plan-table caption, #default-plan caption {
+            padding-bottom: 0.5em;
+        }
+
+        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+            border: solid thin;
+            padding: 0.5rem 0.5rem;
+        }
+
+        #plan-table td, #default-plan td {
+            white-space: nowrap;
+        }
+
+        #plan-table th, #default-plan th {
+            font-weight: normal;
+        }
+
+        #plan-table td, #default-plan td {
+            vertical-align: top;
+        }
+
+        #plan-table th, #default-plan th {
+            padding: 0.2em;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+            content: leader(". ");
+        }
+
+        #plan-table td {
+            height: 35px;
+            vertical-align: middle;
+        }
+
+        #plan-table {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        table tr:first-child > td {
+            position: sticky;
+            top: 0;
+        }
+
+        .select2-selection__rendered, .select2-results__option {
+            direction: rtl;
+            text-align: right;
+            font-size: 11px;
+        }
+
+    </style>
+
+    <script type="text/javascript" th:inline="javascript">
+        var result = [[${teachertimes}]];
+        var teachers = [[${teachers}]];
+
+        var times = ["8T", "10T", "12T", "14T", "16T", "18T"];
+        var persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
+        var days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
+
+        var teacherSelected = 0;
+
+        var selectedTimes = [];
+        $(document).ready(function () {
+            $("#allteachertime").prop("selectedIndex", -1);
+            create_default_plan();
+
+            $('#base-sidebar li:eq(2)').addClass('active');
+
+            $("#allteachertime").on('change', function () {
+                teacherSelected = $('option:selected', this).val();
+                create_default_plan();
+            });
+
+            $('.nBtn, .table .eBtn').on('click', function (event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                var text = $(this).attr('name');
+                //for update plan
+                if (text == 'edit') {
+                    $.get(href, function (plan, status) {
+                        if (plan != null) {
+                            $('.myFormUpdate #id').val(plan.id);
+                            $('.myFormUpdate #name').val(plan.name);
+                            $('.myFormUpdate #timeType').val(plan.timeType);
+                            $('.myFormUpdate #updateModal').modal();
+                        }
+                    });
+                } else if (text == 'copy') {
+                    $.get(href, function (plan, status) {
+                        if (plan != null) {
+                            $('.myFormCopy #id').val(plan.id);
+                            $('.myFormCopy #name').val('');
+                            $('.myFormCopy #timeType').val(plan.timeType);
+                            $('.myFormCopy #copyModal').modal();
+                        }
+                    });
+                } else {
+                    if (teacherSelected == null || teacherSelected === 0) {
+                        alert("ابتدا استادی را برای ویرایش انتخاب کنید.");
+                    } else {
+                        selectedTimes = [];
+                        //for creating plan
+                        $('.myFormCreate #lesson').val('');
+                        $('.myFormCreate #teacher').val('');
+                        $('.myFormCreate #day').val('');
+                        $('.myFormCreate #myModalCreate').modal();
+                        create_plan_table();
+                    }
+                }
+            });
+        });
+
+
+        function highlight_cell() {
+            var table = document.getElementById('plan-table');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                // Take each cell
+                var cell = cells[i];
+                // do something on onclick event for cell
+                cell.onclick = function () {
+                    // Get the row id where the cell exists
+                    var rowId = this.parentNode.rowIndex;
+
+                    if (rowId >= 1 && this.cellIndex < times.length && this.innerHTML === "") {
+                        // if this time is not selected, then select
+                        if (this.style.backgroundColor != "yellow") {
+                            this.style.backgroundColor = "yellow";
+                        }
+                        // if this time is selected before, then deselect (double click = deselect)
+                        else {
+                            this.style.backgroundColor = "white";
+                        }
+                    }
+                }
+            }
+        }
+
+        function create_default_plan() {
+            var defaultPlan = document.getElementById("default-plan");
+            defaultPlan.innerHTML = "";
+            //create thead
+            var header = defaultPlan.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "rgb(178 251 255)";
+            row.style.zIndex = "900";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
+            for (var i = 0; i < times.length; i++) {
+                var cell2 = row.insertCell(0);
+                cell2.innerHTML = persianTimes[i];
+                cell2.style.fontWeight = "bold";
+                cell2.style.backgroundColor = "rgb(178 251 255)";
+                cell2.style.direction = "rtl";
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                var row2 = defaultPlan.insertRow();
+                var cell3 = row2.insertCell(0);
+                cell3.innerHTML = persianDays[n];
+                cell3.style.position = "sticky";
+                cell3.style.right = "0px";
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "antiquewhite";
+
+                for (var t = 0; t < times.length; t++) {         //loop on times
+                    var cell4 = row2.insertCell(0);
+                    for (var b = 0; b < result.length; b++) {//loop on result
+                        if (result[b].time === days[n] + times[t] && result[b].teacherId == teacherSelected) {
+                            cell4.style.backgroundColor = "#34d238";
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        function create_plan_table() {
+            var planTable = document.getElementById("plan-table");
+            planTable.deleteTHead();
+            planTable.innerHTML = "";
+            //create thead
+            var header = planTable.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "rgb(178 251 255)";
+            row.style.zIndex = "99999";
+            row.style.fontWeight = "bold";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
+            for (var i = 0; i < times.length; i++) {
+                var cell2 = row.insertCell(0);
+                cell2.innerHTML = persianTimes[i];
+                cell2.style.fontWeight = "bold";
+                cell2.style.backgroundColor = "rgb(178 251 255)";
+                cell2.style.direction = "rtl";
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                var row2 = planTable.insertRow();
+                var cell3 = row2.insertCell(0);
+                cell3.innerHTML = persianDays[n];
+                cell3.style.position = "sticky";
+                cell3.style.right = "0px";
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "antiquewhite";
+
+                for (var t = 0; t < times.length; t++) {         //loop on times
+                    var cell4 = row2.insertCell(0);
+                    for (var b = 0; b < result.length; b++) {//loop on result
+                        if (result[b].time === days[n] + times[t] && result[b].teacherId == teacherSelected) {
+                            cell4.style.backgroundColor = "#34d238";
+                        }
+
+                        // if now select then highlight
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.time === times[t] && selectedTime.day === days[n]));
+                        if (checkTime.length) {
+                            for (var k = 0; k < checkTime.length; k++) {
+                                cell4.style.backgroundColor = "yellow";
+                            }
+                        }
+                    }
+                }
+            }
+            highlight_cell();
+        }
+
+        function handleClick() {
+            var jsonCellTable = [];
+
+            var teacherId = teacherSelected;
+
+            var table = document.getElementById('plan-table');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                var cell = cells[i];
+                if(cell.style.backgroundColor == "yellow" || cell.style.backgroundColor == "rgb(52, 210, 56)") {
+                    var time = times[times.length - cell.cellIndex - 1];
+                    var day = days[cell.parentNode.rowIndex - 1];
+                    jsonCellTable.push(day + time);
+                }
+            }
+
+            var jsonRequest = '{"planId" : ' + [[${planId}]] + ', "times" : ' + JSON.stringify(jsonCellTable) + '}';
+
+            $.ajax({
+                type: "POST",
+                url: '/teachertime/' + teacherId,
+                data: jsonRequest,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                error: function (response) {
+                  alert("error");
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("success");
+                    }
+                    else {
+                        alert(response.responseText);
+                    }
+                }
+            });
+
+            location.reload();
+        }
+    </script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/planninglayout :: header"></header>
+    <aside th:replace="layouts/planninglayout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                برنامه
+            </h1>
+            <ol class="breadcrumb">
+                <li><a th:href="@{/dashboard}"><i class="fa fa-calendar-times-o"></i> برنامه</a></li>
+                <li class="active">برنامه ریزی</li>
+            </ol>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+            <div class="card">
+                <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
+                    <div class="col-sm-12" style="padding: 0;">
+                        <button class="btn btn-primary nBtn">
+                            <i class="fa fa-user-times" aria-hidden="true"></i>
+                            <span style="margin: 5px;">ویرایش زمان استاد</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <p style="font-size: 11px; font-weight: bold; margin: 5px 0;">انتخاب استاد:</p>
+                        <select style="width: 100%; font-size: 11px; margin-bottom: 20px;" id="allteachertime">
+                            <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                                    th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-10" style="overflow-x:auto;overflow-y: auto;">
+                        <table id="default-plan" class="table" style="direction: ltr;text-align: center">
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!--#Modal for plan create-->
+            <div class="myFormCreate">
+                <form onSubmit="JavaScript:handleClick()">
+                    <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
+                         aria-labelledby="modalLabelCreate" aria-hidden="true">
+                        <div class="modal-dialog" role="document"
+                             style="width: 75%; margin-right: auto; margin-left: auto;">
+                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش زمان
+                                        استاد</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="padding: 25px 10px;">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="width: 93%; margin: 0 auto 20px auto;">
+                                                <p>زمان های حضور خود را روی جدول انتخاب و گزینه ذخیره را انتخاب
+                                                    نمایید.</p>
+                                            </div>
+                                            <div style="overflow-x:auto;">
+                                                <table id="plan-table"
+                                                       style="width: 93%; direction: ltr;text-align: center; margin: 0 auto 25px auto; ">
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--                                    <div id="showSelectedTimes"></div>-->
+                                    <div class="modal-footer" style="padding: 15px 0;">
+                                        <button type="button" class="btn btn" data-dismiss="modal"
+                                                style="outline: none;">انصراف
+                                        </button>
+                                        <input type="submit" class="btn btn-primary" value="ذخیره"
+                                               style="outline: none;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End form-->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/planninglayout :: footer"></aside>
+    <aside th:replace="layouts/planninglayout :: settings"></aside>
+    <aside th:replace="layouts/planninglayout :: sidebar"></aside>
+</div>
+
+
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
+
+</body>
+
+</html>

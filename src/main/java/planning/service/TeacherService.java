@@ -254,6 +254,12 @@ public class TeacherService {
         twoHourList.add(Time.CHARSHANBE14T);
         twoHourList.add(Time.CHARSHANBE16T);
         twoHourList.add(Time.CHARSHANBE18T);
+        twoHourList.add(Time.PANJSHANBE8T);
+        twoHourList.add(Time.PANJSHANBE10T);
+        twoHourList.add(Time.PANJSHANBE12T);
+        twoHourList.add(Time.PANJSHANBE14T);
+        twoHourList.add(Time.PANJSHANBE16T);
+        twoHourList.add(Time.PANJSHANBE18T);
 
         return twoHourList;
     }
@@ -300,6 +306,14 @@ public class TeacherService {
         oneThirtyHourList.add(Time.CHARSHANBE15O);
         oneThirtyHourList.add(Time.CHARSHANBE1630O);
         oneThirtyHourList.add(Time.CHARSHANBE18O);
+        oneThirtyHourList.add(Time.PANJSHANBE730O);
+        oneThirtyHourList.add(Time.PANJSHANBE9O);
+        oneThirtyHourList.add(Time.PANJSHANBE1030O);
+        oneThirtyHourList.add(Time.PANJSHANBE12O);
+        oneThirtyHourList.add(Time.PANJSHANBE1330O);
+        oneThirtyHourList.add(Time.PANJSHANBE15O);
+        oneThirtyHourList.add(Time.PANJSHANBE1630O);
+        oneThirtyHourList.add(Time.PANJSHANBE18O);
 
         return oneThirtyHourList;
     }

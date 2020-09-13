@@ -4,15 +4,6 @@
 <head>
 
     <style>
-        #datatable_wrapper {
-            width: 80%;
-            margin: auto;
-        }
-
-        .pagination {
-            float: left;
-        }
-
         #datatable {
             border-radius: 5px;
             overflow: hidden;
@@ -105,7 +96,16 @@
 
         #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
             content: leader(". ");
-        '
+        }
+
+        #plan-table td {
+            height: 35px;
+            vertical-align: middle;
+        }
+
+        #plan-table {
+            margin-right: auto;
+            margin-left: auto;
         }
 
         table tr:first-child > td {
@@ -139,7 +139,7 @@
 
             $('#base-sidebar li:eq(2)').addClass('active');
 
-            $("#allteachertime").on('change', function() {
+            $("#allteachertime").on('change', function () {
                 teacherSelected = $('option:selected', this).val();
                 create_default_plan();
             });
@@ -168,13 +168,17 @@
                         }
                     });
                 } else {
-                    //for creating plan
-                    $('.myFormCreate #lesson').val('');
-                    $('.myFormCreate #teacher').val('');
-                    $('.myFormCreate #day').val('');
-                    // selectedTimes is array of selected times
-                    $('.myFormCreate #myModalCreate').modal();
-                    create_plan_table();
+                    if (teacherSelected == null || teacherSelected === 0) {
+                        alert("ابتدا استادی را برای ویرایش انتخاب کنید.");
+                    } else {
+                        selectedTimes = [];
+                        //for creating plan
+                        $('.myFormCreate #lesson').val('');
+                        $('.myFormCreate #teacher').val('');
+                        $('.myFormCreate #day').val('');
+                        $('.myFormCreate #myModalCreate').modal();
+                        create_plan_table();
+                    }
                 }
             });
         });
@@ -192,55 +196,19 @@
                     // Get the row id where the cell exists
                     var rowId = this.parentNode.rowIndex;
 
-                    if (rowId >= 2 && this.cellIndex < 2 * times.length && this.innerHTML === "") {
-                        var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
-                        var day = document.getElementById("day").value;
-                        var highlightTime = {time: time, day: day};
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.time === time && selectedTime.day === day));
+                    if (rowId >= 1 && this.cellIndex < times.length && this.innerHTML === "") {
                         // if this time is not selected, then select
-                        if (!checkTime.length) {
+                        if (this.style.backgroundColor != "yellow") {
                             this.style.backgroundColor = "yellow";
-                            selectedTimes.push(highlightTime);
-                            show_selected_times(day, time);
                         }
                         // if this time is selected before, then deselect (double click = deselect)
                         else {
                             this.style.backgroundColor = "white";
-                            var index;
-                            selectedTimes.some(function(entry, i) {
-                                if (entry.time === time && entry.day === day) {
-                                    index = i;
-                                    return true;
-                                }
-                            });
-                            delete proxy[index];
                         }
                     }
                 }
             }
         }
-
-        // "delete" is triggered when an element is removed from the selectedTimes array.
-        var proxy = new Proxy(selectedTimes, {
-            deleteProperty: function (target, property) {
-                // property is index of deselected time in selectedTimes array
-                console.log('deselected time is: ');
-                console.log(selectedTimes[property]);
-                // remove deselected time
-                var ul = document.getElementById('selectedTimesList');
-                var lis = ul.getElementsByTagName("li");
-                for (var i = 0; i < lis.length; i++) {
-                    if (lis[i].innerHTML.includes(target[property].day) && lis[i].innerHTML.includes(target[property].time)
-                        && lis[i].innerHTML.includes(target[property].classroomName) && lis[i].innerHTML.includes(target[property].weekType))
-                        ul.removeChild(ul.children[i]);
-                }
-                if (target.length === 0)
-                    ul.removeChild(ul.children[0]);
-
-                delete target[property];
-                return true;
-            },
-        });
 
         function create_default_plan() {
             var defaultPlan = document.getElementById("default-plan");
@@ -320,14 +288,14 @@
                 for (var t = 0; t < times.length; t++) {         //loop on times
                     var cell4 = row2.insertCell(0);
                     for (var b = 0; b < result.length; b++) {//loop on result
-                        if (result[b].time === days[n] + times[t] && result[b].teacherId === teacherSelected) {
+                        if (result[b].time === days[n] + times[t] && result[b].teacherId == teacherSelected) {
                             cell4.style.backgroundColor = "#34d238";
                         }
 
                         // if now select then highlight
-                        var checkTime = selectedTimes.filter(selectedTime.time === times[t] && selectedTime.day === days[n]);
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.time === times[t] && selectedTime.day === days[n]));
                         if (checkTime.length) {
-                            for (var k=0;k<checkTime.length;k++){
+                            for (var k = 0; k < checkTime.length; k++) {
                                 cell4.style.backgroundColor = "yellow";
                             }
                         }
@@ -337,23 +305,45 @@
             highlight_cell();
         }
 
-        function show_selected_times(day, time) {
-            //create selectedTimesList for the first time
-            if (selectedTimes.length === 1) {
-                var ul = document.createElement('ul');
-                ul.setAttribute('id', 'selectedTimesList');
-                document.getElementById('showSelectedTimes').appendChild(ul);
-                var li = document.createElement('li');
-                li.setAttribute('class', 'item');
-                ul.appendChild(li);
-                li.innerHTML = "زمان های انتخاب شده : ";
-            } else
-                var ul = document.getElementById('selectedTimesList');
-            var li = document.createElement('li');
-            li.setAttribute('class', 'item');
-            ul.appendChild(li);
-            li.innerHTML = li.innerHTML + day + " " + " ساعت : " + time;
+        function handleClick() {
+            var jsonCellTable = [];
 
+            var teacherId = teacherSelected;
+
+            var table = document.getElementById('plan-table');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                var cell = cells[i];
+                if(cell.style.backgroundColor == "yellow" || cell.style.backgroundColor == "rgb(52, 210, 56)") {
+                    var time = times[times.length - cell.cellIndex - 1];
+                    var day = days[cell.parentNode.rowIndex - 1];
+                    jsonCellTable.push(day + time);
+                }
+            }
+
+            var jsonRequest = '{"planId" : ' + [[${planId}]] + ', "times" : ' + JSON.stringify(jsonCellTable) + '}';
+
+            $.ajax({
+                type: "POST",
+                url: '/teachertime/' + teacherId,
+                data: jsonRequest,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                error: function (response) {
+                  alert("error");
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("success");
+                    }
+                    else {
+                        alert(response.responseText);
+                    }
+                }
+            });
+
+            location.reload();
         }
     </script>
 
@@ -379,7 +369,6 @@
 
         <!-- Main content -->
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
-
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-12" style="padding: 0;">
@@ -393,7 +382,8 @@
                     <div class="col-sm-2">
                         <p style="font-size: 11px; font-weight: bold; margin: 5px 0;">انتخاب استاد:</p>
                         <select style="width: 100%; font-size: 11px; margin-bottom: 20px;" id="allteachertime">
-                            <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}">
+                            <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                                    th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}">
                             </option>
                         </select>
                     </div>
@@ -408,28 +398,35 @@
 
             <!--#Modal for plan create-->
             <div class="myFormCreate">
-                <form th:action="@{/plan/add}" method="post">
-                    <div class="modal fade" id="myModalCreate" tabindex="-1"  role="dialog"
+                <form onSubmit="JavaScript:handleClick()">
+                    <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
-                        <div class="modal-dialog" role="document" style="width: 95%;">
+                        <div class="modal-dialog" role="document"
+                             style="width: 75%; margin-right: auto; margin-left: auto;">
                             <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش زمان استاد</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش زمان
+                                        استاد</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body" style="padding: 25px 10px;">
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            <div style="width: 93%; margin: 0 auto 20px auto;">
+                                                <p>زمان های حضور خود را روی جدول انتخاب و گزینه ذخیره را انتخاب
+                                                    نمایید.</p>
+                                            </div>
                                             <div style="overflow-x:auto;">
-                                                <table id="plan-table" style="direction: ltr;text-align: center; margin: 0 auto;">
-
+                                                <table id="plan-table"
+                                                       style="width: 93%; direction: ltr;text-align: center; margin: 0 auto 25px auto; ">
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="showSelectedTimes"></div>
+                                    <!--                                    <div id="showSelectedTimes"></div>-->
                                     <div class="modal-footer" style="padding: 15px 0;">
                                         <button type="button" class="btn btn" data-dismiss="modal"
                                                 style="outline: none;">انصراف

@@ -136,6 +136,7 @@
         var classroom = [[${classrooms}]];
         var lessons = [[${lessons}]];
         var teachers = [[${teachers}]];
+        var showTeacherTimes = [[${teachertimes}]];
 
         var selectedTimes = [];
 
@@ -222,7 +223,10 @@
                         // if this time is selected before, then deselect (double click = deselect)
                         else {
                             if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
-                                this.style.backgroundColor = "white";
+                                if(this.style.borderColor != "green")
+                                    this.style.backgroundColor = "white";
+                                else
+                                    this.style.backgroundColor = "#c6ffb3";
                                 this.innerHTML = "";
                                 var index;
                                 selectedTimes.some(function (entry, i) {
@@ -420,6 +424,18 @@
                             for (var t = 0; t < times.length; t++) {         //loop on times
                                 var cell8 = row3.insertCell(0);
                                 var cell9 = row3.insertCell(0);
+
+                                //show teacher times:
+                                for (var tt = 0; tt < showTeacherTimes.length; tt++) {//loop on showTeacherTimes
+                                    if (showTeacherTimes[tt].time === days[n] + times[t] && showTeacherTimes[tt].teacherId == parseInt(document.getElementById("teacher").value)) {
+                                        cell8.style.border = "1px solid green";
+                                        cell9.style.border = "1px solid green";
+                                        cell8.style.backgroundColor = "#c6ffb3";
+                                        cell9.style.backgroundColor = "#c6ffb3";
+                                    }
+                                }
+
+                                //show planning:
                                 for (var b = 0; b < selectedTimes.length; b++) {//loop on result
                                     if (selectedTimes[b] != null) {
                                         if (selectedTimes[b].day + selectedTimes[b].time === days[n] + times[t] && selectedTimes[b].classroomId === classroom[m].id) {

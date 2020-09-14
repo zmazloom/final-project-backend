@@ -417,6 +417,10 @@ public class PanelController {
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
+            ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
+
+            model.addAttribute("planId", id);
+
             List<Long> classroomIds = new ArrayList<>();
             List<Long> teacherIds = new ArrayList<>();
 
@@ -454,6 +458,10 @@ public class PanelController {
                 model.addAttribute("teacherIds", new ArrayList<Long>());
             }
 
+            if (teacherTimeVOList.getBody() != null && teacherTimeVOList.getBody().getResult() != null)
+                model.addAttribute("teachertimes", teacherTimeVOList.getBody().getResult());
+            else
+                model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
 
         } catch (Exception ex) {
             model.addAttribute("reports", new ArrayList<PlanVO>());
@@ -462,6 +470,7 @@ public class PanelController {
             model.addAttribute("lessons", new ArrayList<LessonVO>());
             model.addAttribute("teacherIds", new ArrayList<Long>());
             model.addAttribute("classroomIds", new ArrayList<Long>());
+            model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
             model.addAttribute("errorMessage", ex.getMessage());
         }
 
@@ -562,19 +571,5 @@ public class PanelController {
 
         return "plandashboard";
     }
-//    @PostMapping("/teachertime/{id}")
-//    public String addTeacherTime(@RequestBody TeacherTimeVO teacherTimeVO, @PathVariable("id") long id, Model model) {
-//        try {
-//            ResponseEntity<Result<Boolean>> result = teacherController.addTeacherTimes(id, teacherTimeVO);
-//
-//            if (result.getBody() != null && result.getBody().getResult() != null)
-//                return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-//        } catch (Exception ex) {
-//            model.addAttribute("errorMessage", ex.getMessage());
-//            return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-//        }
-//
-//        return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-//    }
     /******************** end *********************/
 }

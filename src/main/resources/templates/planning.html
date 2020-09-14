@@ -184,6 +184,55 @@
             });
         });
 
+        function checkWarningSelection(highlightTime) {
+            if(highlightTime != null && selectedTimes.length > 0) {
+                var lessonUnit = 0;
+
+                for(var j = 0; j < lessons.length; j++) {
+                    if(lessons[j].id === highlightTime.lessonId) {
+                        lessonUnit = lessons[j].unit;
+                        break;
+                    }
+                }
+                if(lessonUnit === "ZERO")
+                    lessonUnit = 0;
+                else if(lessonUnit === "ONE")
+                    lessonUnit = 1;
+                else if(lessonUnit === "TWO")
+                    lessonUnit = 2;
+                else if(lessonUnit === "THREE")
+                    lessonUnit = 3;
+                else if(lessonUnit === "FOUR")
+                    lessonUnit = 4;
+
+                var lessonCount = 0;
+                for (var i = 0; i < selectedTimes.length; i++) {
+                    if(selectedTimes[i] != null) {
+                        if (selectedTimes[i].lessonId === highlightTime.lessonId) {
+                            lessonCount = lessonCount + 1;
+                        }
+                    }
+                }
+
+                if(lessonCount >= lessonUnit)
+                    return "تعداد زمان انتخاب شده برای درس، بیشتر از واحد آن خواهد شد.";
+                else return "";
+            }
+        }
+
+        function checkIgnoreSelection(highlightTime) {
+            if(highlightTime != null && selectedTimes.length > 0) {
+                for (var i = 0; i<selectedTimes.length; i++) {
+                    if(selectedTimes[i] != null) {
+                        if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                            return "درس دیگری در این زمان برای استاد ثبت شده است.";
+                        }
+                    }
+                }
+            }
+
+            return "";
+        }
 
         function highlight_cell() {
             var table = document.getElementById('plan-table');
@@ -214,10 +263,23 @@
                         var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
                         // if this time is not selected, then select
                         if (!checkTime.length) {
-                            if (confirm("برای انتخاب این زمان مطمعن هستید؟")) {
-                                this.style.backgroundColor = "yellow";
-                                this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
-                                selectedTimes.push(highlightTime);
+                            var warningSelection = checkWarningSelection(highlightTime);
+                            var ignoreSelection = checkIgnoreSelection(highlightTime);
+
+                            if(ignoreSelection != null && ignoreSelection.length > 0)
+                                alert(ignoreSelection);
+                            else {
+                                if (warningSelection != null && warningSelection.length > 0) {
+                                    if (confirm(warningSelection + " آیا مطمئن هستید؟")) {
+                                        this.style.backgroundColor = "yellow";
+                                        this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
+                                        selectedTimes.push(highlightTime);
+                                    }
+                                } else {
+                                    this.style.backgroundColor = "yellow";
+                                    this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
+                                    selectedTimes.push(highlightTime);
+                                }
                             }
                         }
                         // if this time is selected before, then deselect (double click = deselect)

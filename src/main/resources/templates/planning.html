@@ -105,7 +105,11 @@
 
         #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
             content: leader(". ");
-        '
+        }
+
+        #plan-table td {
+            height: 35px;
+            vertical-align: middle;
         }
 
         table tr:first-child > td {
@@ -151,9 +155,20 @@
                 //for update plan
                 if (text == 'edit') {
                 } else {
-                    for (var i = 0; i < result.length; i++) {
-                        var highlightTime = {classroomId: result[i].classroomId, teacherId: result[i].teacherId, lessonId: result[i].lessonId, time: result[i].time, day: result[i].day, weekType: result[i].weekType};
-                        selectedTimes.push(highlightTime);
+                    if(selectedTimes.length === 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var highlightTime = {
+                                classroomId: result[i].classroomId,
+                                teacherId: result[i].teacherId,
+                                lessonId: result[i].lessonId,
+                                time: result[i].time.substring(result[i].time.search(/\d/)),
+                                day: result[i].time.substring(0, result[i].time.search(/\d/)),
+                                weekType: result[i].weekType,
+                                name: result[i].name,
+                                lastName: result[i].lastName
+                            };
+                            selectedTimes.push(highlightTime);
+                        }
                     }
                     //for creating plan
                     $('.myFormCreate #myModalCreate').modal();
@@ -183,22 +198,24 @@
 
                     if (rowId >= 2 && this.cellIndex < 2 * times.length) {
                         var classroomId = classroom[rowId - 2].id;
-                        var teacherId = teachers[document.getElementById("teacher").value].id;
-                        var lessonId = lessons[document.getElementById("lesson").value].id;
+                        var teacherId = parseInt(document.getElementById("teacher").value);
+                        var lessonId = parseInt(document.getElementById("lesson").value);
                         var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
                         var day = document.getElementById("day").value;
+                        var name = $("#lesson option:selected").text();
+                        var lastName = $("#teacher option:selected").text();
                         var weekType = '';
                         if (this.cellIndex % 2 === 0)
                             weekType = "FARD";
                         else weekType = "ZOJ";
-                        var highlightTime = {classroomId: classroomId, teacherId: teacherId, lessonId: lessonId, time: time, day: day, weekType: weekType};
+                        var highlightTime = {classroomId: classroomId, teacherId: teacherId, lessonId: lessonId, time: time, day: day, weekType: weekType, name: name, lastName: lastName};
 
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.teacherId === teacherId && selectedTime.lessonId === lessonId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
                         // if this time is not selected, then select
-                        console.log(selectedTimes);
                         if (!checkTime.length) {
                             if (confirm("برای انتخاب این زمان مطمعن هستید؟")) {
                                 this.style.backgroundColor = "yellow";
+                                this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
                                 selectedTimes.push(highlightTime);
                             }
                         }
@@ -206,9 +223,10 @@
                         else {
                             if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
                                 this.style.backgroundColor = "white";
+                                this.innerHTML = "";
                                 var index;
                                 selectedTimes.some(function (entry, i) {
-                                    if (entry.classroomId === classroomId && entry.teacherId === teacherId && entry.lessonId === lessonId && entry.time === time && entry.day === day && entry.weekType === weekType) {
+                                    if (entry.classroomId === classroomId && entry.time === time && entry.day === day && entry.weekType === weekType) {
                                         index = i;
                                         return true;
                                     }
@@ -397,17 +415,19 @@
                             cell7.innerHTML = classroom[m].name;
                             cell7.style.fontWeight = "bold";
                             cell7.style.position = "sticky";
-                            cell7.style.right = "99px";
+                            cell7.style.right = "41px";
                             cell7.style.backgroundColor = "antiquewhite";
                             for (var t = 0; t < times.length; t++) {         //loop on times
                                 var cell8 = row3.insertCell(0);
                                 var cell9 = row3.insertCell(0);
-                                for (var b = 0; b < result.length; b++) {//loop on result
-                                    if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
-                                        if (result[b].weekType === "ZOJ") {
-                                            cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
-                                        } else if (result[b].weekType === "FARD") {
-                                            cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
+                                for (var b = 0; b < selectedTimes.length; b++) {//loop on result
+                                    if (selectedTimes[b] != null) {
+                                        if (selectedTimes[b].day + selectedTimes[b].time === days[n] + times[t] && selectedTimes[b].classroomId === classroom[m].id) {
+                                            if (selectedTimes[b].weekType === "ZOJ") {
+                                                cell8.innerHTML = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
+                                            } else if (selectedTimes[b].weekType === "FARD") {
+                                                cell9.innerHTML = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
+                                            }
                                         }
                                     }
                                 }
@@ -450,28 +470,48 @@
 
 
         function handleClickPlanning() {
-            selectedTimes = [];
+            event.preventDefault();
 
-            // $.ajax({
-            //     type: "POST",
-            //     url: '/teachertime/' + teacherId,
-            //     data: jsonRequest,
-            //     contentType: "application/json; charset=utf-8",
-            //     dataType: "json",
-            //     error: function (response) {
-            //         alert("error");
-            //     },
-            //     success: function (response) {
-            //         if (response.success) {
-            //             alert("success");
-            //         }
-            //         else {
-            //             alert(response.responseText);
-            //         }
-            //     }
-            // });
-            //
-            // location.reload();
+            var jsonCellTables = '[';
+
+            var planId = [[${planId}]];
+
+            for (var i = 0; i < selectedTimes.length; i++) {
+                if(selectedTimes[i] != null) {
+                    var jsonCellTable = '{"teacherId": ' + selectedTimes[i].teacherId +
+                        ', "classroomId": ' + selectedTimes[i].classroomId +
+                        ', "lessonId": ' + selectedTimes[i].lessonId +
+                        ',"time": "' + selectedTimes[i].day + selectedTimes[i].time + '"' +
+                        ',"weekType": "' + selectedTimes[i].weekType + '"}';
+
+
+                    jsonCellTables = jsonCellTables + jsonCellTable + ',';
+                }
+            }
+
+            if(jsonCellTables.length > 1)
+                jsonCellTables = jsonCellTables.substring(0, jsonCellTables.length - 1) + ']';
+            else
+                jsonCellTables = jsonCellTables + ']';
+
+            console.log(jsonCellTables);
+            selectedTimes = [];
+            $.ajax({
+                type: "POST",
+                url: '/api/plan/' + planId + "/planning",
+                data: jsonCellTables,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                alert("برنامه ریزی با موفیت ذخیره شد.");
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+            .fail(function(response) {
+                alert(JSON.parse(response.responseText).message);
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
         }
     </script>
 

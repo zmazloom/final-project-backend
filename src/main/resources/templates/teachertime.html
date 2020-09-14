@@ -332,16 +332,16 @@
                 data: jsonRequest,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
-                }).done (function (response) {
-                    alert("برنامه زمانی استاد با موفیت ذخیره شد.");
-                    $('.myFormCreate #myModalCreate').modal('hide');
-                    location.reload();
-                })
-                .fail(function(response) {
-                    alert(JSON.parse(response.responseText).message);
-                    $('.myFormCreate #myModalCreate').modal('hide');
-                    location.reload();
-                })
+            }).done (function (response) {
+                alert("برنامه زمانی استاد با موفیت ذخیره شد.");
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+            .fail(function(response) {
+                alert(JSON.parse(response.responseText).message);
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
         }
     </script>
 

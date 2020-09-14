@@ -306,6 +306,8 @@
         }
 
         function handleClick() {
+            event.preventDefault();
+
             var jsonCellTable = [];
 
             var teacherId = teacherSelected;
@@ -326,24 +328,20 @@
 
             $.ajax({
                 type: "POST",
-                url: '/teachertime/' + teacherId,
+                url: '/api/teacher/' + teacherId + "/time",
                 data: jsonRequest,
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                error: function (response) {
-                  alert("error");
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert("success");
-                    }
-                    else {
-                        alert(response.responseText);
-                    }
-                }
-            });
-
-            location.reload();
+                dataType: "json"
+                }).done (function (response) {
+                    alert("برنامه زمانی استاد با موفیت ذخیره شد.");
+                    $('.myFormCreate #myModalCreate').modal('hide');
+                    location.reload();
+                })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                    $('.myFormCreate #myModalCreate').modal('hide');
+                    location.reload();
+                })
         }
     </script>
 
@@ -416,7 +414,7 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div style="width: 93%; margin: 0 auto 20px auto;">
-                                                <p>زمان های حضور خود را روی جدول انتخاب و گزینه ذخیره را انتخاب
+                                                <p>زمان های حضور خود را روی جدول و گزینه ذخیره را انتخاب
                                                     نمایید.</p>
                                             </div>
                                             <div style="overflow-x:auto;">

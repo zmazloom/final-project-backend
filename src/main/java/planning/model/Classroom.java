@@ -29,4 +29,7 @@ public class Classroom {
     @Column
     private boolean removed;
 
+    @Column
+    private int zarfiat;
+
 }

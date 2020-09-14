@@ -136,6 +136,7 @@
         var classroom = [[${classrooms}]];
         var lessons = [[${lessons}]];
         var teachers = [[${teachers}]];
+        var showTeacherTimes = [[${teachertimes}]];
 
         var selectedTimes = [];
 
@@ -183,6 +184,55 @@
             });
         });
 
+        function checkWarningSelection(highlightTime) {
+            if(highlightTime != null && selectedTimes.length > 0) {
+                var lessonUnit = 0;
+
+                for(var j = 0; j < lessons.length; j++) {
+                    if(lessons[j].id === highlightTime.lessonId) {
+                        lessonUnit = lessons[j].unit;
+                        break;
+                    }
+                }
+                if(lessonUnit === "ZERO")
+                    lessonUnit = 0;
+                else if(lessonUnit === "ONE")
+                    lessonUnit = 1;
+                else if(lessonUnit === "TWO")
+                    lessonUnit = 2;
+                else if(lessonUnit === "THREE")
+                    lessonUnit = 3;
+                else if(lessonUnit === "FOUR")
+                    lessonUnit = 4;
+
+                var lessonCount = 0;
+                for (var i = 0; i < selectedTimes.length; i++) {
+                    if(selectedTimes[i] != null) {
+                        if (selectedTimes[i].lessonId === highlightTime.lessonId) {
+                            lessonCount = lessonCount + 1;
+                        }
+                    }
+                }
+
+                if(lessonCount >= lessonUnit)
+                    return "تعداد زمان انتخاب شده برای درس، بیشتر از واحد آن خواهد شد.";
+                else return "";
+            }
+        }
+
+        function checkIgnoreSelection(highlightTime) {
+            if(highlightTime != null && selectedTimes.length > 0) {
+                for (var i = 0; i<selectedTimes.length; i++) {
+                    if(selectedTimes[i] != null) {
+                        if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                            return "درس دیگری در این زمان برای استاد ثبت شده است.";
+                        }
+                    }
+                }
+            }
+
+            return "";
+        }
 
         function highlight_cell() {
             var table = document.getElementById('plan-table');
@@ -213,16 +263,32 @@
                         var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
                         // if this time is not selected, then select
                         if (!checkTime.length) {
-                            if (confirm("برای انتخاب این زمان مطمعن هستید؟")) {
-                                this.style.backgroundColor = "yellow";
-                                this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
-                                selectedTimes.push(highlightTime);
+                            var warningSelection = checkWarningSelection(highlightTime);
+                            var ignoreSelection = checkIgnoreSelection(highlightTime);
+
+                            if(ignoreSelection != null && ignoreSelection.length > 0)
+                                alert(ignoreSelection);
+                            else {
+                                if (warningSelection != null && warningSelection.length > 0) {
+                                    if (confirm(warningSelection + " آیا مطمئن هستید؟")) {
+                                        this.style.backgroundColor = "yellow";
+                                        this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
+                                        selectedTimes.push(highlightTime);
+                                    }
+                                } else {
+                                    this.style.backgroundColor = "yellow";
+                                    this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
+                                    selectedTimes.push(highlightTime);
+                                }
                             }
                         }
                         // if this time is selected before, then deselect (double click = deselect)
                         else {
                             if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
-                                this.style.backgroundColor = "white";
+                                if(this.style.borderColor != "green")
+                                    this.style.backgroundColor = "white";
+                                else
+                                    this.style.backgroundColor = "#c6ffb3";
                                 this.innerHTML = "";
                                 var index;
                                 selectedTimes.some(function (entry, i) {
@@ -420,6 +486,18 @@
                             for (var t = 0; t < times.length; t++) {         //loop on times
                                 var cell8 = row3.insertCell(0);
                                 var cell9 = row3.insertCell(0);
+
+                                //show teacher times:
+                                for (var tt = 0; tt < showTeacherTimes.length; tt++) {//loop on showTeacherTimes
+                                    if (showTeacherTimes[tt].time === days[n] + times[t] && showTeacherTimes[tt].teacherId == parseInt(document.getElementById("teacher").value)) {
+                                        cell8.style.border = "1px solid green";
+                                        cell9.style.border = "1px solid green";
+                                        cell8.style.backgroundColor = "#c6ffb3";
+                                        cell9.style.backgroundColor = "#c6ffb3";
+                                    }
+                                }
+
+                                //show planning:
                                 for (var b = 0; b < selectedTimes.length; b++) {//loop on result
                                     if (selectedTimes[b] != null) {
                                         if (selectedTimes[b].day + selectedTimes[b].time === days[n] + times[t] && selectedTimes[b].classroomId === classroom[m].id) {

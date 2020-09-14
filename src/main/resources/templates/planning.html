@@ -134,6 +134,7 @@
         var teachers = [[${teachers}]];
 
         var selectedTimes = [];
+
         $(document).ready(function () {
             $("select").select2({
                 dropdownParent: $("#myModalCreate")
@@ -149,29 +150,12 @@
                 var text = $(this).attr('name');
                 //for update plan
                 if (text == 'edit') {
-                    $.get(href, function (plan, status) {
-                        if (plan != null) {
-                            $('.myFormUpdate #id').val(plan.id);
-                            $('.myFormUpdate #name').val(plan.name);
-                            $('.myFormUpdate #timeType').val(plan.timeType);
-                            $('.myFormUpdate #updateModal').modal();
-                        }
-                    });
-                } else if (text == 'copy') {
-                    $.get(href, function (plan, status) {
-                        if (plan != null) {
-                            $('.myFormCopy #id').val(plan.id);
-                            $('.myFormCopy #name').val('');
-                            $('.myFormCopy #timeType').val(plan.timeType);
-                            $('.myFormCopy #copyModal').modal();
-                        }
-                    });
                 } else {
+                    for (var i = 0; i < result.length; i++) {
+                        var highlightTime = {classroomId: result[i].classroomId, teacherId: result[i].teacherId, lessonId: result[i].lessonId, time: result[i].time, day: result[i].day, weekType: result[i].weekType};
+                        selectedTimes.push(highlightTime);
+                    }
                     //for creating plan
-                    $('.myFormCreate #lesson').val('');
-                    $('.myFormCreate #teacher').val('');
-                    $('.myFormCreate #day').val('');
-                    // selectedTimes is array of selected times
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -197,36 +181,40 @@
                     // Get the row id where the cell exists
                     var rowId = this.parentNode.rowIndex;
 
-                    if (rowId >= 2 && this.cellIndex < 2 * times.length && this.innerHTML === "") {
-                        var classroomName = classroom[rowId - 2].name;
+                    if (rowId >= 2 && this.cellIndex < 2 * times.length) {
+                        var classroomId = classroom[rowId - 2].id;
+                        var teacherId = teachers[document.getElementById("teacher").value].id;
+                        var lessonId = lessons[document.getElementById("lesson").value].id;
                         var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
                         var day = document.getElementById("day").value;
                         var weekType = '';
                         if (this.cellIndex % 2 === 0)
                             weekType = "FARD";
                         else weekType = "ZOJ";
-                        var highlightTime = {classroomName: classroomName, time: time, weekType: weekType, day: day};
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroomName &&
-                            selectedTime.time === time && selectedTime.weekType === weekType && selectedTime.day === day));
+                        var highlightTime = {classroomId: classroomId, teacherId: teacherId, lessonId: lessonId, time: time, day: day, weekType: weekType};
+
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.teacherId === teacherId && selectedTime.lessonId === lessonId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
                         // if this time is not selected, then select
+                        console.log(selectedTimes);
                         if (!checkTime.length) {
-                            this.style.backgroundColor = "yellow";
-                            selectedTimes.push(highlightTime);
-                            show_selected_times(day, classroomName, time, weekType);
-                            console.log(selectedTimes);
+                            if (confirm("برای انتخاب این زمان مطمعن هستید؟")) {
+                                this.style.backgroundColor = "yellow";
+                                selectedTimes.push(highlightTime);
+                            }
                         }
                         // if this time is selected before, then deselect (double click = deselect)
                         else {
-                            this.style.backgroundColor = "white";
-                            var index;
-                            selectedTimes.some(function(entry, i) {
-                                if (entry.classroomName === classroomName && entry.time === time && entry.weekType === weekType
-                                    && entry.day === day) {
-                                    index = i;
-                                    return true;
-                                }
-                            });
-                            delete proxy[index];
+                            if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
+                                this.style.backgroundColor = "white";
+                                var index;
+                                selectedTimes.some(function (entry, i) {
+                                    if (entry.classroomId === classroomId && entry.teacherId === teacherId && entry.lessonId === lessonId && entry.time === time && entry.day === day && entry.weekType === weekType) {
+                                        index = i;
+                                        return true;
+                                    }
+                                });
+                                delete proxy[index];
+                            }
                         }
                     }
                 }
@@ -236,17 +224,9 @@
         // "delete" is triggered when an element is removed from the selectedTimes array.
         var proxy = new Proxy(selectedTimes, {
             deleteProperty: function (target, property) {
-                // property is index of deselected time in selectedTimes array
-                console.log('deselected time is: ');
-                console.log(selectedTimes[property]);
                 // remove deselected time
                 var ul = document.getElementById('selectedTimesList');
-                var lis = ul.getElementsByTagName("li");
-                for (var i = 0; i < lis.length; i++) {
-                    if (lis[i].innerHTML.includes(target[property].day) && lis[i].innerHTML.includes(target[property].time)
-                        && lis[i].innerHTML.includes(target[property].classroomName) && lis[i].innerHTML.includes(target[property].weekType))
-                        ul.removeChild(ul.children[i]);
-                }
+
                 if (target.length === 0)
                     ul.removeChild(ul.children[0]);
 
@@ -257,7 +237,6 @@
 
         function create_default_plan() {
             var defaultPlan = document.getElementById("default-plan");
-            console.log(defaultPlan);
             //create thead
             var header = defaultPlan.createTHead();
             var row = header.insertRow(0);
@@ -359,94 +338,98 @@
         }
 
         function create_plan_table() {
-            var planTable = document.getElementById("plan-table");
-            planTable.deleteTHead();
-            //create thead
-            var header = planTable.createTHead();
-            var row = header.insertRow(0);
-            row.style.position = "sticky";
-            row.style.top = "0px";
-            row.style.backgroundColor = "rgb(178 251 255)";
-            row.style.zIndex = "99999";
-            row.style.fontWeight = "bold";
-            var cell = row.insertCell(0);
-            cell.innerHTML = "روز";
-            cell.style.fontWeight = "bold";
-            cell.rowSpan = 2;
-            var cell2 = row.insertCell(0);
-            cell2.innerHTML = "کلاس";
-            cell2.style.fontWeight = "bold";
-            cell2.rowSpan = 2;
-            for (var i = 0; i < times.length; i++) {
-                var cell3 = row.insertCell(0);
-                cell3.innerHTML = persianTimes[i];
-                cell3.style.fontWeight = "bold";
-                cell3.style.backgroundColor = "rgb(178 251 255)";
-                cell3.style.direction = "rtl";
-                cell3.colSpan = 2;
-            }
-            var row2 = header.insertRow(1);
-            row2.style.position = "sticky";
-            row2.style.top = "30px";
-            row2.style.backgroundColor = "#a9caf4";
-            row2.style.zIndex = "9999";
-            for (var j = 0; j < times.length; j++) {
-                var cell4 = row2.insertCell(0);
-                cell4.innerHTML = "زوج";
-                cell4.style.fontWeight = "bold";
-                var cell5 = row2.insertCell(0);
-                cell5.style.fontWeight = "bold";
-                cell5.innerHTML = "فرد";
+            var lessonSelect = document.getElementById("lesson");
+            var teacherSelect = document.getElementById("teacher");
+            var daySelect = document.getElementById("day");
 
-            }
-            //create tbody
-            for (var n = 0; n < days.length; n++) {                     //loop on days
-                if (days[n] === document.getElementById('day').value) {
-                    for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
-                        var row3 = planTable.insertRow();
-                        var cell6 = row3.insertCell(0);
-                        cell6.innerHTML = persianDays[n];
-                        cell6.style.position = "sticky";
-                        cell6.style.right = "0px";
-                        cell6.style.fontWeight = "bold";
-                        cell6.style.backgroundColor = "antiquewhite";
-                        var cell7 = row3.insertCell(0);
-                        cell7.innerHTML = classroom[m].name;
-                        cell7.style.fontWeight = "bold";
-                        cell7.style.position = "sticky";
-                        cell7.style.right = "99px";
-                        cell7.style.backgroundColor = "antiquewhite";
-                        for (var t = 0; t < times.length; t++) {         //loop on times
-                            var cell8 = row3.insertCell(0);
-                            var cell9 = row3.insertCell(0);
-                            for (var b = 0; b < result.length; b++) {//loop on result
-                                if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
-                                    if (result[b].weekType === "ZOJ") {
-                                        cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
-                                    } else if (result[b].weekType === "FARD") {
-                                        cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
+            if (lessonSelect.value != 0 && teacherSelect.value != 0 && daySelect.value != 0) {
+                var planTable = document.getElementById("plan-table");
+                planTable.deleteTHead();
+                //create thead
+                var header = planTable.createTHead();
+                var row = header.insertRow(0);
+                row.style.position = "sticky";
+                row.style.top = "0px";
+                row.style.backgroundColor = "rgb(178 251 255)";
+                row.style.zIndex = "99999";
+                row.style.fontWeight = "bold";
+                var cell = row.insertCell(0);
+                cell.innerHTML = "روز";
+                cell.style.fontWeight = "bold";
+                cell.rowSpan = 2;
+                var cell2 = row.insertCell(0);
+                cell2.innerHTML = "کلاس";
+                cell2.style.fontWeight = "bold";
+                cell2.rowSpan = 2;
+                for (var i = 0; i < times.length; i++) {
+                    var cell3 = row.insertCell(0);
+                    cell3.innerHTML = persianTimes[i];
+                    cell3.style.fontWeight = "bold";
+                    cell3.style.backgroundColor = "rgb(178 251 255)";
+                    cell3.style.direction = "rtl";
+                    cell3.colSpan = 2;
+                }
+                var row2 = header.insertRow(1);
+                row2.style.position = "sticky";
+                row2.style.top = "30px";
+                row2.style.backgroundColor = "#a9caf4";
+                row2.style.zIndex = "9999";
+                for (var j = 0; j < times.length; j++) {
+                    var cell4 = row2.insertCell(0);
+                    cell4.innerHTML = "زوج";
+                    cell4.style.fontWeight = "bold";
+                    var cell5 = row2.insertCell(0);
+                    cell5.style.fontWeight = "bold";
+                    cell5.innerHTML = "فرد";
+                }
+                //create tbody
+                for (var n = 0; n < days.length; n++) {                     //loop on days
+                    if (days[n] === document.getElementById('day').value) {
+                        for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
+                            var row3 = planTable.insertRow();
+                            var cell6 = row3.insertCell(0);
+                            cell6.innerHTML = persianDays[n];
+                            cell6.style.position = "sticky";
+                            cell6.style.right = "0px";
+                            cell6.style.fontWeight = "bold";
+                            cell6.style.backgroundColor = "antiquewhite";
+                            var cell7 = row3.insertCell(0);
+                            cell7.innerHTML = classroom[m].name;
+                            cell7.style.fontWeight = "bold";
+                            cell7.style.position = "sticky";
+                            cell7.style.right = "99px";
+                            cell7.style.backgroundColor = "antiquewhite";
+                            for (var t = 0; t < times.length; t++) {         //loop on times
+                                var cell8 = row3.insertCell(0);
+                                var cell9 = row3.insertCell(0);
+                                for (var b = 0; b < result.length; b++) {//loop on result
+                                    if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
+                                        if (result[b].weekType === "ZOJ") {
+                                            cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
+                                        } else if (result[b].weekType === "FARD") {
+                                            cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
+                                        }
+                                    }
+                                }
+                                // if now select then highlight
+                                var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroom[m].id && selectedTime.time === times[t] && selectedTime.day === days[n]));
+                                if (checkTime.length) {
+                                    for (var k = 0; k < checkTime.length; k++) {
+                                        if (checkTime[k].weekType === 'ZOJ')
+                                            cell8.style.backgroundColor = "yellow";
+                                        else cell9.style.backgroundColor = "yellow";
                                     }
                                 }
                             }
-                            // if now select then highlight
-                            var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomName === classroom[m].name &&
-                                selectedTime.time === times[t] && selectedTime.day === days[n]));
-                            if (checkTime.length) {
-                                for (var k=0;k<checkTime.length;k++){
-                                    if (checkTime[k].weekType === 'ZOJ')
-                                        cell8.style.backgroundColor = "yellow";
-                                    else cell9.style.backgroundColor = "yellow";
-                                }
-                            }
-                        }
 
+                        }
                     }
                 }
+                highlight_cell();
             }
-            highlight_cell();
         }
 
-        function show_selected_times(day, classroomName, time, weekType) {
+        function show_selected_times(classroomId, teacherId, lessonId, time, day, weekType) {
             //create selectedTimesList for the first time
             if (selectedTimes.length === 1) {
                 var ul = document.createElement('ul');
@@ -461,11 +444,35 @@
             var li = document.createElement('li');
             li.setAttribute('class', 'item');
             ul.appendChild(li);
-            li.innerHTML = li.innerHTML + day + " " + " کلاس : " + classroomName + " ساعت : " + time + " هفته " + weekType;
+            li.innerHTML = li.innerHTML + day + " " + " کلاس : " + classroomId + " استاد : " + teacherId + " درس : " + lessonId + " ساعت : " + time + " هفته " + weekType;
 
         }
 
 
+        function handleClickPlanning() {
+            selectedTimes = [];
+
+            // $.ajax({
+            //     type: "POST",
+            //     url: '/teachertime/' + teacherId,
+            //     data: jsonRequest,
+            //     contentType: "application/json; charset=utf-8",
+            //     dataType: "json",
+            //     error: function (response) {
+            //         alert("error");
+            //     },
+            //     success: function (response) {
+            //         if (response.success) {
+            //             alert("success");
+            //         }
+            //         else {
+            //             alert(response.responseText);
+            //         }
+            //     }
+            // });
+            //
+            // location.reload();
+        }
     </script>
 
 </head>
@@ -558,7 +565,7 @@
 
             <!--#Modal for plan create-->
             <div class="myFormCreate">
-                <form th:action="@{/plan/add}" method="post">
+                <form onSubmit="JavaScript:handleClickPlanning()">
                     <div class="modal fade" id="myModalCreate" tabindex="-1"  role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
                         <div class="modal-dialog" role="document" style="width: 95%;">
@@ -575,20 +582,19 @@
                                             <div class="form-style-1">
                                                 <div style="margin-bottom: 15px;">
                                                     <label>درس </label>
-                                                    <select id="lesson" name="lesson" data-width="80%">
+                                                    <select id="lesson" name="lesson" data-width="80%" onchange="create_plan_table()">
                                                         <option value="">یک درس را انتخاب کنید...</option>
                                                     </select>
                                                 </div>
                                                 <div style="margin-bottom: 15px;">
                                                     <label>استاد </label>
-                                                    <select id="teacher" name="teacher"  data-width="80%">
+                                                    <select id="teacher" name="teacher"  data-width="80%" onchange="create_plan_table()">
                                                         <option value="">یک استاد را انتخاب کنید...</option>
                                                     </select>
                                                 </div>
                                                 <div style="margin-bottom: 15px;">
                                                     <label>روز هفته </label>
-                                                    <select id="day" name="day" data-width="80%"
-                                                            onchange="create_plan_table()">
+                                                    <select id="day" name="day" data-width="80%" onchange="create_plan_table()">
                                                         <option value="">یک روز را انتخاب کنید...</option>
                                                     </select>
                                                 </div>

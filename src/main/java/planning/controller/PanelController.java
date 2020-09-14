@@ -562,19 +562,19 @@ public class PanelController {
 
         return "plandashboard";
     }
-    @PostMapping("/teachertime/{id}")
-    public String addTeacherTime(@RequestBody TeacherTimeVO teacherTimeVO, @PathVariable("id") long id, Model model) {
-        try {
-            ResponseEntity<Result<Boolean>> result = teacherController.addTeacherTimes(id, teacherTimeVO);
-
-            if (result.getBody() != null && result.getBody().getResult() != null)
-                return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-        }
-
-        return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
-    }
+//    @PostMapping("/teachertime/{id}")
+//    public String addTeacherTime(@RequestBody TeacherTimeVO teacherTimeVO, @PathVariable("id") long id, Model model) {
+//        try {
+//            ResponseEntity<Result<Boolean>> result = teacherController.addTeacherTimes(id, teacherTimeVO);
+//
+//            if (result.getBody() != null && result.getBody().getResult() != null)
+//                return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
+//        } catch (Exception ex) {
+//            model.addAttribute("errorMessage", ex.getMessage());
+//            return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
+//        }
+//
+//        return "redirect:/teachertime/" + teacherTimeVO.getPlanId();
+//    }
     /******************** end *********************/
 }

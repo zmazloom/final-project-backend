@@ -26,7 +26,6 @@ public class PlanDetailVO {
     @NotNull
     private Time time;
 
-    @NotNull
     private PlanDetail.WeekType weekType;
 
 }

@@ -22,4 +22,7 @@ public class ClassroomVO {
     @NotEmpty
     private String name;
 
+    @NotNull
+    private Integer zarfiat;
+
 }

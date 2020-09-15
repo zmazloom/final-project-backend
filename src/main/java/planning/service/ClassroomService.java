@@ -36,6 +36,7 @@ public class ClassroomService {
     public Classroom addClassroom(ClassroomVO classroomVO) {
         Classroom classroom = new Classroom();
         classroom.setName(classroomVO.getName());
+        classroom.setZarfiat(classroomVO.getZarfiat());
 
         return classroomCRUD.saveAndFlush(classroom);
     }
@@ -52,6 +53,8 @@ public class ClassroomService {
         if (classroomVO != null) {
             if (classroomVO.getName() != null)
                 classroom.setName(classroomVO.getName());
+            if (classroomVO.getZarfiat() != null)
+                classroom.setZarfiat(classroomVO.getZarfiat());
             return classroomCRUD.saveAndFlush(classroom);
         }
 

@@ -4,10 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import planning.model.AllTeacherTimeGet;
-import planning.model.PlanDetailGet;
-import planning.model.Result;
-import planning.model.Time;
+import planning.model.*;
 import planning.modelVO.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -412,7 +409,9 @@ public class PanelController {
     public String getDetailsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
         model.addAttribute("planId", id);
 
+        ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            plan = planController.getPlanById(id);
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
@@ -436,24 +435,22 @@ public class PanelController {
 
             if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null) {
                 model.addAttribute("classrooms", classroomVOList.getBody().getResult());
-                for(ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
+                for (ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
                     classroomIds.add(classroomVO.getId());
                 }
                 model.addAttribute("classroomIds", classroomIds);
-            }
-            else {
+            } else {
                 model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
                 model.addAttribute("classroomIds", new ArrayList<Long>());
             }
 
             if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null) {
                 model.addAttribute("teachers", teacherVOList.getBody().getResult());
-                for(TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
+                for (TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
                     teacherIds.add(teacherVO.getId());
                 }
                 model.addAttribute("teacherIds", teacherIds);
-            }
-            else {
+            } else {
                 model.addAttribute("teachers", new ArrayList<TeacherVO>());
                 model.addAttribute("teacherIds", new ArrayList<Long>());
             }
@@ -475,7 +472,10 @@ public class PanelController {
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "reports::#report-list";
+            return "planning::#planning-list";
+
+        if (plan != null && plan.getBody() != null && plan.getBody().getResult() != null && plan.getBody().getResult().getTimeType().equals(TimeType.ONE_THIRTY_HOURS))
+            return "planningOtherTime";
 
         return "planning";
     }
@@ -484,7 +484,9 @@ public class PanelController {
     public String getReportsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
         model.addAttribute("planId", id);
 
+        ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            plan = planController.getPlanById(id);
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
@@ -498,24 +500,22 @@ public class PanelController {
 
             if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null) {
                 model.addAttribute("classrooms", classroomVOList.getBody().getResult());
-                for(ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
+                for (ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
                     classroomIds.add(classroomVO.getId());
                 }
                 model.addAttribute("classroomIds", classroomIds);
-            }
-            else {
+            } else {
                 model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
                 model.addAttribute("classroomIds", new ArrayList<Long>());
             }
 
             if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null) {
                 model.addAttribute("teachers", teacherVOList.getBody().getResult());
-                for(TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
+                for (TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
                     teacherIds.add(teacherVO.getId());
                 }
                 model.addAttribute("teacherIds", teacherIds);
-            }
-            else {
+            } else {
                 model.addAttribute("teachers", new ArrayList<TeacherVO>());
                 model.addAttribute("teacherIds", new ArrayList<Long>());
             }
@@ -533,6 +533,9 @@ public class PanelController {
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
             return "reports::#report-list";
 
+        if (plan != null && plan.getBody() != null && plan.getBody().getResult() != null && plan.getBody().getResult().getTimeType().equals(TimeType.ONE_THIRTY_HOURS))
+            return "reportsOtherTime";
+
         return "reports";
     }
 
@@ -540,11 +543,11 @@ public class PanelController {
     public String getTeacherTime(Model model, HttpServletRequest request, @PathVariable("id") long id) {
         model.addAttribute("planId", id);
 
+        ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            plan = planController.getPlanById(id);
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
-
-            model.addAttribute("planId", id);
 
             if (teacherTimeVOList.getBody() != null && teacherTimeVOList.getBody().getResult() != null)
                 model.addAttribute("teachertimes", teacherTimeVOList.getBody().getResult());
@@ -563,8 +566,12 @@ public class PanelController {
             model.addAttribute("errorMessage", ex.getMessage());
         }
 
+        if (plan != null && plan.getBody() != null && plan.getBody().getResult() != null && plan.getBody().getResult().getTimeType().equals(TimeType.ONE_THIRTY_HOURS))
+            return "teachertimeOtherTime";
+
         return "teachertime";
     }
+
     @GetMapping("/plandashboard/{id}")
     public String getPlanDashboard(Model model, HttpServletRequest request, @PathVariable("id") long id) {
         model.addAttribute("planId", id);

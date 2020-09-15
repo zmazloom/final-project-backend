@@ -63,12 +63,14 @@
                         if(classroom != null) {
                             $('.myFormUpdate #id').val(classroom.id);
                             $('.myFormUpdate #name').val(classroom.name);
+                            $('.myFormUpdate #zarfiat').val(classroom.zarfiat);
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
                 } else {
                     //for creating classroom
                     $('.myFormCreate #name').val('');
+                    $('.myFormCreate #zarfiat').val('');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -160,6 +162,7 @@
                     <tr>
                         <th>شناسه</th>
                         <th>نام</th>
+                        <th>ظرفیت</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -168,6 +171,7 @@
                     <tr th:each="classroom :${classrooms}">
                         <td th:text="${classroom.id}"></td>
                         <td th:text="${classroom.name}"></td>
+                        <td th:text="${classroom.zarfiat}"></td>
                         <td>
                             <a th:href="@{/classroom/delete/(id=${classroom.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف کلاس"></i></a>
                         </td>
@@ -200,6 +204,10 @@
                                         <label for="name" class="col-form-label">نام</label><em style="color: red;"> *</em>
                                         <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام کلاس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
+                                    <div class="form-group">
+                                        <label for="zarfiat" class="col-form-label">ظرفیت</label><em style="color: red;"> *</em>
+                                        <input type="number" class="form-control" id="zarfiat" name="zarfiat" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('ظرفیت کلاس را وارد کنید.')" oninput="setCustomValidity('')" />
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
@@ -229,6 +237,10 @@
                                     <div class="form-group">
                                         <label for="name" class="col-form-label">نام</label><em style="color: red;"> *</em>
                                         <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام کلاس را وارد کنید.')" oninput="setCustomValidity('')" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="zarfiat" class="col-form-label">ظرفیت</label><em style="color: red;"> *</em>
+                                        <input type="number" class="form-control" id="zarfiat" name="zarfiat" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('ظرفیت کلاس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="modal-footer" style="padding: 15px 0;">
                                         <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>

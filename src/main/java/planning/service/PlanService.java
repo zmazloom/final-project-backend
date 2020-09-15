@@ -123,7 +123,7 @@ public class PlanService {
                                 planDetails.get(i).getLesson().getId().equals(planDetailVO.getLessonId()) &&
                                 planDetails.get(i).getTeacher().getId().equals(planDetailVO.getTeacherId()) &&
                                 planDetails.get(i).getTime().equals(planDetailVO.getTime()) &&
-                                planDetails.get(i).getWeekType().equals(planDetailVO.getWeekType())) {
+                                (planDetailVO.getWeekType() == null || planDetails.get(i).getWeekType().equals(planDetailVO.getWeekType()))) {
                             planDetailVOS.remove(planDetailVO);
                             fined = true;
                             break;

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">برنامه ریزی درسی</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" th:href="@{../dist/css/bootstrap-theme.css}" media="screen"/>
+    <!-- Bootstrap rtl -->
+    <link rel="stylesheet" th:href="@{../dist/css/rtl.css}" media="screen"/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" th:href="@{../bower_components/font-awesome/css/font-awesome.min.css}" media="screen"/>
+    <!-- Ionicons -->
+    <link rel="stylesheet" th:href="@{../bower_components/Ionicons/css/ionicons.min.css}" media="screen"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" th:href="@{../dist/css/AdminLTE.css}" media="screen"/>
+    <!-- Skins -->
+    <link rel="stylesheet" th:href="@{../dist/css/skins/skin-blue.min.css}" media="screen"/>
+    <!-- Google Font -->
+    <link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic}">
+    <!--jquery -->
+    <script th:src="@{https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js}"></script>
+    <script th:src="@{https://code.jquery.com/jquery-1.11.1.min.js}" type="text/javascript"></script>
+
+    <!--[if lt IE 9]>
+    <script th:src="@{https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js}"></script>
+    <script th:src="@{https://oss.maxcdn.com/respond/1.4.2/respond.min.js}"></script>
+    <![endif]-->
+
+    <style>
+        body {
+            background-color: #3c8dbc;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        .main {
+            background-color: #ecebeb;
+            width: 400px;
+            height: 370px;
+            margin: 0 auto 10px auto;
+            position: relative;
+            top: 110px;
+            border-radius: 1.5em;
+            -webkit-box-shadow: 0 0 25px 6px rgb(42 76 103);
+            -moz-box-shadow: 0 0 25px 6px rgb(42 76 103);
+            box-shadow: 0 0 25px 6px rgb(42 76 103);
+        }
+
+        .sign {
+            color: #3c8dbc;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: bold;
+            font-size: 23px;
+        }
+
+        .un {
+            width: 100%;
+            margin: 0 auto 27px auto;
+            color: rgb(38, 50, 56);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 250, 0.04);
+            padding: 10px 20px;
+            border-radius: 20px;
+            outline: none;
+            box-sizing: border-box;
+            border: 2px solid rgba(0, 0, 0, 0.02);
+        }
+
+        form.form1 {
+            padding-top: 40px;
+        }
+
+        .pass {
+            width: 100%;
+            color: rgb(38, 50, 56);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 250, 0.04);
+            padding: 10px 20px;
+            border-radius: 20px;
+            outline: none;
+            box-sizing: border-box;
+            border: 2px solid rgba(0, 0, 0, 0.02);
+            margin-bottom: 27px;
+        }
+
+        .un:focus, .pass:focus {
+            border: 2px solid rgba(0, 0, 0, 0.18) !important;
+        }
+
+        .submit {
+            cursor: pointer;
+            border-radius: 5em;
+            color: #fff;
+            background: linear-gradient(to right, #3c8dbc, #3c8dbc);
+            border: 0;
+            padding: 11px 40px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+        }
+        #logindiv {
+            background-color: #d7dee6;
+            padding: 20px;
+            border-radius: 1.5em 1.5em 0 0;
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                top: 20px;
+                width: 90%;
+                border-radius: 0;
+            }
+            #logindiv {
+                border-radius: 0;
+            }
+        }
+
+        .loginItem {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="main">
+    <div id="logindiv">
+        <p class="sign" style="text-align: center;">ورود به برنامه</p>
+    </div>
+    <form class="form1" autocomplete="on">
+        <div class="loginItem">
+            <input class="un" type="text" placeholder="نام کاربری" required="" oninvalid="this.setCustomValidity('نام کاربری را وارد کنید.')" oninput="setCustomValidity('')">
+        </div>
+        <div class="loginItem">
+            <input class="pass" type="password" placeholder="گذر واژه" required="" oninvalid="this.setCustomValidity('گذرواژه را وارد کنید.')" oninput="setCustomValidity('')">
+        </div>
+        <div class="loginItem" style="margin-top: 18px;">
+            <input class="submit" type="submit" value="ورود" style="text-align: center; width: 100%; font-weight: bold;">
+        </div>
+    </form>
+</div>
+
+</body>
+
+</html>

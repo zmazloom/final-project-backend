@@ -579,4 +579,11 @@ public class PanelController {
         return "plandashboard";
     }
     /******************** end *********************/
+
+    /******************* login ********************/
+    @GetMapping("/login")
+    public String getLoginPage(Model model) {
+        return "login";
+    }
+    /******************** end *********************/
 }

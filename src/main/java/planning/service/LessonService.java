@@ -1,6 +1,5 @@
 package planning.service;
 
-import com.github.sbahmani.jalcal.util.JalCal;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,7 @@ public class LessonService {
         if (lesson == null)
             return null;
 
-        LessonVO lessonVO = modelMapper.map(lesson, LessonVO.class);
-        if(lessonVO.getCreated() != null && !lessonVO.getCreated().equals(""))
-            lessonVO.setCreated(JalCal.gregorianToJalaliTime(lesson.getCreated()));
-        return lessonVO;
+        return modelMapper.map(lesson, LessonVO.class);
     }
 
     public List<LessonVO> getLessonVOs(List<Lesson> lessons) {
@@ -43,7 +39,7 @@ public class LessonService {
         lesson.setName(lessonVO.getName());
         lesson.setUnit(lessonVO.getUnit());
         lesson.setCode(lessonVO.getCode());
-        lesson.setNumber(lessonVO.getNumber());
+        lesson.setTerm(lessonVO.getTerm() != null ? lessonVO.getTerm() : new ArrayList<>());
         lesson.setGrade(lessonVO.getGrade());
 
         return lessonCRUD.saveAndFlush(lesson);
@@ -66,8 +62,8 @@ public class LessonService {
                 lesson.setName(lessonVO.getName());
             if(lessonVO.getCode() != null)
                 lesson.setCode(lessonVO.getCode());
-            if(lessonVO.getNumber() != null)
-                lesson.setNumber(lessonVO.getNumber());
+            if(lessonVO.getTerm() != null)
+                lesson.setTerm(lessonVO.getTerm());
             if(lessonVO.getGrade() != null)
                 lesson.setGrade(lessonVO.getGrade());
             if(lessonVO.getUnit() != null)

@@ -90,7 +90,7 @@ public class PlanService {
                 if(planDetail.getLesson() != null) {
                     planDetailGet.setName(planDetail.getLesson().getName());
                     planDetailGet.setCode(planDetail.getLesson().getCode());
-                    planDetailGet.setNumber(planDetail.getLesson().getNumber());
+                    planDetailGet.setTerm(planDetail.getLesson().getTerm());
                     planDetailGet.setGrade(planDetail.getLesson().getGrade());
                     planDetailGet.setUnit(planDetail.getLesson().getUnit());
                     planDetailGet.setLessonId(planDetail.getLesson().getId());

@@ -9,6 +9,7 @@ import planning.model.Unit;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,14 +25,16 @@ public class LessonVO {
     @NotEmpty
     private String name;
 
+    @NotNull
+    @NotEmpty
     private String code;
-
-    private String number;
 
     @NotNull
     private Unit unit;
 
     @NotNull
     private Grade grade;
+
+    private List<Integer> term;
 
 }

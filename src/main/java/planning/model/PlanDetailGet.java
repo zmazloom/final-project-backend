@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,9 +28,9 @@ public class PlanDetailGet {
     private long lessonId;
     private String name;
     private String code;
-    private String number;
     private Unit unit;
     private Grade grade;
+    private List<Integer> term;
 
     //classroom
     private long classroomId;

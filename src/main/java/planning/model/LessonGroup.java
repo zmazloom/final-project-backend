@@ -27,4 +27,22 @@ public class LessonGroup {
     @Column
     private boolean removed;
 
+    @Column
+    private String number;
+
+    @Column
+    private int zarfiat;
+
+    @Column
+    private int jalaseNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Teacher teacher;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Lesson lesson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Plan plan;
+
 }

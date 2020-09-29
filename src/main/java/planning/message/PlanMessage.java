@@ -16,6 +16,10 @@ public class PlanMessage {
 
     private static final String FA_INVALID_LESSON_TEACHER = "درس " + "{LESSONNAME}" + " به بیش از یک استاد انتساب دارد.";
 
+    private static final String FA_GROUP_NOT_FOUND = "گروه با شناسه " + "{PLANID}" + " پیدا نشد.";
+
+    private static final String FA_GROUP_DELETED = "گروه با شناسه " + "{GROUPID}" + " حذف شد.";
+
     public static String getDuplicatePlan(String planName) {
         return FA_DUPLICATE_PLAN.replace("{PLANNAME}", planName);
     }
@@ -43,5 +47,14 @@ public class PlanMessage {
     public static String getInvalidLessonTeacher(String lessonName) {
         return FA_INVALID_LESSON_TEACHER.replace("{LESSONNAME}", lessonName);
     }
+
+    public static String getGroupNotFound(String groupId) {
+        return FA_GROUP_NOT_FOUND.replace("{GROUPID}", groupId);
+    }
+
+    public static String getGroupDeleted(String groupId) {
+        return FA_GROUP_DELETED.replace("{GROUPID}", groupId);
+    }
+
 
 }

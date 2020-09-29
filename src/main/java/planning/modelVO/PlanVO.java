@@ -26,4 +26,6 @@ public class PlanVO {
 
     @NotNull
     private TimeType timeType;
+
+    private int nimsal;
 }

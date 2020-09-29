@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -34,12 +35,12 @@ public class Lesson {
     private String code;
 
     @Column
-    private String number;
-
-    @Column
     private Unit unit;
 
     @Enumerated
     private Grade grade;
+
+    @ElementCollection
+    private List<Integer> term;
 
 }

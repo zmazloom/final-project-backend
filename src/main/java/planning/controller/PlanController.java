@@ -15,7 +15,6 @@ import planning.service.PlanService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.List;
 
 @CrossOrigin
@@ -41,7 +40,8 @@ public class PlanController {
 
     @PutMapping(value = "/{planId}")
     public ResponseEntity<Result<PlanVO>> updatePlan(@PathVariable("planId") @NotNull Long planId,
-                                                     @RequestBody @NotNull @NotEmpty String name) {
+                                                     @RequestBody @NotNull @NotEmpty String name,
+                                                     @RequestBody int nimsal) {
         Plan plan = planCRUD.getPlanById(planId);
 
         if (plan == null)
@@ -51,7 +51,7 @@ public class PlanController {
             throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()
-                .setResult(planService.getPlanVO(planService.updatePlan(plan, name)))
+                .setResult(planService.getPlanVO(planService.updatePlan(plan, name, nimsal)))
                 .get());
     }
 
@@ -64,22 +64,6 @@ public class PlanController {
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()
                 .setResult(planService.getPlanVO(plan))
-                .get());
-    }
-
-    @PostMapping(value = "/{planId}/copy")
-    public ResponseEntity<Result<PlanVO>> copyPlan(@PathVariable("planId") @NotNull Long planId,
-                                                   @RequestBody @NotNull @NotEmpty String name) {
-        Plan plan = planCRUD.getPlanById(planId);
-
-        if (plan == null)
-            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
-
-        if (planCRUD.checkDuplicatePlanName(planId, name) != null)
-            throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
-
-        return ResponseEntity.ok(ResFact.<PlanVO>build()
-                .setResult(planService.getPlanVO(planService.copyPlan(plan, name)))
                 .get());
     }
 
@@ -98,6 +82,20 @@ public class PlanController {
                 .get());
     }
 
+    @GetMapping(value = "")
+    public ResponseEntity<Result<List<PlanVO>>> getAllPlans() {
+        return ResponseEntity.ok(ResFact.<List<PlanVO>>build()
+                .setResult(planService.getPlanVOs(planCRUD.getAllPlans()))
+                .get());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Result<Long>> getPlansCount() {
+        return ResponseEntity.ok(ResFact.<Long>build()
+                .setResult(planCRUD.getPlansCount())
+                .get());
+    }
+
     @PostMapping(value = "/{planId}/planning")
     public ResponseEntity<Result<PlanVO>> savePlanning(@PathVariable("planId") @NotNull Long planId,
                                                        @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
@@ -113,26 +111,6 @@ public class PlanController {
                 .get());
     }
 
-    @PostMapping(value = "/{planId}/check")
-    public ResponseEntity<Result<HashMap<String, List<String>>>> checkPlanning(@PathVariable("planId") @NotNull Long planId,
-                                                                               @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
-        Plan plan = planCRUD.getPlanById(planId);
-
-        if (plan == null)
-            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
-
-        return ResponseEntity.ok(ResFact.<HashMap<String, List<String>>>build()
-                .setResult(planService.checkPlanning(plan, planDetailVOList))
-                .get());
-    }
-
-    @GetMapping(value = "")
-    public ResponseEntity<Result<List<PlanVO>>> getAllPlans() {
-        return ResponseEntity.ok(ResFact.<List<PlanVO>>build()
-                .setResult(planService.getPlanVOs(planCRUD.getAllPlans()))
-                .get());
-    }
-
     @GetMapping(value = "/{planId}/detail")
     public ResponseEntity<Result<List<PlanDetailGet>>> getPlanDetails(@PathVariable("planId") @NotNull Long planId) {
         Plan plan = planCRUD.getPlanById(planId);
@@ -145,10 +123,19 @@ public class PlanController {
                 .get());
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<Result<Long>> getPlansCount() {
-        return ResponseEntity.ok(ResFact.<Long>build()
-                .setResult(planCRUD.getPlansCount())
+    @PostMapping(value = "/{planId}/copy")
+    public ResponseEntity<Result<PlanVO>> copyPlan(@PathVariable("planId") @NotNull Long planId,
+                                                   @RequestBody @NotNull @NotEmpty String name) {
+        Plan plan = planCRUD.getPlanById(planId);
+
+        if (plan == null)
+            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
+
+        if (planCRUD.checkDuplicatePlanName(planId, name) != null)
+            throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
+
+        return ResponseEntity.ok(ResFact.<PlanVO>build()
+                .setResult(planService.getPlanVO(planService.copyPlan(plan, name)))
                 .get());
     }
 }

@@ -33,4 +33,7 @@ public class Plan {
     @Column
     @Enumerated
     private TimeType timeType;
+
+    @Column
+    private Integer nimsal; //1 or 2
 }

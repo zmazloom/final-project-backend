@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/planninglayout}">
+<head>
+
+    <style>
+        #datatable_wrapper{
+            width: 100%;
+            margin: auto;
+        }
+        .pagination{
+            float: left;
+        }
+        #datatable{
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #datatable th, #datatable td{
+            padding: 10px;
+        }
+        #datatable tr{
+            border-radius: 10px;
+        }
+        .form-group{
+            margin: 20px 0;
+        }
+
+        .form-style-1 {
+            max-width: 400px;
+            font-size: 11px;
+        }
+        .form-style-1 li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 1px 0 0 0;
+        }
+        .form-style-1 label {
+            margin: 0 0 3px 0;
+            padding: 0px;
+            display: block;
+            font-weight: bold;
+        }
+
+        form-style-1 .field-divided {
+            width: 49%;
+        }
+
+        .form-style-1 .field-long {
+            width: 100%;
+        }
+
+        .form-style-1 .field-select {
+            width: 100%;
+        }
+
+        .form-style-1 .field-textarea {
+            height: 100px;
+        }
+
+        .select2 {
+            width: 100%;
+        }
+        .select2-selection__rendered, .select2-results__option {
+            direction: rtl;
+            text-align: right;
+            margin-right: 5px;
+            font-size: 11px;
+        }
+        .groupselect {
+            margin: 10px 0;
+        }
+        .updategroupselect {
+            margin: 15px 0;
+        }
+        .updategroupselect select {
+            padding: 2px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $(".card select").select2({
+                dropdownParent: $(".card")
+            });
+
+            document.getElementById("sidebar-toggle-link").click();
+
+            $('#base-sidebar li:eq(3)').addClass('active');
+
+            set_options();
+            set_update_options();
+
+            $(function () {
+                $("#datatable").dataTable({
+                    "language": {
+                        "paginate": {
+                            "next": "بعدی",
+                            "previous" : "قبلی"
+                        },
+                        "sSearch": "جستجو ",
+                        "sEmptyTable": "گروهی وجود ندارد.",
+                        "sLengthMenu": 'تعداد ' + '<select>'+
+                            '<option value="10">10</option>'+
+                            '<option value="20">20</option>'+
+                            '<option value="30">30</option>'+
+                            '<option value="40">40</option>'+
+                            '<option value="50">50</option>'+
+                            '<option value="-1">همه</option>'+
+                            '</select>',
+                        "sLoadingRecords": "در حال بارگذاری اطلاعات...",
+                        "sZeroRecords": "داده ای برای نمایش نیست."
+                    },
+                    "info" : false,
+                    "bSort": false
+                });
+
+            });
+
+            $('.nBtn, .table .eBtn').on('click', function (event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                var text = $(this).attr('name');
+                //for update group
+                if (text == 'edit') {
+                    $.get(href, function (group, status) {
+                        if(group != null) {
+                            $('.myFormUpdate #groupId').val(group.groupId);
+                            $('.myFormUpdate #updatenumber').val(group.number);
+                            $('.myFormUpdate #updatezarfiat').val(group.zarfiat);
+                            $('.myFormUpdate #updatejalaseNumber').val(group.jalaseNumber);
+                            $('.myFormUpdate #updatelesson').val(group.lessonId);
+                            $('.myFormUpdate #updateteacher').val(group.teacherId);
+                            $('.myFormUpdate #updateModal').modal();
+                        }
+                    });
+                }
+            });
+            //for delete lesson
+            $('.table .delBtn').on('click', function (event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                $('#removeModalCenter #delRef').attr('href', href);
+                $('#removeModalCenter').modal();
+            });
+        });
+    </script>
+
+    <script type="text/javascript" th:inline="javascript">
+        var lessons = [[${lessons}]];
+        var teachers = [[${teachers}]];
+
+        function set_options() {
+            var selectLesson = document.getElementById("lesson");
+            for (var i = 0; i < lessons.length; i++) {
+                var option = document.createElement("option");
+                option.text = lessons[i].name;
+                option.value = lessons[i].id;
+                option.style.textAlign = "right";
+                selectLesson.add(option);
+            }
+
+            var selectTeacher = document.getElementById("teacher");
+            for (var i = 0; i < teachers.length; i++) {
+                var option = document.createElement("option");
+                option.text = teachers[i].firstName + ' ' + teachers[i].lastName;
+                option.value = teachers[i].id;
+                option.style.textAlign = "right";
+                selectTeacher.add(option);
+            }
+        }
+        function set_update_options() {
+            var selectLesson = document.getElementById("updatelesson");
+            for (var i = 0; i < lessons.length; i++) {
+                var option = document.createElement("option");
+                option.text = lessons[i].name;
+                option.value = lessons[i].id;
+                option.style.textAlign = "right";
+                selectLesson.add(option);
+            }
+
+            var selectTeacher = document.getElementById("updateteacher");
+            for (var i = 0; i < teachers.length; i++) {
+                var option = document.createElement("option");
+                option.text = teachers[i].firstName + ' ' + teachers[i].lastName;
+                option.value = teachers[i].id;
+                option.style.textAlign = "right";
+                selectTeacher.add(option);
+            }
+        }
+
+        function handleClickAddGroup() {
+            event.preventDefault();
+
+            var planId = [[${planId}]];
+
+            var jsonCellTable = '{"teacherId": ' + parseInt(document.getElementById("teacher").value) +
+                ', "lessonId": ' + parseInt(document.getElementById("lesson").value) +
+                ', "planId": ' + planId +
+                ',"number": "' + $('.groupselect #number').val() + '"' +
+                ',"jalaseNumber": "' + $('.groupselect #jalaseNumber').val() + '"' +
+                ',"zarfiat": "' + $('.groupselect #zarfiat').val() + '"}';
+
+            $.ajax({
+                type: "POST",
+                url: '/api/group/plan/' + planId,
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                location.reload();
+            })
+            .fail(function(response) {
+                alert(JSON.parse(response.responseText).message);
+            })
+        }
+        function handleClickUpdateGroup() {
+            event.preventDefault();
+
+            var planId = [[${planId}]];
+            var groupId = $('#groupId').val();
+
+            var jsonCellTable = '{"teacherId": ' + parseInt(document.getElementById("updateteacher").value) +
+                ', "lessonId": ' + parseInt(document.getElementById("updatelesson").value) +
+                ', "planId": ' + planId +
+                ',"number": "' + $('.updategroupselect #updatenumber').val() + '"' +
+                ',"jalaseNumber": "' + $('.updategroupselect #updatejalaseNumber').val() + '"' +
+                ',"zarfiat": "' + $('.updategroupselect #updatezarfiat').val() + '"}';
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/group/' + groupId,
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                    $('.myFormUpdate #updateModal').modal('hide');
+                    location.reload();
+                })
+        }
+
+        function set_lesson_vahed() {
+            var lessonSelectId = parseInt(document.getElementById("lesson").value);
+            var vahed = null;
+            if(lessons != null) {
+                for(var i=0; i<lessons.length; i++) {
+                    if(lessons[i].id === lessonSelectId) {
+                        vahed = lessons[i].unit;
+                        break;
+                    }
+                }
+            }
+
+            if(vahed != null) {
+                if(vahed === "ZERO")
+                    $("#jalaseNumber").val(0);
+                else if(vahed === "ONE")
+                    $("#jalaseNumber").val(1);
+                else if(vahed === "TWO")
+                    $("#jalaseNumber").val(2);
+                else if(vahed === "THREE")
+                    $("#jalaseNumber").val(3);
+                else if(vahed === "FOUR")
+                    $("#jalaseNumber").val(4);
+            }
+            else
+                $("#jalaseNumber").val(0);
+        }
+    </script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/planninglayout :: header"></header>
+    <aside th:replace="layouts/planninglayout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                گروه ها
+            </h1>
+            <ol class="breadcrumb">
+                <li><a th:href="@{/plandashboard/{id}(id = ${planId})}"><i class="fa fa-dashboard"></i> داشبورد</a></li>
+                <li class="active">تعیین گروه ها</li>
+            </ol>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+
+            <div class="card" id="contentDiv">
+                <div class="row" style="padding: 8px 0; outline: none; margin: 0 auto 20px auto;">
+                    <div class="col-sm-3" style="font-size: 0.8em;">
+                        <form onSubmit="JavaScript:handleClickAddGroup()">
+                            <div class="form-style-1 select2list" id="groupselectd">
+                                <div class="groupselect">
+                                    <label class="col-form-label">درس <em style="color: red;"> *</em></label>
+                                    <select id="lesson" class="form-control select2" name="lesson" data-width="80%" required onchange="set_lesson_vahed()">
+                                        <option value="">یک درس را انتخاب کنید...</option>
+                                    </select>
+                                </div>
+                                <div class="groupselect">
+                                    <label class="col-form-label">استاد <em style="color: red;"> *</em></label>
+                                    <select id="teacher" class="form-control select2" name="teacher" data-width="80%" required>
+                                        <option value="">یک استاد را انتخاب کنید...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="groupselect">
+                                <label for="number" class="col-form-label">شماره</label><em style="color: red;"> *</em>
+                                <input type="number" class="form-control" id="number" name="number" value="" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('شماره گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                            </div>
+                            <div class="groupselect">
+                                <label for="jalaseNumber" class="col-form-label">تعداد جلسه</label><em style="color: red;"> *</em>
+                                <input type="number" class="form-control" id="jalaseNumber" name="jalaseNumber" value="" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('تعداد جلسه گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                            </div>
+                            <div class="groupselect">
+                                <label for="zarfiat" class="col-form-label">ظرفیت</label><em style="color: red;"> *</em>
+                                <input type="number" class="form-control" id="zarfiat" name="zarfiat" value="0" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('ظرفیت گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                            </div>
+                            <div class="groupselect">
+                                <input type="submit" class="btn btn-primary" value="افزودن گروه" style="width: 80%; margin-top: 8px; outline: none;"/>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-sm-9">
+                        <table id="datatable" class="table table-striped table-hover " style="margin: 10px auto 0 auto;">
+                        <thead style="background-color: #a7b6bf;">
+                        <tr>
+                            <th style="display:none;">شناسه</th>
+                            <th>درس</th>
+                            <th>استاد</th>
+                            <th>شماره گروه</th>
+                            <th>تعداد جلسه</th>
+                            <th>ظرفیت</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="group :${groups}">
+                            <td th:text="${group.groupId}" style="display: none;"></td>
+                            <td th:text="${group.lessonName}"></td>
+                            <td th:text="${group.teacherName}"></td>
+                            <td th:text="${group.number}"></td>
+                            <td th:text="${group.jalaseNumber}"></td>
+                            <td th:text="${group.zarfiat}"></td>
+                            <td>
+                                <a th:href="@{'/group/' + ${group.groupId} + '/delete/' + ${planId}}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف گروه"></i></a>
+                            </td>
+                            <td>
+                                <a th:href="@{/group/one/(id=${group.groupId})}" class="btn btn-primary eBtn" name="edit"><i class="fa fa-pencil" title="ویرایش گروه"></i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!--#Modal form for lesson update-->
+            <div class="myFormUpdate">
+                <form onSubmit="JavaScript:handleClickUpdateGroup()">
+                    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document" style="width: 80%">
+                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش گروه</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-sm-6" id="updategroupselected">
+                                            <input type="number" name="groupId" id="groupId" value="" style="display: none"/>
+                                            <div class="updategroupselect">
+                                                <label class="col-form-label" style="display: block;">درس <em style="color: red;"> *</em></label>
+                                                <select id="updatelesson" class="form-control" name="updatelesson" data-width="80%" required>
+                                                    <option value="">یک درس را انتخاب کنید...</option>
+                                                </select>
+                                            </div>
+                                            <div class="updategroupselect">
+                                                <label class="col-form-label" style="display: block;">استاد <em style="color: red;"> *</em></label>
+                                                <select id="updateteacher" class="form-control" name="updateteacher"  data-width="80%" required>
+                                                    <option value="">یک استاد را انتخاب کنید...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="updategroupselect">
+                                                <label for="updatenumber" class="col-form-label">شماره</label><em style="color: red;"> *</em>
+                                                <input type="updatenumber" class="form-control" id="updatenumber" name="updatenumber" value="" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('شماره گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                                            </div>
+                                            <div class="updategroupselect">
+                                                <label for="updatejalaseNumber" class="col-form-label">تعداد جلسه</label><em style="color: red;"> *</em>
+                                                <input type="updatejalaseNumber" class="form-control" id="updatejalaseNumber" name="updatejalaseNumber" value="" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('تعداد جلسه گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                                            </div>
+                                            <div class="updategroupselect">
+                                                <label for="updatezarfiat" class="col-form-label">ظرفیت</label><em style="color: red;"> *</em>
+                                                <input type="updatezarfiat" class="form-control" id="updatezarfiat" name="zarfiat" value="" style="border-radius: 2px; width: 80%;" required="" oninvalid="this.setCustomValidity('ظرفیت گروه را وارد کنید.')" oninput="setCustomValidity('')" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
+                                    <input type="submit" class="btn btn-primary" value="ویرایش" style="outline: none;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End update form-->
+
+            <!-- #Modal for removing lesson -->
+            <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                        <div class="modal-header" style="background-color: #ecebeb;">
+                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف گروه</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="overflow: hidden;">
+                            <p>آیا از حذف گروه اطمینان دارید؟</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
+                            <a href="" class="btn btn-primary" id="delRef" style="outline: none;">تایید</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/planninglayout :: footer"></aside>
+    <aside th:replace="layouts/planninglayout :: settings"></aside>
+    <aside th:replace="layouts/planninglayout :: sidebar"></aside>
+</div>
+
+
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{dist/js/adminlte.min.js}"></script>
+
+</body>
+</html>

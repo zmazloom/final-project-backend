@@ -26,8 +26,15 @@ public class GroupService {
             return null;
 
         return LessonGroupVO.builder()
+                .groupId(lessonGroup.getId())
                 .teacherId(lessonGroup.getTeacher().getId())
+                .firstName(lessonGroup.getTeacher().getFirstName())
+                .lastName(lessonGroup.getTeacher().getLastName())
+                .teacherName(lessonGroup.getTeacher().getFirstName() + " " + lessonGroup.getTeacher().getLastName())
                 .lessonId(lessonGroup.getLesson().getId())
+                .name(lessonGroup.getLesson().getName())
+                .code(lessonGroup.getLesson().getCode())
+                .lessonName(lessonGroup.getLesson().getName() + (lessonGroup.getLesson().getCode() != null ? " - " + lessonGroup.getLesson().getCode() : ""))
                 .planId(lessonGroup.getPlan().getId())
                 .number(lessonGroup.getNumber())
                 .jalaseNumber(lessonGroup.getJalaseNumber())

@@ -24,15 +24,18 @@ public class PanelController {
     private final LessonController lessonController;
     private final TeacherController teacherController;
     private final PlanController planController;
+    private final GroupController groupController;
 
     public PanelController(ClassroomController classroomController,
                            LessonController lessonController,
                            TeacherController teacherController,
-                           PlanController planController) {
+                           PlanController planController,
+                           GroupController groupController) {
         this.classroomController = classroomController;
         this.lessonController = lessonController;
         this.teacherController = teacherController;
         this.planController = planController;
+        this.groupController = groupController;
     }
 
     @RequestMapping(value = {"/", "/dashboard"})
@@ -131,7 +134,7 @@ public class PanelController {
 
     @GetMapping("/classroom/one")
     @ResponseBody
-    public Optional<ClassroomVO> findOneClassroom(Model model, HttpServletRequest request, long id) {
+    public Optional<ClassroomVO> findOneClassroom(Model model, long id) {
         try {
             ResponseEntity<Result<ClassroomVO>> classroom = classroomController.getClassroomById(id);
 
@@ -210,7 +213,7 @@ public class PanelController {
 
     @GetMapping("/lesson/one")
     @ResponseBody
-    public Optional<LessonVO> findOneLesson(Model model, HttpServletRequest request, long id) {
+    public Optional<LessonVO> findOneLesson(Model model, long id) {
         try {
             ResponseEntity<Result<LessonVO>> lesson = lessonController.getLessonById(id);
 
@@ -289,7 +292,7 @@ public class PanelController {
 
     @GetMapping("/teacher/one")
     @ResponseBody
-    public Optional<TeacherVO> findOneTeacher(Model model, HttpServletRequest request, long id) {
+    public Optional<TeacherVO> findOneTeacher(Model model, long id) {
         try {
             ResponseEntity<Result<TeacherVO>> teacher = teacherController.getTeacherById(id);
 
@@ -351,7 +354,7 @@ public class PanelController {
     @PostMapping("/plan/update")
     public String editPlan(Model model, HttpServletRequest request, PlanVO planVO) {
         try {
-            ResponseEntity<Result<PlanVO>> changedPlan = planController.updatePlan(planVO.getId(), planVO.getName());
+            ResponseEntity<Result<PlanVO>> changedPlan = planController.updatePlan(planVO.getId(), planVO.getName(), planVO.getNimsal());
 
             if (changedPlan.getBody() != null && changedPlan.getBody().getResult() != null)
                 return "redirect:/plan";
@@ -368,7 +371,7 @@ public class PanelController {
 
     @GetMapping("/plan/one")
     @ResponseBody
-    public Optional<PlanVO> findOnePlan(Model model, HttpServletRequest request, long id) {
+    public Optional<PlanVO> findOnePlan(Model model, long id) {
         try {
             ResponseEntity<Result<PlanVO>> plan = planController.getPlanById(id);
 
@@ -540,7 +543,7 @@ public class PanelController {
     }
 
     @GetMapping("/teachertime/{id}")
-    public String getTeacherTime(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+    public String getTeacherTime(Model model, @PathVariable("id") long id) {
         model.addAttribute("planId", id);
 
         ResponseEntity<Result<PlanVO>> plan = null;
@@ -573,7 +576,7 @@ public class PanelController {
     }
 
     @GetMapping("/plandashboard/{id}")
-    public String getPlanDashboard(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+    public String getPlanDashboard(Model model, @PathVariable("id") long id) {
         model.addAttribute("planId", id);
 
         return "plandashboard";
@@ -584,6 +587,66 @@ public class PanelController {
     @GetMapping("/login")
     public String getLoginPage(Model model) {
         return "login";
+    }
+    /******************** end *********************/
+
+    /******************** group *********************/
+    @GetMapping("/group/{id}")
+    public String getAllGroups(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        model.addAttribute("planId", id);
+
+        try {
+            ResponseEntity<Result<List<LessonGroupVO>>> lessonGroupVOList = groupController.getAllLessonGroups(id);
+            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
+            ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
+
+            if (lessonGroupVOList.getBody() != null && lessonGroupVOList.getBody().getResult() != null && !lessonGroupVOList.getBody().getResult().isEmpty())
+                model.addAttribute("groups", lessonGroupVOList.getBody().getResult());
+            else
+                model.addAttribute("groups", new ArrayList<LessonGroupVO>());
+
+            if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null)
+                model.addAttribute("teachers", teacherVOList.getBody().getResult());
+            else
+                model.addAttribute("teachers", new ArrayList<TeacherVO>());
+
+            if (lessonVOList.getBody() != null && lessonVOList.getBody().getResult() != null)
+                model.addAttribute("lessons", lessonVOList.getBody().getResult());
+            else
+                model.addAttribute("lessons", new ArrayList<LessonVO>());
+
+        } catch (Exception ex) {
+            model.addAttribute("groups", new ArrayList<LessonGroupVO>());
+            model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            model.addAttribute("lessons", new ArrayList<LessonVO>());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
+            return "groups::#group-list";
+
+        return "group";
+    }
+
+    @GetMapping("/group/one")
+    @ResponseBody
+    public Optional<LessonGroupVO> findOneLessonGroup(Model model, long id) {
+        try {
+            ResponseEntity<Result<LessonGroupVO>> lessonGroup = groupController.getLessonGroupById(id);
+
+            if (lessonGroup.getBody() != null && lessonGroup.getBody().getResult() != null)
+                return Optional.of(lessonGroup.getBody().getResult());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
+
+        return Optional.empty();
+    }
+
+    @GetMapping("/group/{id}/delete/{planId}")
+    public String deleteLessonGroup(@PathVariable("id") long id, @PathVariable("planId") long planId) {
+        groupController.deleteLessonGroup(id);
+        return "redirect:/group/" + planId;
     }
     /******************** end *********************/
 }

@@ -13,13 +13,20 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class LessonGroupVO {
 
+    private Long groupId;
+
     @NotNull
     private Long teacherId;
+    private String firstName;
+    private String lastName;
+    private String teacherName;
 
     @NotNull
     private Long lessonId;
+    private String name;
+    private Integer code;
+    private String lessonName;
 
-    @NotNull
     private Long planId;
 
     @NotNull

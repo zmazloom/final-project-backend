@@ -25,7 +25,7 @@ public class GroupController {
     private final PlanCRUD planCRUD;
     private final GroupService groupService;
 
-    @PostMapping(value = "/{planId}/group")
+    @PostMapping(value = "/plan/{planId}")
     public ResponseEntity<Result<LessonGroupVO>> savePlanGroup(@PathVariable("planId") @NotNull Long planId,
                                                                @RequestBody @Validated @NotNull LessonGroupVO lessonGroupVO) {
         Plan plan = planCRUD.getPlanById(planId);
@@ -38,19 +38,13 @@ public class GroupController {
                 .get());
     }
 
-    @PutMapping(value = "/{planId}/group/{groupId}")
-    public ResponseEntity<Result<LessonGroupVO>> updatePlanGroup(@PathVariable("planId") @NotNull Long planId,
-                                                                 @PathVariable("groupId") @NotNull Long groupId,
+    @PutMapping(value = "/{groupId}")
+    public ResponseEntity<Result<LessonGroupVO>> updatePlanGroup(@PathVariable("groupId") @NotNull Long groupId,
                                                                  @RequestBody @Validated @NotNull LessonGroupVO lessonGroupVO) {
-        Plan plan = planCRUD.getPlanById(planId);
-
-        if (plan == null)
-            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
-
         LessonGroup lessonGroup = lessonGroupCRUD.getLessonGroupById(groupId);
 
         if (lessonGroup == null)
-            throw ResourceNotFoundException.getInstance(PlanMessage.getGroupNotFound(planId.toString()));
+            throw ResourceNotFoundException.getInstance(PlanMessage.getGroupNotFound(groupId.toString()));
 
         return ResponseEntity.ok(ResFact.<LessonGroupVO>build()
                 .setResult(groupService.getLessonGroupVO(groupService.updateLessonGroup(lessonGroup, lessonGroupVO)))

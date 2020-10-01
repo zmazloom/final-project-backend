@@ -24,6 +24,34 @@
         .form-group{
             margin: 20px 0;
         }
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        #checkboxes1, #checkboxes2 {
+            display: none;
+            border: 1px #dadada solid;
+            background-color: #e2f7f7;
+        }
+        #checkboxes1 label, #checkboxes2 label {
+            display: block;
+        }
+        #checkboxes1 label:hover,#checkboxes2 label:hover {
+            background-color: #1e90ff;
+        }
     </style>
 
     <script>
@@ -64,12 +92,39 @@
                 if (text == 'edit') {
                     $.get(href, function (lesson, status) {
                         if(lesson != null) {
-                            $('.myFormUpdate #id').val(lesson.id);
-                            $('.myFormUpdate #name').val(lesson.name);
-                            $('.myFormUpdate #code').val(lesson.code);
-                            $('.myFormUpdate #number').val(lesson.number);
-                            $('.myFormUpdate #unit').val(lesson.unit);
-                            $('.myFormUpdate #grade').val(lesson.grade);
+                            $('.myFormUpdate #lessonId').val(lesson.id);
+                            $('.myFormUpdate #updatename').val(lesson.name);
+                            $('.myFormUpdate #updatenumber').val(lesson.code);
+                            $('.myFormUpdate #updateunit').val(lesson.unit);
+                            $('.myFormUpdate #updategrade').val(lesson.grade);
+                            $('#updateterm1').prop('checked', false);
+                            $('#updateterm2').prop('checked', false);
+                            $('#updateterm3').prop('checked', false);
+                            $('#updateterm4').prop('checked', false);
+                            $('#updateterm5').prop('checked', false);
+                            $('#updateterm6').prop('checked', false);
+                            $('#updateterm7').prop('checked', false);
+                            $('#updateterm8').prop('checked', false);
+                            if(lesson.term != null) {
+                                for(var i=0; i<lesson.term.length; i++) {
+                                    if(lesson.term[i] === 1)
+                                        $('#updateterm1').prop('checked', true);
+                                    else if(lesson.term[i] === 2)
+                                        $('#updateterm2').prop('checked', true);
+                                    else if(lesson.term[i] === 3)
+                                        $('#updateterm3').prop('checked', true);
+                                    else if(lesson.term[i] === 4)
+                                        $('#updateterm4').prop('checked', true);
+                                    else if(lesson.term[i] === 5)
+                                        $('#updateterm5').prop('checked', true);
+                                    else if(lesson.term[i] === 6)
+                                        $('#updateterm6').prop('checked', true);
+                                    else if(lesson.term[i] === 7)
+                                        $('#updateterm7').prop('checked', true);
+                                    else if(lesson.term[i] === 8)
+                                        $('#updateterm8').prop('checked', true);
+                                }
+                            }
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
@@ -80,6 +135,14 @@
                     $('.myFormCreate #number').val('');
                     $('.myFormCreate #unit').val('THREE');
                     $('.myFormCreate #grade').val('KARSHENASI');
+                    $('#term1').prop('checked', false);
+                    $('#term2').prop('checked', false);
+                    $('#term3').prop('checked', false);
+                    $('#term4').prop('checked', false);
+                    $('#term5').prop('checked', false);
+                    $('#term6').prop('checked', false);
+                    $('#term7').prop('checked', false);
+                    $('#term8').prop('checked', false);
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -91,6 +154,93 @@
                 $('#removeModalCenter').modal();
             });
         });
+    </script>
+
+    <script type="text/javascript" th:inline="javascript">
+        var expanded1 = false;
+        var expanded2 = false;
+
+        function showCheckboxes1() {
+            var checkboxes = document.getElementById("checkboxes1");
+            if (!expanded1) {
+                checkboxes.style.display = "block";
+                expanded1 = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded1 = false;
+            }
+        }
+        function showCheckboxes2() {
+            var checkboxes = document.getElementById("checkboxes2");
+            if (!expanded2) {
+                checkboxes.style.display = "block";
+                expanded2 = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded2 = false;
+            }
+        }
+
+        function handleClickCreateLesson() {
+            event.preventDefault();
+            var selectedTerms = [];
+
+            $('[id^=term]').each( function () {
+                if($(this).is(':checked'))
+                    selectedTerms.push(parseInt($(this).val()));
+            });
+
+            var jsonCellTable = '{"name": "' + document.getElementById("createname").value + '"' +
+                ', "code": ' + document.getElementById("createnumber").value +
+                ', "unit": "' + document.getElementById("createunit").value + '"' +
+                ',"grade": "' + document.getElementById("creategrade").value + '"' +
+                ',"term": [' + selectedTerms + ']}';
+
+            $.ajax({
+                type: "POST",
+                url: '/api/lesson',
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
+        }
+        function handleClickUpdateLesson() {
+            event.preventDefault();
+            var selectedTerms = [];
+
+            var lessonId = $('#lessonId').val();
+
+            $('[id^=updateterm]').each( function () {
+                if($(this).is(':checked'))
+                    selectedTerms.push(parseInt($(this).val()));
+            });
+
+            var jsonCellTable = '{"name": "' + document.getElementById("updatename").value + '"' +
+                ', "code": ' + document.getElementById("updatenumber").value +
+                ', "unit": "' + document.getElementById("updateunit").value + '"' +
+                ',"grade": "' + document.getElementById("updategrade").value + '"' +
+                ',"term": [' + selectedTerms + ']}';
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/lesson/' + lessonId,
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
+        }
     </script>
 
 </head>
@@ -131,10 +281,10 @@
                     <tr>
                         <th>شناسه</th>
                         <th>نام</th>
-                        <th>گروه</th>
                         <th>شماره درس</th>
                         <th>تعداد واحد</th>
                         <th>مقطع</th>
+                        <th>ترم</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -144,7 +294,6 @@
                         <td th:text="${lesson.id}"></td>
                         <td th:text="${lesson.name}"></td>
                         <td th:text="${lesson.code}"></td>
-                        <td th:text="${lesson.number}"></td>
                         <td>
                             <div th:switch="${lesson.unit}">
                                 <span th:case="${T(planning.model.Unit).ZERO}">0</span>
@@ -161,6 +310,7 @@
                                 <span th:case="${T(planning.model.Grade).DOCTORA}">دکترا</span>
                             </div>
                         </td>
+                        <td th:text="${lesson.term}"></td>
                         <td>
                             <a th:href="@{/lesson/delete/(id=${lesson.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف درس"></i></a>
                         </td>
@@ -175,7 +325,7 @@
 
             <!--#Modal form for lesson update-->
             <div class="myFormUpdate">
-                <form th:action="@{/lesson/update}" method="post">
+                <form onSubmit="JavaScript:handleClickUpdateLesson()">
                     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
@@ -186,42 +336,59 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
+                                    <input type="number" name="lessonId" id="lessonId" value="" style="display: none"/>
                                     <div class="form-group">
                                         <input type="hidden" class="form-control" id="id" name="id" value=""/>
                                     </div>
                                     <div class="form-group">
-                                        <label for="name" class="col-form-label">نام</label><em style="color: red;"> *</em>
-                                        <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام درس را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        <label for="updatename" class="col-form-label">نام</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="updatename" name="updatename" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام درس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="code" class="col-form-label">گروه</label>
-                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="number" class="col-form-label">شماره درس</label>
-                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                        <label for="updatenumber" class="col-form-label">شماره درس</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="updatenumber" name="updatenumber" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('شماره درس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label for="grade" class="col-form-label">مقطع</label>
-                                                <select name="grade" id="grade">
+                                                <label for="updategrade" class="col-form-label">مقطع</label>
+                                                <select name="updategrade" id="updategrade">
                                                     <option value="KARSHENASI">کارشناسی</option>
                                                     <option value="ARSHAD">کارشناسی ارشد</option>
                                                     <option value="DOCTORA">دکترا</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label for="unit" class="col-form-label">تعداد واحد</label>
-                                                <select name="unit" id="unit">
+                                                <label for="updateunit" class="col-form-label">تعداد واحد</label>
+                                                <select name="updateunit" id="updateunit">
                                                     <option value="ZERO">0</option>
                                                     <option value="ONE">1</option>
                                                     <option value="TWO">2</option>
                                                     <option value="THREE">3</option>
                                                     <option value="FOUR">4</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <div class="selectBox" onclick="showCheckboxes2()" style="width: 80%;">
+                                                    <select>
+                                                        <option>ترم</option>
+                                                    </select>
+                                                    <div class="overSelect"></div>
+                                                </div>
+                                                <div id="checkboxes2" style="width: 80%;">
+                                                    <label th:for="updateterm1"><input type="checkbox" th:id="updateterm1" th:value="1" />ترم 1</label>
+                                                    <label th:for="updateterm2"><input type="checkbox" th:id="updateterm2" th:value="2" />ترم 2</label>
+                                                    <label th:for="updateterm3"><input type="checkbox" th:id="updateterm3" th:value="3" />ترم 3</label>
+                                                    <label th:for="updateterm4"><input type="checkbox" th:id="updateterm4" th:value="4" />ترم 4</label>
+                                                    <label th:for="updateterm5"><input type="checkbox" th:id="updateterm5" th:value="5" />ترم 5</label>
+                                                    <label th:for="updateterm6"><input type="checkbox" th:id="updateterm6" th:value="6" />ترم 6</label>
+                                                    <label th:for="updateterm7"><input type="checkbox" th:id="updateterm7" th:value="7" />ترم 7</label>
+                                                    <label th:for="updateterm8"><input type="checkbox" th:id="updateterm8" th:value="8" />ترم 8</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -239,51 +406,67 @@
 
             <!--#Modal for lesson create-->
             <div class="myFormCreate">
-                <form th:action="@{/lesson/add}" method="post">
+                <form onSubmit="JavaScript:handleClickCreateLesson()">
                     <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">درس جدید</h5>
+                                    <h5 class="modal-title" id="createModalLabel" style="display: inline;">درس جدید</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="name" class="col-form-label">نام</label><em style="color: red;"> *</em>
-                                        <input type="text" class="form-control" id="name" name="name" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام درس را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        <label for="createname" class="col-form-label">نام</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="createname" name="createname" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام درس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="code" class="col-form-label">گروه</label>
-                                        <input type="text" class="form-control" id="code" name="code" value="" style="border-radius: 2px;" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="number" class="col-form-label">شماره درس</label>
-                                        <input type="text" class="form-control" id="number" name="number" value="" style="border-radius: 2px;" />
+                                        <label for="createnumber" class="col-form-label">شماره درس</label><em style="color: red;"> *</em>
+                                        <input type="number" class="form-control" id="createnumber" name="createnumber" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('شماره درس را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label for="grade" class="col-form-label">مقطع</label>
-                                                <select name="grade" id="grade">
+                                                <label for="creategrade" class="col-form-label">مقطع</label>
+                                                <select name="creategrade" id="creategrade">
                                                     <option value="KARSHENASI">کارشناسی</option>
                                                     <option value="ARSHAD">کارشناسی ارشد</option>
                                                     <option value="DOCTORA">دکترا</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label for="unit" class="col-form-label">تعداد واحد</label>
-                                                <select name="unit" id="unit">
+                                                <label for="createunit" class="col-form-label">تعداد واحد</label>
+                                                <select name="createunit" id="createunit">
                                                     <option value="ZERO">0</option>
                                                     <option value="ONE">1</option>
                                                     <option value="TWO">2</option>
                                                     <option value="THREE">3</option>
                                                     <option value="FOUR">4</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <div class="selectBox" onclick="showCheckboxes1()" style="width: 80%;">
+                                                    <select>
+                                                        <option>ترم</option>
+                                                    </select>
+                                                    <div class="overSelect"></div>
+                                                </div>
+                                                <div id="checkboxes1" style="width: 80%;">
+                                                    <label th:for="term1"><input type="checkbox" th:id="term1" th:value="1" />ترم 1</label>
+                                                    <label th:for="term2"><input type="checkbox" th:id="term2" th:value="2" />ترم 2</label>
+                                                    <label th:for="term3"><input type="checkbox" th:id="term3" th:value="3" />ترم 3</label>
+                                                    <label th:for="term4"><input type="checkbox" th:id="term4" th:value="4" />ترم 4</label>
+                                                    <label th:for="term5"><input type="checkbox" th:id="term5" th:value="5" />ترم 5</label>
+                                                    <label th:for="term6"><input type="checkbox" th:id="term6" th:value="6" />ترم 6</label>
+                                                    <label th:for="term7"><input type="checkbox" th:id="term7" th:value="7" />ترم 7</label>
+                                                    <label th:for="term8"><input type="checkbox" th:id="term8" th:value="8" />ترم 8</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

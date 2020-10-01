@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class AllTeacherTimeGet {
 
     private Time time;
+    private int priority;
 
     //techer
     private long teacherId;

@@ -123,6 +123,7 @@
 
     <script type="text/javascript" th:inline="javascript">
         var result = [[${teachertimes}]];
+        var teachers = [[${teachers}]];
 
         var times = ["730O", "9O", "1030O", "12O", "1330O", "15O", "1630O", "18O"];
         var persianTimes = ["7:30 تا 9", "9 تا 10:30", "10:30 تا 12", "12 تا 13:30", "13:30 تا 15", "15 تا 16:30", "16:30 تا 18", "18 تا 19:30"];
@@ -133,41 +134,23 @@
 
         var selectedTimes = [];
         $(document).ready(function () {
-            $("#allteachertime").prop("selectedIndex", -1);
-            create_default_plan();
-
+            $(".teacherselect select").select2({
+                dropdownParent: $(".teacherselect")
+            });
             $('#base-sidebar li:eq(2)').addClass('active');
 
             $("#allteachertime").on('change', function () {
                 teacherSelected = $('option:selected', this).val();
                 create_default_plan();
             });
-
-            $('.nBtn, .table .eBtn').on('click', function (event) {
-                event.preventDefault();
-                var href = $(this).attr('href');
-                var text = $(this).attr('name');
-                //for update plan
-                if (text == 'edit') {
-                } else {
-                    if (teacherSelected == null || teacherSelected === 0) {
-                        alert("ابتدا استادی را برای ویرایش انتخاب کنید.");
-                    } else {
-                        selectedTimes = [];
-                        //for creating plan
-                        $('.myFormCreate #lesson').val('');
-                        $('.myFormCreate #teacher').val('');
-                        $('.myFormCreate #day').val('');
-                        $('.myFormCreate #myModalCreate').modal();
-                        create_plan_table();
-                    }
-                }
-            });
         });
 
 
+        var rowId;
+        var cellIndex;
+
         function highlight_cell() {
-            var table = document.getElementById('plan-table');
+            var table = document.getElementById('default-plan');
             var cells = table.getElementsByTagName('td');
 
             for (var i = 0; i < cells.length; i++) {
@@ -175,17 +158,15 @@
                 var cell = cells[i];
                 // do something on onclick event for cell
                 cell.onclick = function () {
-                    // Get the row id where the cell exists
-                    var rowId = this.parentNode.rowIndex;
-
-                    if (rowId >= 1 && this.cellIndex < times.length && this.innerHTML === "") {
-                        // if this time is not selected, then select
-                        if (this.style.backgroundColor != "yellow") {
-                            this.style.backgroundColor = "yellow";
-                        }
-                        // if this time is selected before, then deselect (double click = deselect)
-                        else {
-                            this.style.backgroundColor = "white";
+                    if (teacherSelected != null && teacherSelected > 0) {
+                        // Get the row id where the cell exists
+                        rowId = this.parentNode.rowIndex;
+                        cellIndex = this.cellIndex;
+                        if (rowId >= 1 && this.cellIndex < times.length && this.innerHTML === "") {
+                            var time = times[times.length - this.cellIndex - 1];
+                            var day = days[this.parentNode.rowIndex - 1];
+                            document.getElementById('selectedTime').innerText = day + ' ' + time;
+                            $('.priorityModal #priorityModal').modal();
                         }
                     }
                 }
@@ -226,87 +207,76 @@
                     var cell4 = row2.insertCell(0);
                     for (var b = 0; b < result.length; b++) {//loop on result
                         if (result[b].time === days[n] + times[t] && result[b].teacherId == teacherSelected) {
-                            cell4.style.backgroundColor = "#34d238";
-                        }
-
-                    }
-                }
-
-            }
-        }
-
-        function create_plan_table() {
-            var planTable = document.getElementById("plan-table");
-            planTable.deleteTHead();
-            planTable.innerHTML = "";
-            //create thead
-            var header = planTable.createTHead();
-            var row = header.insertRow(0);
-            row.style.position = "sticky";
-            row.style.top = "0px";
-            row.style.backgroundColor = "rgb(178 251 255)";
-            row.style.zIndex = "99999";
-            row.style.fontWeight = "bold";
-            var cell = row.insertCell(0);
-            cell.innerHTML = "روز";
-            cell.style.fontWeight = "bold";
-            for (var i = 0; i < times.length; i++) {
-                var cell2 = row.insertCell(0);
-                cell2.innerHTML = persianTimes[i];
-                cell2.style.fontWeight = "bold";
-                cell2.style.backgroundColor = "rgb(178 251 255)";
-                cell2.style.direction = "rtl";
-            }
-            //create tbody
-            for (var n = 0; n < days.length; n++) {                     //loop on days
-                var row2 = planTable.insertRow();
-                var cell3 = row2.insertCell(0);
-                cell3.innerHTML = persianDays[n];
-                cell3.style.position = "sticky";
-                cell3.style.right = "0px";
-                cell3.style.fontWeight = "bold";
-                cell3.style.backgroundColor = "antiquewhite";
-
-                for (var t = 0; t < times.length; t++) {         //loop on times
-                    var cell4 = row2.insertCell(0);
-                    for (var b = 0; b < result.length; b++) {//loop on result
-                        if (result[b].time === days[n] + times[t] && result[b].teacherId == teacherSelected) {
-                            cell4.style.backgroundColor = "#34d238";
-                        }
-
-                        // if now select then highlight
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.time === times[t] && selectedTime.day === days[n]));
-                        if (checkTime.length) {
-                            for (var k = 0; k < checkTime.length; k++) {
+                            if(result[b].priority === 1)
+                                cell4.style.backgroundColor = "green";
+                            else if(result[b].priority === 2)
                                 cell4.style.backgroundColor = "yellow";
-                            }
+                            else if(result[b].priority === 3)
+                                cell4.style.backgroundColor = "red";
                         }
                     }
                 }
+
             }
             highlight_cell();
         }
 
-        function handleClick() {
-            event.preventDefault();
+        function setPriority() {
+            if (document.querySelector("input[name=priority]:checked").value !== null) {
+                event.preventDefault();
+                var table = document.getElementById('default-plan');
+                var cells = table.getElementsByTagName('td');
 
-            var jsonCellTable = [];
+                var prioritySelected = document.querySelector("input[name=priority]:checked").value;
 
-            var teacherId = teacherSelected;
+                var jsonCellTables = '[';
 
-            var table = document.getElementById('plan-table');
-            var cells = table.getElementsByTagName('td');
+                for (var i = 0; i < cells.length; i++) {
+                    cell = cells[i];
 
-            for (var i = 0; i < cells.length; i++) {
-                var cell = cells[i];
-                if(cell.style.backgroundColor == "yellow" || cell.style.backgroundColor == "rgb(52, 210, 56)") {
-                    var time = times[times.length - cell.cellIndex - 1];
-                    var day = days[cell.parentNode.rowIndex - 1];
-                    jsonCellTable.push(day + time);
+                    if (cell.cellIndex === cellIndex && cell.parentNode.rowIndex === rowId) {
+                        if (prioritySelected === "1") {
+                            cell.style.backgroundColor = "green";
+                        } else if (prioritySelected === "2") {
+                            cell.style.backgroundColor = "yellow";
+                        } else if (prioritySelected === "3") {
+                            cell.style.backgroundColor = "red";
+                        } else if (prioritySelected === "4") {
+                            cell.style.backgroundColor = "#ecf0f5";
+                        }
+                    }
+
+                    if(cell.style.backgroundColor == "green" || cell.style.backgroundColor == "yellow" || cell.style.backgroundColor == "red") {
+                        var time = times[times.length - cell.cellIndex - 1];
+                        var day = days[cell.parentNode.rowIndex - 1];
+                        var priority;
+                        if(cell.style.backgroundColor == "green")
+                            priority = 1;
+                        else if(cell.style.backgroundColor == "yellow")
+                            priority = 2;
+                        else if(cell.style.backgroundColor == "red")
+                            priority = 3;
+                        var jsonCellTable = '{"time": "' + day + time + '"' +
+                            ', "priority": ' + priority + '}';
+
+                        jsonCellTables = jsonCellTables + jsonCellTable + ',';
+                    }
                 }
-            }
 
-            var jsonRequest = '{"planId" : ' + [[${planId}]] + ', "times" : ' + JSON.stringify(jsonCellTable) + '}';
+                if(jsonCellTables.length > 1)
+                    jsonCellTables = jsonCellTables.substring(0, jsonCellTables.length - 1) + ']';
+                else
+                    jsonCellTables = jsonCellTables + ']';
+
+                $('input:radio[name="priority"]').prop('checked', false);
+                saveTeacherTimes(jsonCellTables)
+            }
+        }
+
+        function saveTeacherTimes(jsonCellTables) {
+            event.preventDefault();
+            var teacherId = teacherSelected;
+            var jsonRequest = '{"planId" : ' + [[${planId}]] + ', "times" : ' + jsonCellTables + '}';
 
             $.ajax({
                 type: "POST",
@@ -314,16 +284,14 @@
                 data: jsonRequest,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
-            }).done (function (response) {
-                alert("برنامه زمانی استاد با موفیت ذخیره شد.");
-                $('.myFormCreate #myModalCreate').modal('hide');
-                location.reload();
+            }).done(function (response) {
+                $('.priorityModal #priorityModal').modal('hide');
             })
-            .fail(function(response) {
-                alert(JSON.parse(response.responseText).message);
-                $('.myFormCreate #myModalCreate').modal('hide');
-                location.reload();
-            })
+                .fail(function (response) {
+                    alert(JSON.parse(response.responseText).message);
+                    $('.priorityModal #priorityModal').modal('hide');
+                    location.reload();
+                })
         }
     </script>
 
@@ -351,59 +319,62 @@
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
-                    <div class="col-sm-12" style="padding: 0;">
-                        <button class="btn btn-primary nBtn">
-                            <i class="fa fa-user-times" aria-hidden="true"></i>
-                            <span style="margin: 5px;">ویرایش زمان استاد</span>
-                        </button>
-                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-2">
-                        <p style="font-size: 11px; font-weight: bold; margin: 5px 0;">انتخاب استاد:</p>
-                        <select style="width: 100%; font-size: 11px; margin-bottom: 20px;" id="allteachertime">
-                            <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
-                                    th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-sm-10" style="overflow-x:auto;overflow-y: auto;">
-                        <table id="default-plan" class="table" style="direction: ltr;text-align: center">
-                        </table>
-                    </div>
+                    <form>
+                        <div class="col-md-12">
+                            <p>زمان های انتخابی با اولویت های <span style="color: green; font-weight: bold;"> بالا</span> ,
+                                <span style="color: yellow; font-weight: bold;"> کم </span>و یا
+                                <span style="color: red; font-weight: bold;">عدم حضور</span> تعیین می شوند.
+                            </p>
+                        </div>
+                        <div class="col-sm-2 col-md-6">
+                            <div class="form-group teacherselect" style="display: block ruby">
+                                <label for="allteachertime" class="col-form-label">استاد</label>
+                                <select style="width: 100%; font-size: 11px; margin-bottom: 20px;" id="allteachertime">
+                                    <option value=""></option>
+                                    <option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+                                            th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-10 col-md-12" style="overflow-x:auto;overflow-y: auto;">
+                            <table id="default-plan" class="table" style="direction: ltr;text-align: center;">
+                            </table>
+                        </div>
+                    </form>
                 </div>
 
 
             </div>
 
-            <!--#Modal for plan create-->
-            <div class="myFormCreate">
-                <form onSubmit="JavaScript:handleClick()">
-                    <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
+            <div class="priorityModal">
+                <form onSubmit="JavaScript:setPriority()">
+                    <div class="modal fade" id="priorityModal" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
-                        <div class="modal-dialog" role="document"
-                             style="width: 75%; margin-right: auto; margin-left: auto;">
-                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
+                        <div class="modal-dialog " role="document"
+                             style="width: 75%; margin-right: 30%; margin-left: auto;">
+                            <div class="modal-content col-md-6" style="border-radius: 5px; overflow: hidden; padding: 0;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش زمان
-                                        استاد</h5>
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">اولویت زمان انتخاب شده را تعیین کنید.</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                                             style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body" style="padding: 25px 10px;">
+                                <div class="modal-body" style="padding: 15px 19px;">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div style="width: 93%; margin: 0 auto 20px auto;">
-                                                <p>زمان های حضور خود را روی جدول و گزینه ذخیره را انتخاب
-                                                    نمایید.</p>
-                                            </div>
-                                            <div style="overflow-x:auto;">
-                                                <table id="plan-table"
-                                                       style="width: 93%; direction: ltr;text-align: center; margin: 0 auto 25px auto; ">
-                                                </table>
-                                            </div>
+                                            <p style="display: none;">زمان انتخاب شده : <span id="selectedTime"></span></p>
+                                            <input type="radio" id="priority1" name="priority" required value="1">
+                                            <label for="priority1">اولویت بالا</label><br>
+                                            <input type="radio" id="priority2" name="priority" required value="2">
+                                            <label for="priority2">اولویت کم</label><br>
+                                            <input type="radio" id="priority3" name="priority" required value="3">
+                                            <label for="priority3">عدم حضور</label><br>
+                                            <input type="radio" id="priority4" name="priority" required value="4">
+                                            <label for="priority4">حذف این ساعت از برنامه</label>
                                         </div>
                                     </div>
                                     <!--                                    <div id="showSelectedTimes"></div>-->
@@ -411,7 +382,7 @@
                                         <button type="button" class="btn btn" data-dismiss="modal"
                                                 style="outline: none;">انصراف
                                         </button>
-                                        <input type="submit" class="btn btn-primary" value="ذخیره"
+                                        <input type="submit" class="btn btn-primary" value="تایید"
                                                style="outline: none;"/>
                                     </div>
                                 </div>
@@ -420,7 +391,6 @@
                     </div>
                 </form>
             </div>
-            <!--End form-->
 
         </section>
         <!-- /.content -->

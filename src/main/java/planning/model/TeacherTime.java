@@ -33,4 +33,7 @@ public class TeacherTime {
 
     @Enumerated
     private Time time;
+
+    @Column
+    private int priority;
 }

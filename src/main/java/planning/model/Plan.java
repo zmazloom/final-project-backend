@@ -35,5 +35,5 @@ public class Plan {
     private TimeType timeType;
 
     @Column
-    private Integer nimsal; //1 or 2
+    private int nimsal; //1 or 2
 }

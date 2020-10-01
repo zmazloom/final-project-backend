@@ -43,18 +43,14 @@ public class PlanService {
         Plan plan = new Plan();
         plan.setName(planVO.getName());
         plan.setTimeType(planVO.getTimeType());
-
-        if (planVO.getNimsal() != 0)
-            plan.setNimsal(planVO.getNimsal());
+        plan.setNimsal(planVO.getNimsal());
 
         return planCRUD.saveAndFlush(plan);
     }
 
     public Plan updatePlan(Plan plan, String newName, int nimsal) {
         plan.setName(newName);
-
-        if (nimsal == 1 || nimsal == 2)
-            plan.setNimsal(nimsal);
+        plan.setNimsal(nimsal);
 
         planCRUD.saveAndFlush(plan);
         return plan;

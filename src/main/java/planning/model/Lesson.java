@@ -32,7 +32,7 @@ public class Lesson {
     private String name;
 
     @Column
-    private String code;
+    private Integer code;
 
     @Column
     private Unit unit;

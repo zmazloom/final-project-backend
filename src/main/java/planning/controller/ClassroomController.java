@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import planning.exception.ResourceConflictException;
 import planning.exception.ResourceNotFoundException;
 import planning.message.ClassroomMessage;
 import planning.model.Classroom;
@@ -28,9 +27,6 @@ public class ClassroomController {
 
     @PostMapping(value = "")
     public ResponseEntity<Result<ClassroomVO>> addClassroom(@RequestBody @NotNull @Validated ClassroomVO classroomVO) {
-        if (classroomCRUD.getClassroomByName(classroomVO.getName()) != null)
-            throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
-
         Classroom classroom = classroomService.addClassroom(classroomVO);
 
         return ResponseEntity.ok(ResFact.<ClassroomVO>build()
@@ -78,9 +74,6 @@ public class ClassroomController {
 
         if (classroom == null)
             throw ResourceNotFoundException.getInstance(ClassroomMessage.getClassNotFound(classId.toString()));
-
-        if (classroomCRUD.checkDuplicateClassName(classId, classroomVO.getName()) != null)
-            throw ResourceConflictException.getInstance(ClassroomMessage.getDuplicateClassroom(classroomVO.getName()));
 
         Classroom changedClassroom = classroomService.updateClassroom(classroom, classroomVO);
 

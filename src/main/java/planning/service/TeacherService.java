@@ -104,7 +104,7 @@ public class TeacherService {
 
             teacher.setAvatar(saveAvatarFile(avatar));
         }
-        if (teacherAddVO.getPassword() != null)
+        if (teacherAddVO.getPassword() != null && !teacherAddVO.getPassword().equals(""))
             teacher.setPassword(teacherAddVO.getPassword());
         if (teacherAddVO.getFirstName() != null)
             teacher.setFirstName(teacherAddVO.getFirstName());

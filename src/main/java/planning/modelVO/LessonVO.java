@@ -26,8 +26,7 @@ public class LessonVO {
     private String name;
 
     @NotNull
-    @NotEmpty
-    private String code;
+    private Integer code;
 
     @NotNull
     private Unit unit;

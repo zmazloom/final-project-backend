@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface LessonGroupCRUD extends JpaRepository<LessonGroup, Long> {
 
-    @Query("from LessonGroup lg where lg.plan = :plan")
+    @Query("from LessonGroup lg where lg.plan = :plan and lg.removed = false order by lg.id")
     List<LessonGroup> getAllLessonGroups(Plan plan);
 
     @Query("from LessonGroup lg where lg.id = :groupId and lg.removed = false")

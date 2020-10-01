@@ -12,6 +12,7 @@ import planning.model.*;
 import planning.modelVO.TeacherAddVO;
 import planning.modelVO.TeacherTimeVO;
 import planning.modelVO.TeacherVO;
+import planning.modelVO.TimePriorityVO;
 import planning.repository.PlanCRUD;
 import planning.repository.TeacherCRUD;
 import planning.repository.TeacherTimeCRUD;
@@ -157,12 +158,13 @@ public class TeacherController {
                 TeacherTimeVO teacherTimeVO = teacherService.getTeacherTimeVO(plan, teacherTimeCRUD.getTeacherTimes(plan, teacher));
 
                 if(teacherTimeVO != null) {
-                    for(Time time : teacherTimeVO.getTimes()) {
+                    for(TimePriorityVO time : teacherTimeVO.getTimes()) {
                         AllTeacherTimeGet allTeacherTimeGet = new AllTeacherTimeGet();
                         allTeacherTimeGet.setFirstName(teacher.getFirstName());
                         allTeacherTimeGet.setLastName(teacher.getLastName());
                         allTeacherTimeGet.setTeacherId(teacher.getId());
-                        allTeacherTimeGet.setTime(time);
+                        allTeacherTimeGet.setTime(time.getTime());
+                        allTeacherTimeGet.setPriority(time.getPriority());
                         allTeacherTimeGets.add(allTeacherTimeGet);
                     }
                 }

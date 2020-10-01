@@ -12,6 +12,7 @@ import planning.model.*;
 import planning.modelVO.TeacherAddVO;
 import planning.modelVO.TeacherTimeVO;
 import planning.modelVO.TeacherVO;
+import planning.modelVO.TimePriorityVO;
 import planning.repository.TeacherCRUD;
 import planning.repository.TeacherTimeCRUD;
 import planning.utils.PasswordUtils;
@@ -53,10 +54,13 @@ public class TeacherService {
         if (teacherTimes == null)
             return null;
 
-        List<Time> times = new ArrayList<>();
+        List<TimePriorityVO> times = new ArrayList<>();
 
         for(TeacherTime teacherTime : teacherTimes) {
-            times.add(teacherTime.getTime());
+            TimePriorityVO timePriorityVO = new TimePriorityVO();
+            timePriorityVO.setTime(teacherTime.getTime());
+            timePriorityVO.setPriority(teacherTime.getPriority());
+            times.add(timePriorityVO);
         }
 
         TeacherTimeVO teacherTimeVO = new TeacherTimeVO();
@@ -162,8 +166,8 @@ public class TeacherService {
             throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("lastName"));
     }
 
-    public void addTeacherTimes(Teacher teacher, Plan plan, List<Time> times) {
-        validateTeacherTimes(plan.getTimeType(), times);
+    public void addTeacherTimes(Teacher teacher, Plan plan, List<TimePriorityVO> times) {
+//        validateTeacherTimes(plan.getTimeType(), times);
 
         List<TeacherTime> teacherTimes = teacherTimeCRUD.getTeacherTimes(plan, teacher);
 
@@ -171,8 +175,8 @@ public class TeacherService {
             if (teacherTimes != null) {
                 for (int i = 0; i < teacherTimes.size(); i++) {
                     boolean fined = false;
-                    for (Time time : times) {
-                        if (teacherTimes.get(i).getTime().equals(time)) {
+                    for (TimePriorityVO time : times) {
+                        if (teacherTimes.get(i).getTime().equals(time.getTime()) && teacherTimes.get(i).getPriority() == time.getPriority()) {
                             times.remove(time);
                             fined = true;
                             break;
@@ -187,11 +191,12 @@ public class TeacherService {
                 }
             }
 
-            for (Time time : times) {
+            for (TimePriorityVO time : times) {
                 TeacherTime teacherTime = new TeacherTime();
                 teacherTime.setPlan(plan);
                 teacherTime.setTeacher(teacher);
-                teacherTime.setTime(time);
+                teacherTime.setTime(time.getTime());
+                teacherTime.setPriority(time.getPriority());
 
                 teacherTimeCRUD.saveAndFlush(teacherTime);
             }

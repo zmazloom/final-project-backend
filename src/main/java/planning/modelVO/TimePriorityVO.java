@@ -4,19 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import planning.model.Time;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeacherTimeVO {
+public class TimePriorityVO {
 
-    @NotNull
-    private Long planId;
-
-    @NotNull
-    private List<TimePriorityVO> times;
+    private Time time;
+    private int priority;   //1: bala, 2:motevaset, 3:payin
 
 }

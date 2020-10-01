@@ -8,6 +8,8 @@ public class TeacherMessage {
 
     private static final String FA_DUPLICATE_TEACHER = "استاد با نام کاربری " + "{USERNAME}" + " تکراری است!";
 
+    private static final String FA_TEACHER_PASSWORD = "گذرواژه استاد: " + "{PASSWORD}";
+
     private static final String FA_ERROR_SAVE_AVATAR = "خطای داخلی در ذخیره تصویر!";
 
     private static final String FA_INVALID_USERNAME = "پارامتر username باید بزگتر از 3 کاراکتر باشد.";
@@ -32,6 +34,10 @@ public class TeacherMessage {
 
     public static String getDuplicateTeacher(String username) {
         return FA_DUPLICATE_TEACHER.replace("{USERNAME}", username);
+    }
+
+    public static String getTeacherPassword(String password) {
+        return FA_TEACHER_PASSWORD.replace("{PASSWORD}", password);
     }
 
     public static String getErrorSaveAvatar() {

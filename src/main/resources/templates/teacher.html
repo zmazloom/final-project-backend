@@ -61,22 +61,21 @@
                 if (text == 'edit') {
                     $.get(href, function (teacher, status) {
                         if(teacher != null) {
-                            $('.myFormUpdate #id').val(teacher.id);
+                            $('.myFormUpdate #teacherId').val(teacher.id);
                             $('.myFormUpdate #firstName').val(teacher.firstName);
                             $('.myFormUpdate #lastName').val(teacher.lastName);
                             $('.myFormUpdate #prefix').val(teacher.prefix);
                             $('.myFormUpdate #username').val(teacher.username);
-                            $('.myFormUpdate #password').val(teacher.password);
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
                 } else {
                     //for creating teacher
-                    $('.myFormCreate #firstName').val('');
-                    $('.myFormCreate #lastName').val('');
-                    $('.myFormCreate #prefix').val('DOCTOR');
-                    $('.myFormCreate #username').val('');
-                    $('.myFormCreate #password').val('');
+                    $('.myFormCreate #createfirstName').val('');
+                    $('.myFormCreate #createlastName').val('');
+                    $('.myFormCreate #createprefix').val('DOCTOR');
+                    $('.myFormCreate #createusername').val('');
+                    $('.myFormCreate #createpassword').val('');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -88,6 +87,60 @@
                 $('#removeModalCenter').modal();
             });
         });
+    </script>
+
+    <script type="text/javascript" th:inline="javascript">
+        function handleClickAddTeacher() {
+            event.preventDefault();
+            var password = document.getElementById("createpassword").value;
+
+            var jsonCellTable = '{"firstName": "' + document.getElementById("createfirstName").value + '"' +
+                ', "lastName": "' + document.getElementById("createlastName").value + '"' +
+                ', "prefix": "' + $('#createprefix').val() + '"' +
+                ',"username": "' + document.getElementById("createusername").value + '"' +
+                ',"password": "' + password + '"}';
+
+            $.ajax({
+                type: "POST",
+                url: '/api/teacher',
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                if(password === "") {
+                    alert(response.message);
+                }
+                $('.myFormCreate #myModalCreate').modal('hide');
+                location.reload();
+            })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
+        }
+        function handleClickUpdateTeacher() {
+            event.preventDefault();
+
+            var teacherId = $('#teacherId').val();
+
+            var jsonCellTable = '{"firstName": "' + document.getElementById("firstName").value + '"' +
+                ', "lastName": "' + document.getElementById("lastName").value + '"' +
+                ', "prefix": "' + $('#prefix').val() + '"' +
+                ',"username": "' + document.getElementById("username").value + '"}';
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/teacher/' + teacherId,
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                $('.myFormUpdate #updateModal').modal('hide');
+                location.reload();
+            })
+                .fail(function(response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
+        }
     </script>
 
 </head>
@@ -132,7 +185,6 @@
                         <th>نام</th>
                         <th>نام خانوادگی</th>
                         <th>نام کاربری</th>
-                        <th>پسورد</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -151,7 +203,6 @@
                         <td th:text="${teacher.firstName}"></td>
                         <td th:text="${teacher.lastName}"></td>
                         <td th:text="${teacher.username}"></td>
-                        <td th:text="${teacher.password}"></td>
                         <td>
                             <a th:href="@{/teacher/delete/(id=${teacher.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف استاد"></i></a>
                         </td>
@@ -166,7 +217,7 @@
 
             <!--#Modal form for teacher update-->
             <div class="myFormUpdate">
-                <form th:action="@{/teacher/update}" method="post">
+                <form onSubmit="JavaScript:handleClickUpdateTeacher()">
                     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
@@ -177,6 +228,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
+                                    <input type="number" name="teacherId" id="teacherId" value="" style="display: none"/>
                                     <div class="form-group">
                                         <input type="hidden" class="form-control" id="id" name="id" value=""/>
                                     </div>
@@ -201,10 +253,6 @@
                                         <label for="username" class="col-form-label">نام کاربری</label><em style="color: red;"> *</em>
                                         <input type="text" class="form-control" id="username" name="username" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام کاربری استاد را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
-                                    <div class="form-group">
-                                        <label for="password" class="col-form-label">پسورد</label>
-                                        <input type="text" class="form-control" id="password" name="password" value="" style="border-radius: 2px;" />
-                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
@@ -219,21 +267,21 @@
 
             <!--#Modal for teacher create-->
             <div class="myFormCreate">
-                <form th:action="@{/teacher/add}" method="post">
+                <form onSubmit="JavaScript:handleClickAddTeacher()">
                     <div class="modal fade" id="myModalCreate" tabindex="-1" role="dialog"
                          aria-labelledby="modalLabelCreate" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
                                 <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">استاد جدید</h5>
+                                    <h5 class="modal-title" id="createModalLabel" style="display: inline;">استاد جدید</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="prefix" class="col-form-label">سطح</label>
-                                        <select name="prefix" id="prefix">
+                                        <label for="createprefix" class="col-form-label">سطح</label>
+                                        <select name="createprefix" id="createprefix">
                                             <option value="DOCTOR">دکتر</option>
                                             <option value="OSTAD_TAMAM">استاد تمام</option>
                                             <option value="OSTAD">استاد</option>
@@ -241,20 +289,20 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="firstName" class="col-form-label">نام</label><em style="color: red;"> *</em>
-                                        <input type="text" class="form-control" id="firstName" name="firstName" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام استاد را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        <label for="createfirstName" class="col-form-label">نام</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="createfirstName" name="createfirstName" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام استاد را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="form-group">
                                         <label for="lastName" class="col-form-label">نام خانوادگی</label><em style="color: red;"> *</em>
-                                        <input type="text" class="form-control" id="lastName" name="lastName" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام خانوادگی استاد را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        <input type="text" class="form-control" id="createlastName" name="createlastName" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام خانوادگی استاد را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="username" class="col-form-label">نام کاربری</label><em style="color: red;"> *</em>
-                                        <input type="text" class="form-control" id="username" name="username" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام کاربری استاد را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        <label for="createusername" class="col-form-label">نام کاربری</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="createusername" name="createusername" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام کاربری استاد را وارد کنید.')" oninput="setCustomValidity('')" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="password" class="col-form-label">پسورد</label>
-                                        <input type="text" class="form-control" id="password" name="password" value="" style="border-radius: 2px;" />
+                                        <label for="createpassword" class="col-form-label">پسورد</label>
+                                        <input type="text" class="form-control" id="createpassword" name="createpassword" value="" style="border-radius: 2px;" />
                                     </div>
                                     <div class="modal-footer" style="padding: 15px 0;">
                                         <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>

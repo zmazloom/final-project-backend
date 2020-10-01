@@ -254,42 +254,6 @@ public class PanelController {
         return "teacher";
     }
 
-    @PostMapping("/teacher/add")
-    public String addTeacher(Model model, HttpServletRequest request, TeacherVO teacherVO) {
-        try {
-            ResponseEntity<Result<TeacherVO>> teacher = teacherController.addTeacher(teacherVO.toString(), null);
-
-            if (teacher.getBody() != null && teacher.getBody().getResult() != null)
-                return "redirect:/teacher";
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "redirect:/teacher";
-        }
-
-        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "teacher::#teacher-list";
-
-        return "redirect:/teacher";
-    }
-
-    @PostMapping("/teacher/update")
-    public String editTeacher(Model model, HttpServletRequest request, TeacherVO teacherVO) {
-        try {
-            ResponseEntity<Result<TeacherVO>> changedTeacher = teacherController.updateTeacher(teacherVO.getId(), teacherVO.toString(), null);
-
-            if (changedTeacher.getBody() != null && changedTeacher.getBody().getResult() != null)
-                return "redirect:/teacher";
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "redirect:/teacher";
-        }
-
-        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "teacher::#teacher-list";
-
-        return "redirect:/teacher";
-    }
-
     @GetMapping("/teacher/one")
     @ResponseBody
     public Optional<TeacherVO> findOneTeacher(Model model, long id) {

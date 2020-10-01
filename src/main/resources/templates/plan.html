@@ -67,6 +67,7 @@
                             $('.myFormUpdate #id').val(plan.id);
                             $('.myFormUpdate #name').val(plan.name);
                             $('.myFormUpdate #timeType').val(plan.timeType);
+                            $('.myFormUpdate #nimsal').val(plan.nimsal);
                             $('.myFormUpdate #updateModal').modal();
                         }
                     });
@@ -77,6 +78,7 @@
                             $('.myFormCopy #id').val(plan.id);
                             $('.myFormCopy #name').val('');
                             $('.myFormCopy #timeType').val(plan.timeType);
+                            // $('.myFormCopy #nimsal').val(plan.timeType);
                             $('.myFormCopy #copyModal').modal();
                         }
                     });
@@ -85,6 +87,7 @@
                     //for creating plan
                     $('.myFormCreate #name').val('');
                     $('.myFormCreate #timeType').val('TWO_HOURS');
+                    $('.myFormCreate #nimsal').val('0');
                     $('.myFormCreate #myModalCreate').modal();
                 }
             });
@@ -137,6 +140,7 @@
                         <th>شناسه</th>
                         <th>نام</th>
                         <th>زمانبندی</th>
+                        <th>نیمسال</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -151,6 +155,13 @@
                             <div th:switch="${plan.timeType}">
                                 <span th:case="${T(planning.model.TimeType).TWO_HOURS}">2 ساعت</span>
                                 <span th:case="${T(planning.model.TimeType).ONE_THIRTY_HOURS}">1 ساعت و 30 دقیقه</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div th:switch="${plan.nimsal}">
+                                <span th:case="0">-</span>
+                                <span th:case="1">نیمسال 1</span>
+                                <span th:case="2">نیمسال 2</span>
                             </div>
                         </td>
                         <td>
@@ -201,6 +212,16 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="nimsal" class="col-form-label">نیمسال</label>
+                                                <select name="nimsal" id="nimsal">
+                                                    <option value="0">هیچکدام</option>
+                                                    <option value="1">نیمسال اول</option>
+                                                    <option value="2">نیمسال دوم</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -239,6 +260,16 @@
                                                 <select name="timeType" id="timeType">
                                                     <option value="TWO_HOURS">2 ساعت</option>
                                                     <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="nimsal" class="col-form-label">نیمسال</label>
+                                                <select name="nimsal" id="nimsal">
+                                                    <option value="0">هیچکدام</option>
+                                                    <option value="1">نیمسال اول</option>
+                                                    <option value="2">نیمسال دوم</option>
                                                 </select>
                                             </div>
                                         </div>

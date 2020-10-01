@@ -175,42 +175,6 @@ public class PanelController {
         return "lesson";
     }
 
-    @PostMapping("/lesson/add")
-    public String addLesson(Model model, HttpServletRequest request, LessonVO lessonVO) {
-        try {
-            ResponseEntity<Result<LessonVO>> lesson = lessonController.addLesson(lessonVO);
-
-            if (lesson.getBody() != null && lesson.getBody().getResult() != null)
-                return "redirect:/lesson";
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "redirect:/lesson";
-        }
-
-        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "lesson::#lesson-list";
-
-        return "redirect:/lesson";
-    }
-
-    @PostMapping("/lesson/update")
-    public String editLesson(Model model, HttpServletRequest request, LessonVO lessonVO) {
-        try {
-            ResponseEntity<Result<LessonVO>> changedLesson = lessonController.updateLesson(lessonVO.getId(), lessonVO);
-
-            if (changedLesson.getBody() != null && changedLesson.getBody().getResult() != null)
-                return "redirect:/lesson";
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "redirect:/lesson";
-        }
-
-        if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
-            return "lesson::#lesson-list";
-
-        return "redirect:/lesson";
-    }
-
     @GetMapping("/lesson/one")
     @ResponseBody
     public Optional<LessonVO> findOneLesson(Model model, long id) {

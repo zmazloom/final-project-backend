@@ -28,9 +28,6 @@ public class PlanController {
 
     @PostMapping(value = "")
     public ResponseEntity<Result<PlanVO>> addPlan(@RequestBody @Validated @NotNull PlanVO planVO) {
-        if (planCRUD.getPlanByName(planVO.getName()) != null)
-            throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(planVO.getName()));
-
         Plan plan = planService.addPlan(planVO);
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()

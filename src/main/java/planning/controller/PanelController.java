@@ -740,4 +740,16 @@ public class PanelController {
         return "profile";
     }
     /******************** end *********************/
+
+    /******************* logout ********************/
+    @GetMapping("/exit")
+    public String logout(HttpServletRequest request) {
+        Teacher user = teacherService.getTeacherByRequest(request);
+
+        if (user != null)
+            loginService.deleteAllTeacherTokens(user);
+
+        return "redirect:/login";
+    }
+    /******************** end *********************/
 }

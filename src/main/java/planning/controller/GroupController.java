@@ -4,14 +4,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import planning.exception.AccessDeniedException;
 import planning.exception.ResourceNotFoundException;
+import planning.message.CommonMessage;
 import planning.message.PlanMessage;
 import planning.model.*;
 import planning.modelVO.LessonGroupVO;
 import planning.repository.LessonGroupCRUD;
 import planning.repository.PlanCRUD;
 import planning.service.GroupService;
+import planning.service.LoginService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -24,10 +28,15 @@ public class GroupController {
     private final LessonGroupCRUD lessonGroupCRUD;
     private final PlanCRUD planCRUD;
     private final GroupService groupService;
+    private final LoginService loginService;
 
     @PostMapping(value = "/plan/{planId}")
-    public ResponseEntity<Result<LessonGroupVO>> savePlanGroup(@PathVariable("planId") @NotNull Long planId,
+    public ResponseEntity<Result<LessonGroupVO>> savePlanGroup(HttpServletRequest request,
+                                                               @PathVariable("planId") @NotNull Long planId,
                                                                @RequestBody @Validated @NotNull LessonGroupVO lessonGroupVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            throw AccessDeniedException.getInstance(CommonMessage.getRequestDenied());
+
         Plan plan = planCRUD.getPlanById(planId);
 
         if (plan == null)
@@ -39,8 +48,12 @@ public class GroupController {
     }
 
     @PutMapping(value = "/{groupId}")
-    public ResponseEntity<Result<LessonGroupVO>> updatePlanGroup(@PathVariable("groupId") @NotNull Long groupId,
+    public ResponseEntity<Result<LessonGroupVO>> updatePlanGroup(HttpServletRequest request,
+                                                                 @PathVariable("groupId") @NotNull Long groupId,
                                                                  @RequestBody @Validated @NotNull LessonGroupVO lessonGroupVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            throw AccessDeniedException.getInstance(CommonMessage.getRequestDenied());
+
         LessonGroup lessonGroup = lessonGroupCRUD.getLessonGroupById(groupId);
 
         if (lessonGroup == null)

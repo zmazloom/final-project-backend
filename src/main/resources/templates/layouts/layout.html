@@ -59,26 +59,16 @@
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="/dist/img/dr_baygi.png" class="user-image" alt="user">
-                            <span class="hidden-xs">مصطفی نوری بایگی</span>
+                            <span class="hidden-xs" th:text="' ' + ${user.firstName} + ' ' + ${user.lastName}"></span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <!-- User image -->
-                            <li class="user-header">
-                                <img src="/dist/img/dr_baygi.png" class="img-circle" alt="user">
-
-                                <p>
-                                    مصطفی نوری بایگی
-                                    <small>معاون گروه</small>
-                                </p>
-                            </li>
+                        <ul class="dropdown-menu" style="width: 50px;">
                             <!-- Menu Footer-->
                             <li class="user-footer">
-                                <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">پروفایل</a>
+                                <div class="profilediv" style="text-align: center; border-bottom: 1px dashed; padding-bottom: 9px">
+                                    <a th:href="@{/profile}" class="profilebtn">پروفایل</a>
                                 </div>
-                                <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">خروج</a>
+                                <div class="profilediv" style="text-align: center; padding-top: 9px;">
+                                    <a th:href="@{/exit}" class="profilebtn">خروج</a>
                                 </div>
                             </li>
                         </ul>
@@ -109,11 +99,12 @@
             <ul id="base-sidebar" class="sidebar-menu" data-widget="tree">
                 <li class="header">منوهای اصلی</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li><a th:href="@{/}"><i class="fa fa-dashboard"></i> <span>داشبورد</span></a></li>
-                <li><a th:href="@{/classroom}"><i class="fa fa-cube"></i> <span>کلاس</span></a></li>
-                <li><a th:href="@{/teacher}"><i class="fa fa-user-o"></i> <span>استاد</span></a></li>
-                <li><a th:href="@{/lesson}"><i class="fa fa-book"></i> <span>درس</span></a></li>
-                <li><a th:href="@{/plan}"><i class="fa fa-edit"></i> <span>برنامه</span></a></li>
+                <li class="adminlinks"><a th:href="@{/}"><i class="fa fa-dashboard"></i> <span>داشبورد</span></a></li>
+                <li class="adminlinks"><a th:href="@{/classroom}"><i class="fa fa-cube"></i> <span>کلاس</span></a></li>
+                <li class="adminlinks"><a th:href="@{/teacher}"><i class="fa fa-user-o"></i> <span>استاد</span></a></li>
+                <li class="adminlinks"><a th:href="@{/lesson}"><i class="fa fa-book"></i> <span>درس</span></a></li>
+                <li class="adminlinks"><a th:href="@{/plan}"><i class="fa fa-edit"></i> <span>برنامه</span></a></li>
+                <li class="userlinks"><a th:href="@{/teacher_page}"><i class="fa fa-user-times"></i> <span>زمان حضور</span></a></li>
             </ul>
             <!-- /.sidebar-menu -->
         </section>

@@ -12,7 +12,7 @@ public class TeacherMessage {
 
     private static final String FA_ERROR_SAVE_AVATAR = "خطای داخلی در ذخیره تصویر!";
 
-    private static final String FA_INVALID_USERNAME = "پارامتر username باید بزگتر از 3 کاراکتر باشد.";
+    private static final String FA_INVALID_USERNAME = "نام کاربری باید بزگتر از 3 کاراکتر باشد.";
 
     private static final String FA_INVALID_FORMAT_AVATAR = "فرمت تصویر باید JPG یا PNG باشد.";
 
@@ -22,6 +22,8 @@ public class TeacherMessage {
 
     private static final String FA_INVALID_TWO_TIME = "بازه زمان باید دو ساعت یک بار باشد.";
     private static final String FA_INVALID_ONE_THIRTY_TIME = "بازه زمان باید یک ساعت و نیم یک بار باشد.";
+
+    private static final String FA_WRONG_AUTH = "نام کاربری یا رمز عبور نادرست است!";
 
 
     public static String getTeacherNotFound(String teacherId) {
@@ -66,5 +68,9 @@ public class TeacherMessage {
 
     public static String getInvalidOneThirtyTime() {
         return FA_INVALID_ONE_THIRTY_TIME;
+    }
+
+    public static String getWrongAuth() {
+        return FA_WRONG_AUTH;
     }
 }

@@ -65,6 +65,7 @@
                             $('.myFormUpdate #firstName').val(teacher.firstName);
                             $('.myFormUpdate #lastName').val(teacher.lastName);
                             $('.myFormUpdate #prefix').val(teacher.prefix);
+                            $('.myFormUpdate #updaterole').val(teacher.role);
                             $('.myFormUpdate #username').val(teacher.username);
                             $('.myFormUpdate #updateModal').modal();
                         }
@@ -74,6 +75,7 @@
                     $('.myFormCreate #createfirstName').val('');
                     $('.myFormCreate #createlastName').val('');
                     $('.myFormCreate #createprefix').val('DOCTOR');
+                    $('.myFormCreate #createrole').val('ROLE_USER');
                     $('.myFormCreate #createusername').val('');
                     $('.myFormCreate #createpassword').val('');
                     $('.myFormCreate #myModalCreate').modal();
@@ -97,6 +99,7 @@
             var jsonCellTable = '{"firstName": "' + document.getElementById("createfirstName").value + '"' +
                 ', "lastName": "' + document.getElementById("createlastName").value + '"' +
                 ', "prefix": "' + $('#createprefix').val() + '"' +
+                ', "role": "' + $('#createrole').val() + '"' +
                 ',"username": "' + document.getElementById("createusername").value + '"' +
                 ',"password": "' + password + '"}';
 
@@ -125,6 +128,7 @@
             var jsonCellTable = '{"firstName": "' + document.getElementById("firstName").value + '"' +
                 ', "lastName": "' + document.getElementById("lastName").value + '"' +
                 ', "prefix": "' + $('#prefix').val() + '"' +
+                ', "role": "' + $('#updaterole').val() + '"' +
                 ',"username": "' + document.getElementById("username").value + '"}';
 
             $.ajax({
@@ -185,6 +189,7 @@
                         <th>نام</th>
                         <th>نام خانوادگی</th>
                         <th>نام کاربری</th>
+                        <th>نقش</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -203,6 +208,12 @@
                         <td th:text="${teacher.firstName}"></td>
                         <td th:text="${teacher.lastName}"></td>
                         <td th:text="${teacher.username}"></td>
+                        <td>
+                            <div th:switch="${teacher.role}">
+                                <span th:case="${T(planning.model.Role).ROLE_USER}">استاد</span>
+                                <span th:case="${T(planning.model.Role).ROLE_ADMIN}">معاون گروه</span>
+                            </div>
+                        </td>
                         <td>
                             <a th:href="@{/teacher/delete/(id=${teacher.id})}" class="btn btn-danger delBtn"><i class="fa fa-trash-o" title="حذف استاد"></i></a>
                         </td>
@@ -232,14 +243,23 @@
                                     <div class="form-group">
                                         <input type="hidden" class="form-control" id="id" name="id" value=""/>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="prefix" class="col-form-label">سطح</label>
-                                        <select name="prefix" id="prefix">
-                                            <option value="DOCTOR">دکتر</option>
-                                            <option value="OSTAD_TAMAM">استاد تمام</option>
-                                            <option value="OSTAD">استاد</option>
-                                            <option value="MOHANDES">مهندس</option>
-                                        </select>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="prefix" class="col-form-label">سطح</label>
+                                            <select name="prefix" id="prefix">
+                                                <option value="DOCTOR">دکتر</option>
+                                                <option value="OSTAD_TAMAM">استاد تمام</option>
+                                                <option value="OSTAD">استاد</option>
+                                                <option value="MOHANDES">مهندس</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="updaterole" class="col-form-label">نقش در سیستم</label>
+                                            <select name="updaterole" id="updaterole">
+                                                <option value="ROLE_USER">استاد</option>
+                                                <option value="ROLE_ADMIN">معاون گروه</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="firstName" class="col-form-label">نام</label><em style="color: red;"> *</em>
@@ -279,14 +299,23 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="createprefix" class="col-form-label">سطح</label>
-                                        <select name="createprefix" id="createprefix">
-                                            <option value="DOCTOR">دکتر</option>
-                                            <option value="OSTAD_TAMAM">استاد تمام</option>
-                                            <option value="OSTAD">استاد</option>
-                                            <option value="MOHANDES">مهندس</option>
-                                        </select>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="createprefix" class="col-form-label">سطح</label>
+                                            <select name="createprefix" id="createprefix">
+                                                <option value="DOCTOR">دکتر</option>
+                                                <option value="OSTAD_TAMAM">استاد تمام</option>
+                                                <option value="OSTAD">استاد</option>
+                                                <option value="MOHANDES">مهندس</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="createrole" class="col-form-label">نقش در سیستم</label>
+                                            <select name="createrole" id="createrole">
+                                                <option value="ROLE_USER">استاد</option>
+                                                <option value="ROLE_ADMIN">معاون گروه</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="createfirstName" class="col-form-label">نام</label><em style="color: red;"> *</em>

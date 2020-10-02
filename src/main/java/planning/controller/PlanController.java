@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import planning.exception.AccessDeniedException;
 import planning.exception.ResourceConflictException;
 import planning.exception.ResourceNotFoundException;
+import planning.message.CommonMessage;
 import planning.message.PlanMessage;
 import planning.model.*;
 import planning.modelVO.PlanDetailVO;
 import planning.modelVO.PlanVO;
 import planning.repository.PlanCRUD;
+import planning.service.LoginService;
 import planning.service.PlanService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -25,6 +29,7 @@ public class PlanController {
 
     private final PlanCRUD planCRUD;
     private final PlanService planService;
+    private final LoginService loginService;
 
     @PostMapping(value = "")
     public ResponseEntity<Result<PlanVO>> addPlan(@RequestBody @Validated @NotNull PlanVO planVO) {
@@ -94,8 +99,12 @@ public class PlanController {
     }
 
     @PostMapping(value = "/{planId}/planning")
-    public ResponseEntity<Result<PlanVO>> savePlanning(@PathVariable("planId") @NotNull Long planId,
+    public ResponseEntity<Result<PlanVO>> savePlanning(HttpServletRequest request,
+                                                       @PathVariable("planId") @NotNull Long planId,
                                                        @RequestBody @Validated @NotNull List<PlanDetailVO> planDetailVOList) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            throw AccessDeniedException.getInstance(CommonMessage.getRequestDenied());
+
         Plan plan = planCRUD.getPlanById(planId);
 
         if (plan == null)

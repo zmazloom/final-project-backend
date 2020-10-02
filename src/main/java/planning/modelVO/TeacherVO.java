@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import planning.model.Role;
 import planning.model.TeacherPrefix;
 
 import java.util.Date;
@@ -23,6 +24,7 @@ public class TeacherVO {
     private String username;
     private String password;
     private String avatar;
+    private Role role;
 
     @Override
     public String toString() {
@@ -33,6 +35,7 @@ public class TeacherVO {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", prefix='" + prefix + '\'' +
+                ", role='" + role + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +

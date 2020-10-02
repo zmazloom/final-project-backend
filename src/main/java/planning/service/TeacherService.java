@@ -15,17 +15,16 @@ import planning.modelVO.TeacherVO;
 import planning.modelVO.TimePriorityVO;
 import planning.repository.TeacherCRUD;
 import planning.repository.TeacherTimeCRUD;
+import planning.repository.TokenCRUD;
 import planning.utils.PasswordUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +32,8 @@ public class TeacherService {
 
     private final TeacherCRUD teacherCRUD;
     private final TeacherTimeCRUD teacherTimeCRUD;
+    private final LoginService loginService;
+    private final TokenCRUD tokenCRUD;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -56,7 +57,7 @@ public class TeacherService {
 
         List<TimePriorityVO> times = new ArrayList<>();
 
-        for(TeacherTime teacherTime : teacherTimes) {
+        for (TeacherTime teacherTime : teacherTimes) {
             TimePriorityVO timePriorityVO = new TimePriorityVO();
             timePriorityVO.setTime(teacherTime.getTime());
             timePriorityVO.setPriority(teacherTime.getPriority());
@@ -96,6 +97,11 @@ public class TeacherService {
         teacher.setUsername(teacherAddVO.getUsername());
         teacher.setPrefix(teacherAddVO.getPrefix());
 
+        if (teacherAddVO.getRole() != null)
+            teacher.setRole(teacherAddVO.getRole());
+        else
+            teacher.setRole(Role.ROLE_USER);
+
         return teacherCRUD.saveAndFlush(teacher);
     }
 
@@ -118,6 +124,10 @@ public class TeacherService {
             teacher.setUsername(teacherAddVO.getUsername());
         if (teacherAddVO.getPrefix() != null)
             teacher.setPrefix(teacherAddVO.getPrefix());
+        if (teacherAddVO.getRole() != null && !teacherAddVO.getRole().equals(teacher.getRole())) {
+            teacher.setRole(teacherAddVO.getRole());
+            loginService.deleteAllTeacherTokens(teacher);
+        }
 
         return teacherCRUD.saveAndFlush(teacher);
     }
@@ -204,22 +214,21 @@ public class TeacherService {
     }
 
     private void validateTeacherTimes(TimeType planTypeTime, List<Time> times) {
-        if(times != null && !times.isEmpty()) {
+        if (times != null && !times.isEmpty()) {
             if (planTypeTime.equals(TimeType.TWO_HOURS)) {
 
                 List<Time> twoHourTimes = getTwoHourTimes();
 
-                for(Time time : times) {
-                    if(!twoHourTimes.contains(time)) {
+                for (Time time : times) {
+                    if (!twoHourTimes.contains(time)) {
                         throw InvalidRequestException.getInstance(TeacherMessage.getInvalidTwoTime());
                     }
                 }
-            }
-            else {
+            } else {
                 List<Time> oneThirtyHourTimes = getOneThirtyHourTimes();
 
-                for(Time time : times) {
-                    if(!oneThirtyHourTimes.contains(time)) {
+                for (Time time : times) {
+                    if (!oneThirtyHourTimes.contains(time)) {
                         throw InvalidRequestException.getInstance(TeacherMessage.getInvalidOneThirtyTime());
                     }
                 }
@@ -321,6 +330,43 @@ public class TeacherService {
         oneThirtyHourList.add(Time.PANJSHANBE18O);
 
         return oneThirtyHourList;
+    }
+
+    public Teacher getTeacherByRequest(HttpServletRequest request) {
+        try {
+            if (request.getHeader("Cookie") != null) {
+                List<String> cookies = Arrays.asList(request.getHeader("Cookie").split(";"));
+                if (!cookies.isEmpty()) {
+                    for (String cookie : cookies) {
+                        if (cookie.contains("MazMazAuthorization")) {
+                            List<Token> tokens = tokenCRUD.getTokenByToken(cookie.substring(cookie.indexOf("=") + 1));
+
+                            if (tokens == null || tokens.isEmpty())
+                                return null;
+
+                            return tokens.get(tokens.size() - 1).getTeacher();
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+
+        return null;
+    }
+
+    public Teacher updateProfile(Teacher user, TeacherAddVO teacherAddVO) {
+        if (teacherAddVO.getFirstName() != null && !teacherAddVO.getFirstName().equals(""))
+            user.setFirstName(teacherAddVO.getFirstName());
+        if (teacherAddVO.getLastName() != null && !teacherAddVO.getLastName().equals(""))
+            user.setLastName(teacherAddVO.getLastName());
+        if (teacherAddVO.getUsername() != null && !teacherAddVO.getUsername().equals(""))
+            user.setUsername(teacherAddVO.getUsername());
+        if (teacherAddVO.getPassword() != null && !teacherAddVO.getPassword().equals(""))
+            user.setPassword(teacherAddVO.getPassword());
+
+        return teacherCRUD.saveAndFlush(user);
     }
 
 }

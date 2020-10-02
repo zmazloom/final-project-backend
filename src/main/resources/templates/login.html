@@ -72,7 +72,7 @@
         }
 
         form.form1 {
-            padding-top: 40px;
+            padding-top: 22px;
         }
 
         .pass {
@@ -111,6 +111,11 @@
             border-radius: 1.5em 1.5em 0 0;
         }
 
+        #warnmessage {
+            color: crimson;
+            margin: 13px 42px;
+        }
+
         @media (max-width: 600px) {
             .main {
                 top: 20px;
@@ -129,6 +134,31 @@
 
     </style>
 
+    <script type="text/javascript" th:inline="javascript">
+        function handleClickLogin() {
+            event.preventDefault();
+
+            var jsonCellTable = '{"username": "' + document.getElementById("usernamefield").value + '"' +
+                ',"password": "' + document.getElementById("passwordfield").value + '"}';
+
+            $.ajax({
+                type: "POST",
+                url: '/api/auth/login',
+                data: jsonCellTable,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done (function (response) {
+                $("#warnmessage").text("");
+                var token = response.result.token;
+                var address = response.result.address;
+                document.cookie = "MazMazAuthorization=" + token;
+                window.location.replace(address);
+            })
+                .fail(function(response) {
+                    $("#warnmessage").text(JSON.parse(response.responseText).message);
+                })
+        }
+    </script>
 </head>
 
 <body>
@@ -137,14 +167,15 @@
     <div id="logindiv">
         <p class="sign" style="text-align: center;">ورود به برنامه</p>
     </div>
-    <form class="form1" autocomplete="on">
+    <p style="" id="warnmessage"></p>
+    <form class="form1" autocomplete="on" onSubmit="JavaScript:handleClickLogin()">
         <div class="loginItem">
-            <input class="un" type="text" placeholder="نام کاربری" required="" oninvalid="this.setCustomValidity('نام کاربری را وارد کنید.')" oninput="setCustomValidity('')">
+            <input class="un" id="usernamefield" type="text" placeholder="نام کاربری" required="" oninvalid="this.setCustomValidity('نام کاربری را وارد کنید.')" oninput="setCustomValidity('')">
         </div>
         <div class="loginItem">
-            <input class="pass" type="password" placeholder="گذر واژه" required="" oninvalid="this.setCustomValidity('گذرواژه را وارد کنید.')" oninput="setCustomValidity('')">
+            <input class="pass" id="passwordfield" type="password" placeholder="گذر واژه" required="" oninvalid="this.setCustomValidity('گذرواژه را وارد کنید.')" oninput="setCustomValidity('')">
         </div>
-        <div class="loginItem" style="margin-top: 18px;">
+        <div class="loginItem">
             <input class="submit" type="submit" value="ورود" style="text-align: center; width: 100%; font-weight: bold;">
         </div>
     </form>

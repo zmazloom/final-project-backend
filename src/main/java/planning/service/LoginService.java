@@ -40,10 +40,15 @@ public class LoginService {
                             if (tokens == null || tokens.isEmpty())
                                 return false;
 
-                            if (!tokens.get(tokens.size() - 1).getTeacher().getRole().equals(requiredRole) && requiredRole.equals(Role.ROLE_ADMIN))
+                            Teacher teacher = tokens.get(tokens.size() - 1).getTeacher();
+
+                            if (teacher == null)
                                 return false;
 
-                            return true;
+                            if (teacher.isRemoved())
+                                return false;
+
+                            return teacher.getRole().equals(requiredRole) || !requiredRole.equals(Role.ROLE_ADMIN);
                         }
                     }
                 }
@@ -55,4 +60,12 @@ public class LoginService {
         return false;
     }
 
+    public void deleteAllTeacherTokens(Teacher teacher) {
+        List<Token> tokens = tokenCRUD.getAllTeacherTokens(teacher);
+        if (tokens != null && !tokens.isEmpty()) {
+            for (Token token : tokens) {
+                tokenCRUD.delete(token);
+            }
+        }
+    }
 }

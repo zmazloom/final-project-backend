@@ -33,6 +33,7 @@ public class TeacherService {
 
     private final TeacherCRUD teacherCRUD;
     private final TeacherTimeCRUD teacherTimeCRUD;
+    private final LoginService loginService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -96,8 +97,10 @@ public class TeacherService {
         teacher.setUsername(teacherAddVO.getUsername());
         teacher.setPrefix(teacherAddVO.getPrefix());
 
-        if (teacherAddVO.getRole() == null)
+        if (teacherAddVO.getRole() != null)
             teacher.setRole(teacherAddVO.getRole());
+        else
+            teacher.setRole(Role.ROLE_USER);
 
         return teacherCRUD.saveAndFlush(teacher);
     }
@@ -121,8 +124,10 @@ public class TeacherService {
             teacher.setUsername(teacherAddVO.getUsername());
         if (teacherAddVO.getPrefix() != null)
             teacher.setPrefix(teacherAddVO.getPrefix());
-        if (teacherAddVO.getRole() != null)
+        if (teacherAddVO.getRole() != null && !teacherAddVO.getRole().equals(teacher.getRole())) {
             teacher.setRole(teacherAddVO.getRole());
+            loginService.deleteAllTeacherTokens(teacher);
+        }
 
         return teacherCRUD.saveAndFlush(teacher);
     }

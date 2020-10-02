@@ -99,11 +99,12 @@
             <ul id="base-sidebar" class="sidebar-menu" data-widget="tree">
                 <li class="header">منوهای اصلی</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li><a th:href="@{/}"><i class="fa fa-dashboard"></i> <span>داشبورد</span></a></li>
-                <li><a th:href="@{/classroom}"><i class="fa fa-cube"></i> <span>کلاس</span></a></li>
-                <li><a th:href="@{/teacher}"><i class="fa fa-user-o"></i> <span>استاد</span></a></li>
-                <li><a th:href="@{/lesson}"><i class="fa fa-book"></i> <span>درس</span></a></li>
-                <li><a th:href="@{/plan}"><i class="fa fa-edit"></i> <span>برنامه</span></a></li>
+                <li class="adminlinks"><a th:href="@{/}"><i class="fa fa-dashboard"></i> <span>داشبورد</span></a></li>
+                <li class="adminlinks"><a th:href="@{/classroom}"><i class="fa fa-cube"></i> <span>کلاس</span></a></li>
+                <li class="adminlinks"><a th:href="@{/teacher}"><i class="fa fa-user-o"></i> <span>استاد</span></a></li>
+                <li class="adminlinks"><a th:href="@{/lesson}"><i class="fa fa-book"></i> <span>درس</span></a></li>
+                <li class="adminlinks"><a th:href="@{/plan}"><i class="fa fa-edit"></i> <span>برنامه</span></a></li>
+                <li class="userlinks"><a th:href="@{/teacher_page}"><i class="fa fa-user-times"></i> <span>زمان حضور</span></a></li>
             </ul>
             <!-- /.sidebar-menu -->
         </section>

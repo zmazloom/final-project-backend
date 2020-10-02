@@ -14,8 +14,19 @@
         }
     </style>
 
-    <script>
+    <script type="text/javascript" th:inline="javascript">
         $(document).ready(function () {
+            var userRole = [[${role}]];
+            console.log(userRole);
+            if(userRole == "admin") {
+                $(".userlinks").css('display', 'none');
+                $(".adminlinks").css('display', 'block');
+            }
+            else {
+                $(".adminlinks").css('display', 'none');
+                $(".userlinks").css('display', 'block');
+            }
+
             $('#base-sidebar li:eq(1)').addClass('active');
         });
     </script>

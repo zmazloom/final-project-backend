@@ -727,7 +727,7 @@ public class PanelController {
     /******************** profile *********************/
     @GetMapping("/profile")
     public String getUserProfile(Model model, HttpServletRequest request) {
-        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+        if (!loginService.checkServiceAccess(request, Role.ROLE_USER))
             return "redirect:/login";
 
         Teacher user = teacherService.getTeacherByRequest(request);
@@ -736,6 +736,10 @@ public class PanelController {
             return "redirect:/login";
 
         model.addAttribute("user", user);
+
+        if(user.getRole().equals(Role.ROLE_ADMIN))
+            model.addAttribute("role", "admin");
+        else model.addAttribute("role", "user");
 
         return "profile";
     }
@@ -750,6 +754,44 @@ public class PanelController {
             loginService.deleteAllTeacherTokens(user);
 
         return "redirect:/login";
+    }
+    /******************** end *********************/
+
+    /******************** teacher pages *********************/
+    @GetMapping("/teacher_page")
+    public String getTeacherPage(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_USER))
+            return "redirect:/login";
+
+        try {
+            Teacher user = teacherService.getTeacherByRequest(request);
+            if (user != null) {
+                ResponseEntity<Result<List<PlanVO>>> plans = planController.getAllPlans();
+                ResponseEntity<Result<List<TeacherAllTimeGetVO>>> teacherTimeVOList = teacherController.getTeacherTimeForAllPlans(user.getId());
+
+                if (plans.getBody() != null && plans.getBody().getResult() != null)
+                    model.addAttribute("plans", plans.getBody().getResult());
+                else
+                    model.addAttribute("plans", new ArrayList<PlanVO>());
+
+                if (teacherTimeVOList.getBody() != null && teacherTimeVOList.getBody().getResult() != null)
+                    model.addAttribute("teachertimes", teacherTimeVOList.getBody().getResult());
+                else
+                    model.addAttribute("teachertimes", new ArrayList<TeacherAllTimeGetVO>());
+                if (user != null)
+                    model.addAttribute("user", user);
+                else
+                    model.addAttribute("user", new TeacherVO());
+            }
+
+        } catch (Exception ex) {
+            model.addAttribute("plans", new ArrayList<PlanVO>());
+            model.addAttribute("teachertimes", new ArrayList<TeacherAllTimeGetVO>());
+            model.addAttribute("user", new TeacherVO());
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "teacher_page";
     }
     /******************** end *********************/
 }

@@ -11,10 +11,7 @@ import planning.message.CommonMessage;
 import planning.message.PlanMessage;
 import planning.message.TeacherMessage;
 import planning.model.*;
-import planning.modelVO.TeacherAddVO;
-import planning.modelVO.TeacherTimeVO;
-import planning.modelVO.TeacherVO;
-import planning.modelVO.TimePriorityVO;
+import planning.modelVO.*;
 import planning.repository.PlanCRUD;
 import planning.repository.TeacherCRUD;
 import planning.repository.TeacherTimeCRUD;
@@ -119,7 +116,7 @@ public class TeacherController {
     public ResponseEntity<Result<Boolean>> addTeacherTimes(HttpServletRequest request,
                                                            @PathVariable("teacherId") @NotNull Long teacherId,
                                                            @RequestBody @NotNull @Validated TeacherTimeVO teacherTimeVO) {
-        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+        if (!loginService.checkServiceAccess(request, Role.ROLE_USER))
             throw AccessDeniedException.getInstance(CommonMessage.getRequestDenied());
 
         Teacher teacher = teacherCRUD.getTeacherById(teacherId);
@@ -189,6 +186,37 @@ public class TeacherController {
 
         return ResponseEntity.ok(ResFact.<List<AllTeacherTimeGet>>build()
                 .setResult(allTeacherTimeGets)
+                .get());
+    }
+
+    @GetMapping("/time/all/plan/{teacherId}")
+    public ResponseEntity<Result<List<TeacherAllTimeGetVO>>> getTeacherTimeForAllPlans(@PathVariable("teacherId") @NotNull Long teacherId) {
+        List<TeacherAllTimeGetVO> teacherAllTimeGetVOS = new ArrayList<>();
+
+        Teacher teacher = teacherCRUD.getTeacherById(teacherId);
+        if (teacher == null)
+            throw ResourceNotFoundException.getInstance(TeacherMessage.getTeacherNotFound(teacherId.toString()));
+
+        List<Plan> plans = planCRUD.getAllPlans();
+
+        if (plans != null && !plans.isEmpty()) {
+            for (Plan plan : plans) {
+                TeacherTimeVO teacherTimeVO = teacherService.getTeacherTimeVO(plan, teacherTimeCRUD.getTeacherTimes(plan, teacher));
+
+                if (teacherTimeVO != null) {
+                    for (TimePriorityVO time : teacherTimeVO.getTimes()) {
+                        TeacherAllTimeGetVO teacherAllTimeGetVO = new TeacherAllTimeGetVO();
+                        teacherAllTimeGetVO.setTime(time.getTime());
+                        teacherAllTimeGetVO.setPriority(time.getPriority());
+                        teacherAllTimeGetVO.setPlanId(plan.getId());
+                        teacherAllTimeGetVOS.add(teacherAllTimeGetVO);
+                    }
+                }
+            }
+        }
+
+        return ResponseEntity.ok(ResFact.<List<TeacherAllTimeGetVO>>build()
+                .setResult(teacherAllTimeGetVOS)
                 .get());
     }
 

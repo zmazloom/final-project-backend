@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <!--select2-->
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css}" rel="stylesheet" />
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js}"></script>
+
+    <style>
+        #datatable {
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #datatable th, #datatable td {
+            padding: 10px;
+        }
+
+        #datatable tr {
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin: 20px 0;
+        }
+
+        .form-style-1 {
+            max-width: 400px;
+            padding: 20px 12px 10px 20px;
+            font-size: 11px;
+        }
+
+        .form-style-1 li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 10px 0 0 0;
+        }
+
+        .form-style-1 label {
+            margin: 0 0 3px 0;
+            padding: 0px;
+            display: block;
+            font-weight: bold;
+        }
+
+        form-style-1 .field-divided {
+            width: 49%;
+        }
+
+        .form-style-1 .field-long {
+            width: 100%;
+        }
+
+        .form-style-1 .field-select {
+            width: 100%;
+        }
+
+        .form-style-1 .field-textarea {
+            height: 100px;
+        }
+
+
+        #plan-table, #default-plan {
+            border: solid thin;
+            font-size: 11px;
+        }
+
+        table {
+            border-collapse: unset !important;
+        }
+
+        #plan-table caption, #default-plan caption {
+            padding-bottom: 0.5em;
+        }
+
+        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+            border: solid thin;
+            padding: 0.5rem 0.5rem;
+        }
+
+        #plan-table td, #default-plan td {
+            white-space: nowrap;
+        }
+
+        #plan-table th, #default-plan th {
+            font-weight: normal;
+        }
+
+        #plan-table td, #default-plan td {
+            vertical-align: top;
+        }
+
+        #plan-table th, #default-plan th {
+            padding: 0.2em;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+            content: leader(". ");
+        }
+
+        #plan-table td {
+            height: 35px;
+            vertical-align: middle;
+        }
+
+        #plan-table {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        table tr:first-child > td {
+            position: sticky;
+            top: 0;
+        }
+
+        .select2-selection__rendered, .select2-results__option {
+            direction: rtl;
+            text-align: right;
+            font-size: 11px;
+        }
+
+        .adminlinks {
+            display: none;
+        }
+        .userlinks {
+            display: block;
+        }
+
+    </style>
+
+    <script type="text/javascript" th:inline="javascript">
+        var result = [[${teachertimes}]];
+        var plans = [[${plans}]];
+
+        var times = ["8T", "10T", "12T", "14T", "16T", "18T"];
+        var persianTimes = ["8 تا 10", "10 تا 12", "12 تا 14", "14 تا 16", "16 تا 18", "18 تا 20"];
+        var other_times = ["730O", "9O", "1030O", "12O", "1330O", "15O", "1630O", "18O"];
+        var other_persianTimes = ["7:30 تا 9", "9 تا 10:30", "10:30 تا 12", "12 تا 13:30", "13:30 تا 15", "15 تا 16:30", "16:30 تا 18", "18 تا 19:30"];
+        var days = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var persianDays = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه"];
+
+        var planSelected = 0;
+
+        var selectedTimes = [];
+        $(document).ready(function () {
+            $(".planselect select").select2({
+                dropdownParent: $(".planselect")
+            });
+            $('#base-sidebar li:eq(6)').addClass('active');
+
+            $("#allplans").on('change', function () {
+                planSelected = $('option:selected', this).val();
+                create_default_plan();
+            });
+        });
+
+
+        var rowId;
+        var cellIndex;
+
+        function highlight_cell(planType) {
+            var table = document.getElementById('default-plan');
+            var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length; i++) {
+                // Take each cell
+                var cell = cells[i];
+                // do something on onclick event for cell
+                cell.onclick = function () {
+                    if (planSelected != null && planSelected > 0) {
+                        // Get the row id where the cell exists
+                        rowId = this.parentNode.rowIndex;
+                        cellIndex = this.cellIndex;
+                        if(planType != null && planType === "ONE_THIRTY_HOURS") {
+                            if (rowId >= 1 && this.cellIndex < other_times.length && this.innerHTML === "") {
+                                var time = other_times[other_times.length - this.cellIndex - 1];
+                                var day = days[this.parentNode.rowIndex - 1];
+                                document.getElementById('selectedTime').innerText = day + ' ' + time;
+                                $('.priorityModal #priorityModal').modal();
+                            }
+                        }
+                        else {
+                            if (rowId >= 1 && this.cellIndex < times.length && this.innerHTML === "") {
+                                var time = times[times.length - this.cellIndex - 1];
+                                var day = days[this.parentNode.rowIndex - 1];
+                                document.getElementById('selectedTime').innerText = day + ' ' + time;
+                                $('.priorityModal #priorityModal').modal();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function create_default_plan() {
+            var planType;
+            if (plans != null && planSelected != null) {
+                for (var i = 0; i < plans.length; i++) {
+                    if(plans[i].id == planSelected) {
+                        planType = plans[i].timeType;
+                        break;
+                    }
+                }
+            }
+
+            var defaultPlan = document.getElementById("default-plan");
+            defaultPlan.innerHTML = "";
+            //create thead
+            var header = defaultPlan.createTHead();
+            var row = header.insertRow(0);
+            row.style.position = "sticky";
+            row.style.top = "0px";
+            row.style.backgroundColor = "rgb(178 251 255)";
+            row.style.zIndex = "900";
+            var cell = row.insertCell(0);
+            cell.innerHTML = "روز";
+            cell.style.fontWeight = "bold";
+
+            if(planType != null && planType === "ONE_THIRTY_HOURS") {
+                for (var i = 0; i < other_times.length; i++) {
+                    var cell2 = row.insertCell(0);
+                    cell2.innerHTML = other_persianTimes[i];
+                    cell2.style.fontWeight = "bold";
+                    cell2.style.backgroundColor = "rgb(178 251 255)";
+                    cell2.style.direction = "rtl";
+                }
+            }
+            else {
+                for (var i = 0; i < times.length; i++) {
+                    var cell2 = row.insertCell(0);
+                    cell2.innerHTML = persianTimes[i];
+                    cell2.style.fontWeight = "bold";
+                    cell2.style.backgroundColor = "rgb(178 251 255)";
+                    cell2.style.direction = "rtl";
+                }
+            }
+            //create tbody
+            for (var n = 0; n < days.length; n++) {                     //loop on days
+                var row2 = defaultPlan.insertRow();
+                var cell3 = row2.insertCell(0);
+                cell3.innerHTML = persianDays[n];
+                cell3.style.position = "sticky";
+                cell3.style.right = "0px";
+                cell3.style.fontWeight = "bold";
+                cell3.style.backgroundColor = "antiquewhite";
+
+                if(planType != null && planType === "ONE_THIRTY_HOURS") {
+                    for (var t = 0; t < other_times.length; t++) {         //loop on times
+                        var cell4 = row2.insertCell(0);
+                        for (var b = 0; b < result.length; b++) {//loop on result
+                            if (result[b].time === days[n] + other_times[t] && result[b].planId == planSelected) {
+                                if (result[b].priority === 1)
+                                    cell4.style.backgroundColor = "green";
+                                else if (result[b].priority === 2)
+                                    cell4.style.backgroundColor = "yellow";
+                                else if (result[b].priority === 3)
+                                    cell4.style.backgroundColor = "red";
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (var t = 0; t < times.length; t++) {         //loop on times
+                        var cell4 = row2.insertCell(0);
+                        for (var b = 0; b < result.length; b++) {//loop on result
+                            if (result[b].time === days[n] + times[t] && result[b].planId == planSelected) {
+                                if (result[b].priority === 1)
+                                    cell4.style.backgroundColor = "green";
+                                else if (result[b].priority === 2)
+                                    cell4.style.backgroundColor = "yellow";
+                                else if (result[b].priority === 3)
+                                    cell4.style.backgroundColor = "red";
+                            }
+                        }
+                    }
+                }
+
+            }
+            highlight_cell(planType);
+        }
+
+        function setPriority() {
+            if (document.querySelector("input[name=priority]:checked").value !== null) {
+                var planType;
+                if (plans != null && planSelected != null) {
+                    for (var i = 0; i < plans.length; i++) {
+                        if(plans[i].id == planSelected) {
+                            planType = plans[i].timeType;
+                            break;
+                        }
+                    }
+                }
+
+                event.preventDefault();
+                var table = document.getElementById('default-plan');
+                var cells = table.getElementsByTagName('td');
+
+                var prioritySelected = document.querySelector("input[name=priority]:checked").value;
+
+                var jsonCellTables = '[';
+
+                for (var i = 0; i < cells.length; i++) {
+                    cell = cells[i];
+
+                    if (cell.cellIndex === cellIndex && cell.parentNode.rowIndex === rowId) {
+                        if (prioritySelected === "1") {
+                            cell.style.backgroundColor = "green";
+                        } else if (prioritySelected === "2") {
+                            cell.style.backgroundColor = "yellow";
+                        } else if (prioritySelected === "3") {
+                            cell.style.backgroundColor = "red";
+                        } else if (prioritySelected === "4") {
+                            cell.style.backgroundColor = "#ecf0f5";
+                        }
+                    }
+
+                    if(cell.style.backgroundColor == "green" || cell.style.backgroundColor == "yellow" || cell.style.backgroundColor == "red") {
+                        var time;
+                        if(planType != null && planType === "ONE_THIRTY_HOURS")
+                            time = other_times[other_times.length - cell.cellIndex - 1];
+                        else time = times[times.length - cell.cellIndex - 1];
+                        var day = days[cell.parentNode.rowIndex - 1];
+                        var priority;
+                        if(cell.style.backgroundColor == "green")
+                            priority = 1;
+                        else if(cell.style.backgroundColor == "yellow")
+                            priority = 2;
+                        else if(cell.style.backgroundColor == "red")
+                            priority = 3;
+                        var jsonCellTable = '{"time": "' + day + time + '"' +
+                            ', "priority": ' + priority + '}';
+
+                        jsonCellTables = jsonCellTables + jsonCellTable + ',';
+                    }
+                }
+
+                if(jsonCellTables.length > 1)
+                    jsonCellTables = jsonCellTables.substring(0, jsonCellTables.length - 1) + ']';
+                else
+                    jsonCellTables = jsonCellTables + ']';
+
+                $('input:radio[name="priority"]').prop('checked', false);
+                saveTeacherTimes(jsonCellTables)
+            }
+        }
+
+        function saveTeacherTimes(jsonCellTables) {
+            event.preventDefault();
+            var planId = planSelected;
+            var teacherId = [[${user.id}]];
+            var jsonRequest = '{"planId" : ' + planId + ', "times" : ' + jsonCellTables + '}';
+
+            $.ajax({
+                type: "POST",
+                url: '/api/teacher/' + teacherId + "/time",
+                data: jsonRequest,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done(function (response) {
+                $('.priorityModal #priorityModal').modal('hide');
+            })
+                .fail(function (response) {
+                    alert(JSON.parse(response.responseText).message);
+                    $('.priorityModal #priorityModal').modal('hide');
+                    location.reload();
+                })
+        }
+    </script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header th:replace="layouts/layout :: header"></header>
+    <aside th:replace="layouts/layout :: links"></aside>
+
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                زمان حضور
+            </h1>
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+            <div class="card">
+                <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
+                </div>
+                <div class="row">
+                    <form>
+                        <div class="col-md-12">
+                            <p>زمان های انتخابی با اولویت های <span style="color: green; font-weight: bold;"> بالا</span> ,
+                                <span style="color: yellow; font-weight: bold;"> کم </span>و یا
+                                <span style="color: red; font-weight: bold;">عدم حضور</span> تعیین می شوند.
+                            </p>
+                        </div>
+                        <div class="col-sm-2 col-md-6">
+                            <div class="form-group planselect" style="display: block ruby">
+                                <label for="allplans" class="col-form-label">انتخاب برنامه</label>
+                                <select style="width: 100%; font-size: 11px; margin-bottom: 20px;" id="allplans">
+                                    <option value=""></option>
+                                    <option th:each="plan : ${plans}" th:value="${plan.id}"
+                                            th:text="${plan.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-10 col-md-12" style="overflow-x:auto;overflow-y: auto;">
+                            <table id="default-plan" class="table" style="direction: ltr;text-align: center;">
+                            </table>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+
+            <div class="priorityModal">
+                <form onSubmit="JavaScript:setPriority()">
+                    <div class="modal fade" id="priorityModal" tabindex="-1" role="dialog"
+                         aria-labelledby="modalLabelCreate" aria-hidden="true">
+                        <div class="modal-dialog " role="document"
+                             style="width: 75%; margin-right: 30%; margin-left: auto;">
+                            <div class="modal-content col-md-6" style="border-radius: 5px; overflow: hidden; padding: 0;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">اولویت زمان انتخاب شده را تعیین کنید.</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="padding: 15px 19px;">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <p style="display: none;">زمان انتخاب شده : <span id="selectedTime"></span></p>
+                                            <input type="radio" id="priority1" name="priority" required value="1">
+                                            <label for="priority1">اولویت بالا</label><br>
+                                            <input type="radio" id="priority2" name="priority" required value="2">
+                                            <label for="priority2">اولویت کم</label><br>
+                                            <input type="radio" id="priority3" name="priority" required value="3">
+                                            <label for="priority3">عدم حضور</label><br>
+                                            <input type="radio" id="priority4" name="priority" required value="4">
+                                            <label for="priority4">حذف این ساعت از برنامه</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer" style="padding: 15px 0;">
+                                        <button type="button" class="btn btn" data-dismiss="modal"
+                                                style="outline: none;">انصراف
+                                        </button>
+                                        <input type="submit" class="btn btn-primary" value="تایید"
+                                               style="outline: none;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <aside th:replace="layouts/layout :: footer"></aside>
+    <aside th:replace="layouts/layout :: settings"></aside>
+    <aside th:replace="layouts/layout :: sidebar"></aside>
+</div>
+
+
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
+
+</body>
+
+</html>

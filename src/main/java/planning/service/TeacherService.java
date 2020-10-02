@@ -356,4 +356,17 @@ public class TeacherService {
         return null;
     }
 
+    public Teacher updateProfile(Teacher user, TeacherAddVO teacherAddVO) {
+        if (teacherAddVO.getFirstName() != null && !teacherAddVO.getFirstName().equals(""))
+            user.setFirstName(teacherAddVO.getFirstName());
+        if (teacherAddVO.getLastName() != null && !teacherAddVO.getLastName().equals(""))
+            user.setLastName(teacherAddVO.getLastName());
+        if (teacherAddVO.getUsername() != null && !teacherAddVO.getUsername().equals(""))
+            user.setUsername(teacherAddVO.getUsername());
+        if (teacherAddVO.getPassword() != null && !teacherAddVO.getPassword().equals(""))
+            user.setPassword(teacherAddVO.getPassword());
+
+        return teacherCRUD.saveAndFlush(user);
+    }
+
 }

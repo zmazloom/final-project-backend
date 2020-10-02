@@ -29,7 +29,6 @@ public class TeacherAddVO {
 
     @NotNull
     @NotEmpty
-    @Size(min = 4)
     private String username;
 
     private String password;

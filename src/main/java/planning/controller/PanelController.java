@@ -723,4 +723,21 @@ public class PanelController {
         return "redirect:/group/" + planId;
     }
     /******************** end *********************/
+
+    /******************** profile *********************/
+    @GetMapping("/profile")
+    public String getUserProfile(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
+        Teacher user = teacherService.getTeacherByRequest(request);
+
+        if (user == null)
+            return "redirect:/login";
+
+        model.addAttribute("user", user);
+
+        return "profile";
+    }
+    /******************** end *********************/
 }

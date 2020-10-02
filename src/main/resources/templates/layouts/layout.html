@@ -59,17 +59,16 @@
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-<!--                            <img src="/dist/img/dr_baygi.png" class="user-image" alt="user">-->
                             <span class="hidden-xs" th:text="' ' + ${user.firstName} + ' ' + ${user.lastName}"></span>
                         </a>
                         <ul class="dropdown-menu" style="width: 50px;">
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="profilediv" style="text-align: center; border-bottom: 1px dashed; padding-bottom: 9px">
-                                    <a href="#" class="profilebtn">پروفایل</a>
+                                    <a th:href="@{/profile}" class="profilebtn">پروفایل</a>
                                 </div>
                                 <div class="profilediv" style="text-align: center; padding-top: 9px;">
-                                    <a href="#" class="profilebtn">خروج</a>
+                                    <a th:href="@{/logout}" class="profilebtn">خروج</a>
                                 </div>
                             </li>
                         </ul>

@@ -103,47 +103,6 @@
             </ol>
         </section>
 
-
-        <script th:inline="javascript">
-            function deleteClassroom($id) {
-                var deleteResult = confirm("آیا از حذف کلاس مطمئن هستید؟");
-                if (deleteResult != null && deleteResult === true) {
-                    $.ajax({
-                        type: "DELETE",
-                        contentType: "application/json",
-                        url: "/api/classroom/" + $id,
-                        dataType: 'json',
-                        cache: false,
-                        timeout: 600000,
-                        success: function (data) {
-                            $.ajax({
-                                type: "GET",
-                                contentType: "text",
-                                url: "/classroom",
-                                dataType: 'text',
-                                cache: false,
-                                timeout: 600000,
-                                success: function (data) {
-                                    $('#classroom-list').replaceWith(data);
-                                },
-                                error: function (e) {
-                                    console.log(e);
-                                }
-                            });
-
-                            var jsonData = JSON.stringify(data, null, 4);
-                            $('#feedback').html(jsonData);
-                        },
-                        error: function (ex) {
-                            console.log("ERROR : ", ex);
-                            var requestException = ex.responseText;
-                            $('#feedback').html(requestException);
-                        }
-                    });
-                }
-            }
-        </script>
-
         <!-- Main content -->
         <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
 

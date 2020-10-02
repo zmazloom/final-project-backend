@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">برنامه ریزی درسی</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" th:href="@{../dist/css/bootstrap-theme.css}" media="screen" />
+    <!-- Bootstrap rtl -->
+    <link rel="stylesheet" th:href="@{../dist/css/rtl.css}" media="screen" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" th:href="@{../bower_components/font-awesome/css/font-awesome.min.css}" media="screen" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" th:href="@{../bower_components/Ionicons/css/ionicons.min.css}" media="screen" />
+    <!-- Theme style -->
+    <link rel="stylesheet" th:href="@{../dist/css/AdminLTE.css}" media="screen" />
+    <!-- Skins -->
+    <link rel="stylesheet" th:href="@{../dist/css/skins/skin-blue.min.css}" media="screen" />
+    <!-- Google Font -->
+    <link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic}">
+    <!--jquery -->
+    <script th:src="@{https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js}"></script>
+    <script th:src="@{https://code.jquery.com/jquery-1.11.1.min.js}" type="text/javascript"></script>
+
+    <!--data tables -->
+    <script th:src="@{https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js}" type="text/javascript"></script>
+    <script th:src="@{https://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js}" type="text/javascript"></script>
+    <!--select2-->
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css}" rel="stylesheet" />
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js}"></script>
+    <!--[if lt IE 9]>
+    <script th:src="@{https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js}"></script>
+    <script th:src="@{https://oss.maxcdn.com/respond/1.4.2/respond.min.js}"></script>
+    <![endif]-->
+
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <!-- Main Header -->
+    <header class="main-header" layout:fragment="header">
+        <!-- Logo -->
+        <a href="#" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini">پنل</span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg"><b>برنامه ریزی درسی</b></span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" id="sidebar-toggle-link" data-toggle="push-menu" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- User Account: style can be found in dropdown.less -->
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="/dist/img/dr_baygi.png" class="user-image" alt="user">
+                            <span class="hidden-xs">مصطفی نوری بایگی</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <img src="/dist/img/dr_baygi.png" class="img-circle" alt="user">
+
+                                <p>
+                                    مصطفی نوری بایگی
+                                    <small>معاون گروه</small>
+                                </p>
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="#" class="btn btn-default btn-flat">پروفایل</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="#" class="btn btn-default btn-flat">خروج</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Control Sidebar Toggle Button -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- right side column. contains the logo and sidebar -->
+    <aside class="main-sidebar" layout:fragment="links">
+
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel">
+                <div class="pull-right image">
+                    <img src="../dist/img/FUM_Logo.png" class="img-circle" alt="Ferdowsi">
+                </div>
+                <div class="pull-right info" style="margin: 10px;">
+                    <p>دانشگاه فردوسی</p>
+                    <a th:href="@{https://eng.um.ac.ir/index.php?lang=fa}"><i class="fa fa-circle text-success"></i> دانشکده مهندسی</a>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <ul id="base-sidebar" class="sidebar-menu" data-widget="tree">
+                <li class="header">منوهای اصلی</li>
+                <!-- Optionally, you can add icons to the links -->
+                <li><a th:href="@{/teacherdashboard/{id}(id = ${teacherId})}"><i class="fa fa-dashboard"></i> <span>داشبورد</span></a></li>
+                <li><a th:href="@{/teachertimepersonal/{id}(id = ${teacherId})}"><i class="fa fa-user-times"></i> <span>زمان اساتید</span></a></li>
+            </ul>
+            <!-- /.sidebar-menu -->
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" layout:fragment="content">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                داشبورد
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> داشبورد</a></li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+            <!--------------------------
+              | Your Page Content Here |
+              -------------------------->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer text-right" layout:fragment="footer">
+        <strong>پروژه کارشناسی دانشگاه فردوسی مشهد - 1399</strong>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark" layout:fragment="settings">
+
+    </aside>
+    <!-- /.control-sidebar -->
+
+    <div class="control-sidebar-bg" layout:fragment="sidebar">
+
+    </div>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- REQUIRED JS SCRIPTS -->
+<!-- Bootstrap 3.3.7 -->
+<script th:src="@{../bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- App -->
+<script th:src="@{../dist/js/adminlte.min.js}"></script>
+
+</body>
+</html>

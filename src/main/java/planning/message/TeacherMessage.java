@@ -12,7 +12,7 @@ public class TeacherMessage {
 
     private static final String FA_ERROR_SAVE_AVATAR = "خطای داخلی در ذخیره تصویر!";
 
-    private static final String FA_INVALID_USERNAME = "پارامتر username باید بزگتر از 3 کاراکتر باشد.";
+    private static final String FA_INVALID_USERNAME = "نام کاربری باید بزگتر از 3 کاراکتر باشد.";
 
     private static final String FA_INVALID_FORMAT_AVATAR = "فرمت تصویر باید JPG یا PNG باشد.";
 

@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import planning.model.*;
 import planning.modelVO.*;
+import planning.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -25,21 +26,27 @@ public class PanelController {
     private final TeacherController teacherController;
     private final PlanController planController;
     private final GroupController groupController;
+    private final LoginService loginService;
 
     public PanelController(ClassroomController classroomController,
                            LessonController lessonController,
                            TeacherController teacherController,
                            PlanController planController,
-                           GroupController groupController) {
+                           GroupController groupController,
+                           LoginService loginService) {
         this.classroomController = classroomController;
         this.lessonController = lessonController;
         this.teacherController = teacherController;
         this.planController = planController;
         this.groupController = groupController;
+        this.loginService = loginService;
     }
 
     @RequestMapping(value = {"/", "/dashboard"})
-    public String getIndexPage(Model model) {
+    public String getIndexPage(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<Long>> classroomsCount = classroomController.getClassroomsCount();
             ResponseEntity<Result<Long>> teachersCount = teacherController.getTeachersCount();
@@ -78,6 +85,9 @@ public class PanelController {
     /******************** classroom *********************/
     @GetMapping("/classroom")
     public String getAllClassrooms(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
 
@@ -98,6 +108,9 @@ public class PanelController {
 
     @PostMapping("/classroom/add")
     public String addClassroom(Model model, HttpServletRequest request, ClassroomVO classroomVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<ClassroomVO>> classroom = classroomController.addClassroom(classroomVO);
 
@@ -116,6 +129,9 @@ public class PanelController {
 
     @PostMapping("/classroom/update")
     public String editClassroom(Model model, HttpServletRequest request, ClassroomVO classroom) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<ClassroomVO>> changedClassroom = classroomController.updateClassroom(classroom.getId(), classroom);
 
@@ -134,7 +150,10 @@ public class PanelController {
 
     @GetMapping("/classroom/one")
     @ResponseBody
-    public Optional<ClassroomVO> findOneClassroom(Model model, long id) {
+    public Optional<ClassroomVO> findOneClassroom(Model model, HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return null;
+
         try {
             ResponseEntity<Result<ClassroomVO>> classroom = classroomController.getClassroomById(id);
 
@@ -148,7 +167,10 @@ public class PanelController {
     }
 
     @GetMapping("/classroom/delete")
-    public String deleteClassroom(long id) {
+    public String deleteClassroom(HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         classroomController.deleteClassroom(id);
         return "redirect:/classroom";
     }
@@ -157,6 +179,9 @@ public class PanelController {
     /******************** lesson *********************/
     @GetMapping("/lesson")
     public String getAllLessons(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
 
@@ -177,7 +202,10 @@ public class PanelController {
 
     @GetMapping("/lesson/one")
     @ResponseBody
-    public Optional<LessonVO> findOneLesson(Model model, long id) {
+    public Optional<LessonVO> findOneLesson(Model model, HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return null;
+
         try {
             ResponseEntity<Result<LessonVO>> lesson = lessonController.getLessonById(id);
 
@@ -191,7 +219,10 @@ public class PanelController {
     }
 
     @GetMapping("/lesson/delete")
-    public String deleteLesson(long id) {
+    public String deleteLesson(HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         lessonController.deleteLesson(id);
         return "redirect:/lesson";
     }
@@ -200,6 +231,9 @@ public class PanelController {
     /******************** teacher *********************/
     @GetMapping("/teacher")
     public String getAllTeachers(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
 
@@ -220,7 +254,10 @@ public class PanelController {
 
     @GetMapping("/teacher/one")
     @ResponseBody
-    public Optional<TeacherVO> findOneTeacher(Model model, long id) {
+    public Optional<TeacherVO> findOneTeacher(Model model, HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return null;
+
         try {
             ResponseEntity<Result<TeacherVO>> teacher = teacherController.getTeacherById(id);
 
@@ -234,7 +271,10 @@ public class PanelController {
     }
 
     @GetMapping("/teacher/delete")
-    public String deleteTeacher(long id) {
+    public String deleteTeacher(HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         teacherController.deleteTeacherById(id);
         return "redirect:/teacher";
     }
@@ -243,6 +283,9 @@ public class PanelController {
     /******************** plans *********************/
     @GetMapping("/plan")
     public String getAllPlans(Model model, HttpServletRequest request) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<List<PlanVO>>> planVOList = planController.getAllPlans();
 
@@ -263,6 +306,9 @@ public class PanelController {
 
     @PostMapping("/plan/add")
     public String addPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<PlanVO>> plan = planController.addPlan(planVO);
 
@@ -281,6 +327,9 @@ public class PanelController {
 
     @PostMapping("/plan/update")
     public String editPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<PlanVO>> changedPlan = planController.updatePlan(planVO.getId(), planVO.getName(), planVO.getNimsal());
 
@@ -299,7 +348,10 @@ public class PanelController {
 
     @GetMapping("/plan/one")
     @ResponseBody
-    public Optional<PlanVO> findOnePlan(Model model, long id) {
+    public Optional<PlanVO> findOnePlan(Model model, HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return null;
+
         try {
             ResponseEntity<Result<PlanVO>> plan = planController.getPlanById(id);
 
@@ -313,13 +365,19 @@ public class PanelController {
     }
 
     @GetMapping("/plan/delete")
-    public String deletePlan(long id) {
+    public String deletePlan(HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         planController.deletePlanById(id);
         return "redirect:/plan";
     }
 
     @PostMapping("/plan/copy")
     public String copyPlan(Model model, HttpServletRequest request, PlanVO planVO) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         try {
             ResponseEntity<Result<PlanVO>> copiedPlan = planController.copyPlan(planVO.getId(), planVO.getName());
 
@@ -338,6 +396,9 @@ public class PanelController {
 
     @GetMapping("/planning/{id}")
     public String getDetailsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         model.addAttribute("planId", id);
 
         ResponseEntity<Result<PlanVO>> plan = null;
@@ -413,6 +474,9 @@ public class PanelController {
 
     @GetMapping("/reports/{id}")
     public String getReportsForOnePlan(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         model.addAttribute("planId", id);
 
         ResponseEntity<Result<PlanVO>> plan = null;
@@ -471,7 +535,10 @@ public class PanelController {
     }
 
     @GetMapping("/teachertime/{id}")
-    public String getTeacherTime(Model model, @PathVariable("id") long id) {
+    public String getTeacherTime(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         model.addAttribute("planId", id);
 
         ResponseEntity<Result<PlanVO>> plan = null;
@@ -504,7 +571,10 @@ public class PanelController {
     }
 
     @GetMapping("/plandashboard/{id}")
-    public String getPlanDashboard(Model model, @PathVariable("id") long id) {
+    public String getPlanDashboard(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         model.addAttribute("planId", id);
 
         return "plandashboard";
@@ -521,6 +591,9 @@ public class PanelController {
     /******************** group *********************/
     @GetMapping("/group/{id}")
     public String getAllGroups(Model model, HttpServletRequest request, @PathVariable("id") long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         model.addAttribute("planId", id);
 
         try {
@@ -558,7 +631,10 @@ public class PanelController {
 
     @GetMapping("/group/one")
     @ResponseBody
-    public Optional<LessonGroupVO> findOneLessonGroup(Model model, long id) {
+    public Optional<LessonGroupVO> findOneLessonGroup(Model model, HttpServletRequest request, long id) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return null;
+
         try {
             ResponseEntity<Result<LessonGroupVO>> lessonGroup = groupController.getLessonGroupById(id);
 
@@ -572,7 +648,10 @@ public class PanelController {
     }
 
     @GetMapping("/group/{id}/delete/{planId}")
-    public String deleteLessonGroup(@PathVariable("id") long id, @PathVariable("planId") long planId) {
+    public String deleteLessonGroup(HttpServletRequest request, @PathVariable("id") long id, @PathVariable("planId") long planId) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            return "redirect:/login";
+
         groupController.deleteLessonGroup(id);
         return "redirect:/group/" + planId;
     }

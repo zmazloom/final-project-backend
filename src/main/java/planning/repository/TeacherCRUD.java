@@ -24,4 +24,7 @@ public interface TeacherCRUD extends JpaRepository<Teacher, Long> {
 
     @Query("select count(t) from Teacher t where t.removed = false")
     Long getTeachersCount();
+
+    @Query("from Teacher t where t.username = :username and t.password = :password and t.removed = false")
+    Teacher getTeacherByUserPass(String username, String password);
 }

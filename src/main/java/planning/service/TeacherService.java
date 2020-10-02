@@ -56,7 +56,7 @@ public class TeacherService {
 
         List<TimePriorityVO> times = new ArrayList<>();
 
-        for(TeacherTime teacherTime : teacherTimes) {
+        for (TeacherTime teacherTime : teacherTimes) {
             TimePriorityVO timePriorityVO = new TimePriorityVO();
             timePriorityVO.setTime(teacherTime.getTime());
             timePriorityVO.setPriority(teacherTime.getPriority());
@@ -96,6 +96,9 @@ public class TeacherService {
         teacher.setUsername(teacherAddVO.getUsername());
         teacher.setPrefix(teacherAddVO.getPrefix());
 
+        if (teacherAddVO.getRole() == null)
+            teacher.setRole(teacherAddVO.getRole());
+
         return teacherCRUD.saveAndFlush(teacher);
     }
 
@@ -118,6 +121,8 @@ public class TeacherService {
             teacher.setUsername(teacherAddVO.getUsername());
         if (teacherAddVO.getPrefix() != null)
             teacher.setPrefix(teacherAddVO.getPrefix());
+        if (teacherAddVO.getRole() != null)
+            teacher.setRole(teacherAddVO.getRole());
 
         return teacherCRUD.saveAndFlush(teacher);
     }
@@ -204,22 +209,21 @@ public class TeacherService {
     }
 
     private void validateTeacherTimes(TimeType planTypeTime, List<Time> times) {
-        if(times != null && !times.isEmpty()) {
+        if (times != null && !times.isEmpty()) {
             if (planTypeTime.equals(TimeType.TWO_HOURS)) {
 
                 List<Time> twoHourTimes = getTwoHourTimes();
 
-                for(Time time : times) {
-                    if(!twoHourTimes.contains(time)) {
+                for (Time time : times) {
+                    if (!twoHourTimes.contains(time)) {
                         throw InvalidRequestException.getInstance(TeacherMessage.getInvalidTwoTime());
                     }
                 }
-            }
-            else {
+            } else {
                 List<Time> oneThirtyHourTimes = getOneThirtyHourTimes();
 
-                for(Time time : times) {
-                    if(!oneThirtyHourTimes.contains(time)) {
+                for (Time time : times) {
+                    if (!oneThirtyHourTimes.contains(time)) {
                         throw InvalidRequestException.getInstance(TeacherMessage.getInvalidOneThirtyTime());
                     }
                 }

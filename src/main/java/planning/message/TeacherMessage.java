@@ -23,6 +23,8 @@ public class TeacherMessage {
     private static final String FA_INVALID_TWO_TIME = "بازه زمان باید دو ساعت یک بار باشد.";
     private static final String FA_INVALID_ONE_THIRTY_TIME = "بازه زمان باید یک ساعت و نیم یک بار باشد.";
 
+    private static final String FA_WRONG_AUTH = "نام کاربری یا رمز عبور نادرست است!";
+
 
     public static String getTeacherNotFound(String teacherId) {
         return FA_TEACHER_NOT_FOUND.replace("{TEACHERID}", teacherId);
@@ -66,5 +68,9 @@ public class TeacherMessage {
 
     public static String getInvalidOneThirtyTime() {
         return FA_INVALID_ONE_THIRTY_TIME;
+    }
+
+    public static String getWrongAuth() {
+        return FA_WRONG_AUTH;
     }
 }

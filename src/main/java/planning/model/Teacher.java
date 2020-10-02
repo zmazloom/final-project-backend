@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -43,5 +44,8 @@ public class Teacher {
 
 	@Column
     private boolean removed;
+
+    @Column
+    private Role role;
 
 }

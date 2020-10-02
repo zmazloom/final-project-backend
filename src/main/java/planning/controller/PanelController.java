@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import planning.model.*;
 import planning.modelVO.*;
 import planning.service.LoginService;
+import planning.service.TeacherService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -27,19 +28,22 @@ public class PanelController {
     private final PlanController planController;
     private final GroupController groupController;
     private final LoginService loginService;
+    private final TeacherService teacherService;
 
     public PanelController(ClassroomController classroomController,
                            LessonController lessonController,
                            TeacherController teacherController,
                            PlanController planController,
                            GroupController groupController,
-                           LoginService loginService) {
+                           LoginService loginService,
+                           TeacherService teacherService) {
         this.classroomController = classroomController;
         this.lessonController = lessonController;
         this.teacherController = teacherController;
         this.planController = planController;
         this.groupController = groupController;
         this.loginService = loginService;
+        this.teacherService = teacherService;
     }
 
     @RequestMapping(value = {"/", "/dashboard"})
@@ -52,6 +56,7 @@ public class PanelController {
             ResponseEntity<Result<Long>> teachersCount = teacherController.getTeachersCount();
             ResponseEntity<Result<Long>> lessonsCount = lessonController.getLessonsCount();
             ResponseEntity<Result<Long>> plansCount = planController.getPlansCount();
+            Teacher user = teacherService.getTeacherByRequest(request);
 
             if (classroomsCount.getBody() != null && classroomsCount.getBody().getResult() != null)
                 model.addAttribute("classrooms", classroomsCount.getBody().getResult());
@@ -70,12 +75,17 @@ public class PanelController {
                 model.addAttribute("plans", plansCount.getBody().getResult());
             else
                 model.addAttribute("plans", 0);
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("classrooms", 0);
             model.addAttribute("teachers", 0);
             model.addAttribute("lessons", 0);
             model.addAttribute("plans", 0);
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         return "index";
@@ -89,15 +99,22 @@ public class PanelController {
             return "redirect:/login";
 
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
+
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
 
             if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null && !classroomVOList.getBody().getResult().isEmpty())
                 model.addAttribute("classrooms", classroomVOList.getBody().getResult());
             else
                 model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -183,15 +200,21 @@ public class PanelController {
             return "redirect:/login";
 
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
 
             if (lessonVOList.getBody() != null && lessonVOList.getBody().getResult() != null && !lessonVOList.getBody().getResult().isEmpty())
                 model.addAttribute("lessons", lessonVOList.getBody().getResult());
             else
                 model.addAttribute("lessons", new ArrayList<LessonVO>());
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("lessons", new ArrayList<LessonVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -235,15 +258,21 @@ public class PanelController {
             return "redirect:/login";
 
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
 
             if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null && !teacherVOList.getBody().getResult().isEmpty())
                 model.addAttribute("teachers", teacherVOList.getBody().getResult());
             else
                 model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("teachers", new ArrayList<TeacherVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -287,15 +316,21 @@ public class PanelController {
             return "redirect:/login";
 
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             ResponseEntity<Result<List<PlanVO>>> planVOList = planController.getAllPlans();
 
             if (planVOList.getBody() != null && planVOList.getBody().getResult() != null && !planVOList.getBody().getResult().isEmpty())
                 model.addAttribute("plans", planVOList.getBody().getResult());
             else
                 model.addAttribute("plans", new ArrayList<PlanVO>());
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("plans", new ArrayList<PlanVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -403,6 +438,7 @@ public class PanelController {
 
         ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             plan = planController.getPlanById(id);
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
@@ -452,6 +488,10 @@ public class PanelController {
             else
                 model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
 
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
         } catch (Exception ex) {
             model.addAttribute("reports", new ArrayList<PlanVO>());
             model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
@@ -461,6 +501,7 @@ public class PanelController {
             model.addAttribute("classroomIds", new ArrayList<Long>());
             model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -481,6 +522,7 @@ public class PanelController {
 
         ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             plan = planController.getPlanById(id);
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
@@ -515,6 +557,10 @@ public class PanelController {
                 model.addAttribute("teacherIds", new ArrayList<Long>());
             }
 
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
 
         } catch (Exception ex) {
             model.addAttribute("reports", new ArrayList<PlanVO>());
@@ -523,6 +569,7 @@ public class PanelController {
             model.addAttribute("teacherIds", new ArrayList<Long>());
             model.addAttribute("classroomIds", new ArrayList<Long>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -543,6 +590,7 @@ public class PanelController {
 
         ResponseEntity<Result<PlanVO>> plan = null;
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             plan = planController.getPlanById(id);
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
@@ -556,12 +604,17 @@ public class PanelController {
                 model.addAttribute("teachers", teacherVOList.getBody().getResult());
             else
                 model.addAttribute("teachers", new ArrayList<TeacherVO>());
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
 
         } catch (Exception ex) {
             model.addAttribute("planId", id);
             model.addAttribute("teachertimes", new ArrayList<Time>());
             model.addAttribute("teachers", new ArrayList<TeacherVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (plan != null && plan.getBody() != null && plan.getBody().getResult() != null && plan.getBody().getResult().getTimeType().equals(TimeType.ONE_THIRTY_HOURS))
@@ -576,6 +629,13 @@ public class PanelController {
             return "redirect:/login";
 
         model.addAttribute("planId", id);
+
+        Teacher user = teacherService.getTeacherByRequest(request);
+
+        if (user != null)
+            model.addAttribute("user", user);
+        else
+            model.addAttribute("user", new TeacherVO());
 
         return "plandashboard";
     }
@@ -597,6 +657,7 @@ public class PanelController {
         model.addAttribute("planId", id);
 
         try {
+            Teacher user = teacherService.getTeacherByRequest(request);
             ResponseEntity<Result<List<LessonGroupVO>>> lessonGroupVOList = groupController.getAllLessonGroups(id);
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
@@ -616,11 +677,17 @@ public class PanelController {
             else
                 model.addAttribute("lessons", new ArrayList<LessonVO>());
 
+            if (user != null)
+                model.addAttribute("user", user);
+            else
+                model.addAttribute("user", new TeacherVO());
+
         } catch (Exception ex) {
             model.addAttribute("groups", new ArrayList<LessonGroupVO>());
             model.addAttribute("teachers", new ArrayList<TeacherVO>());
             model.addAttribute("lessons", new ArrayList<LessonVO>());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("user", new TeacherVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))

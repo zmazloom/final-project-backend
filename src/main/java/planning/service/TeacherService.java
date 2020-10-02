@@ -15,17 +15,16 @@ import planning.modelVO.TeacherVO;
 import planning.modelVO.TimePriorityVO;
 import planning.repository.TeacherCRUD;
 import planning.repository.TeacherTimeCRUD;
+import planning.repository.TokenCRUD;
 import planning.utils.PasswordUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -34,6 +33,7 @@ public class TeacherService {
     private final TeacherCRUD teacherCRUD;
     private final TeacherTimeCRUD teacherTimeCRUD;
     private final LoginService loginService;
+    private final TokenCRUD tokenCRUD;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -330,6 +330,30 @@ public class TeacherService {
         oneThirtyHourList.add(Time.PANJSHANBE18O);
 
         return oneThirtyHourList;
+    }
+
+    public Teacher getTeacherByRequest(HttpServletRequest request) {
+        try {
+            if (request.getHeader("Cookie") != null) {
+                List<String> cookies = Arrays.asList(request.getHeader("Cookie").split(";"));
+                if (!cookies.isEmpty()) {
+                    for (String cookie : cookies) {
+                        if (cookie.contains("MazMazAuthorization")) {
+                            List<Token> tokens = tokenCRUD.getTokenByToken(cookie.substring(cookie.indexOf("=") + 1));
+
+                            if (tokens == null || tokens.isEmpty())
+                                return null;
+
+                            return tokens.get(tokens.size() - 1).getTeacher();
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+
+        return null;
     }
 
 }

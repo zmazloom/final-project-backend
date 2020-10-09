@@ -22,6 +22,7 @@ public class PlanService {
     private final ClassroomCRUD classroomCRUD;
     private final LessonCRUD lessonCRUD;
     private final TeacherTimeCRUD teacherTimeCRUD;
+    private final LessonGroupCRUD lessonGroupCRUD;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -79,20 +80,27 @@ public class PlanService {
             for (PlanDetail planDetail : planDetails) {
                 PlanDetailGet planDetailGet = new PlanDetailGet();
 
-                if (planDetail.getTeacher() != null) {
-                    planDetailGet.setFirstName(planDetail.getTeacher().getFirstName());
-                    planDetailGet.setLastName(planDetail.getTeacher().getLastName());
-                    planDetailGet.setUsername(planDetail.getTeacher().getUsername());
-                    planDetailGet.setPrefix(planDetail.getTeacher().getPrefix());
-                    planDetailGet.setTeacherId(planDetail.getTeacher().getId());
-                }
-                if (planDetail.getLesson() != null) {
-                    planDetailGet.setName(planDetail.getLesson().getName());
-                    planDetailGet.setCode(planDetail.getLesson().getCode());
-                    planDetailGet.setTerm(planDetail.getLesson().getTerm());
-                    planDetailGet.setGrade(planDetail.getLesson().getGrade());
-                    planDetailGet.setUnit(planDetail.getLesson().getUnit());
-                    planDetailGet.setLessonId(planDetail.getLesson().getId());
+                if (planDetail.getGroup() != null) {
+                    planDetailGet.setGroupId(planDetail.getGroup().getId());
+                    planDetailGet.setJalaseNumber(planDetail.getGroup().getJalaseNumber());
+                    planDetailGet.setZarfiat(planDetail.getGroup().getZarfiat());
+                    planDetailGet.setNumber(planDetail.getGroup().getNumber());
+
+                    if (planDetail.getGroup().getTeacher() != null) {
+                        planDetailGet.setFirstName(planDetail.getGroup().getTeacher().getFirstName());
+                        planDetailGet.setLastName(planDetail.getGroup().getTeacher().getLastName());
+                        planDetailGet.setUsername(planDetail.getGroup().getTeacher().getUsername());
+                        planDetailGet.setPrefix(planDetail.getGroup().getTeacher().getPrefix());
+                        planDetailGet.setTeacherId(planDetail.getGroup().getTeacher().getId());
+                    }
+                    if (planDetail.getGroup().getLesson() != null) {
+                        planDetailGet.setName(planDetail.getGroup().getLesson().getName());
+                        planDetailGet.setCode(planDetail.getGroup().getLesson().getCode());
+                        planDetailGet.setTerm(planDetail.getGroup().getLesson().getTerm());
+                        planDetailGet.setGrade(planDetail.getGroup().getLesson().getGrade());
+                        planDetailGet.setUnit(planDetail.getGroup().getLesson().getUnit());
+                        planDetailGet.setLessonId(planDetail.getGroup().getLesson().getId());
+                    }
                 }
                 if (planDetail.getClassroom() != null) {
                     planDetailGet.setClassroomName(planDetail.getClassroom().getName());
@@ -119,8 +127,7 @@ public class PlanService {
                     boolean fined = false;
                     for (PlanDetailVO planDetailVO : planDetailVOS) {
                         if (planDetails.get(i).getClassroom().getId().equals(planDetailVO.getClassroomId()) &&
-                                planDetails.get(i).getLesson().getId().equals(planDetailVO.getLessonId()) &&
-                                planDetails.get(i).getTeacher().getId().equals(planDetailVO.getTeacherId()) &&
+                                planDetails.get(i).getGroup().getId().equals(planDetailVO.getGroupId()) &&
                                 planDetails.get(i).getTime().equals(planDetailVO.getTime()) &&
                                 (planDetailVO.getWeekType() == null || planDetails.get(i).getWeekType().equals(planDetailVO.getWeekType()))) {
                             planDetailVOS.remove(planDetailVO);
@@ -140,8 +147,7 @@ public class PlanService {
             for (PlanDetailVO planDetailVO : planDetailVOS) {
                 PlanDetail planDetail = new PlanDetail();
                 planDetail.setClassroom(classroomCRUD.getClassroomById(planDetailVO.getClassroomId()));
-                planDetail.setLesson(lessonCRUD.getLessonById(planDetailVO.getLessonId()));
-                planDetail.setTeacher(teacherCRUD.getTeacherById(planDetailVO.getTeacherId()));
+                planDetail.setGroup(lessonGroupCRUD.getLessonGroupById(planDetailVO.getGroupId()));
                 planDetail.setPlan(plan);
                 planDetail.setTime(planDetailVO.getTime());
                 planDetail.setWeekType(planDetailVO.getWeekType());

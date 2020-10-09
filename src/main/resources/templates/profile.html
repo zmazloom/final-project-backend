@@ -17,7 +17,7 @@
     <script type="text/javascript" th:inline="javascript">
         $(document).ready(function () {
             var userRole = [[${role}]];
-            console.log(userRole);
+
             if(userRole == "admin") {
                 $(".userlinks").css('display', 'none');
                 $(".adminlinks").css('display', 'block');

@@ -4,32 +4,6 @@
 <head>
 
     <style>
-        #datatable_wrapper {
-            width: 80%;
-            margin: auto;
-        }
-
-        .pagination {
-            float: left;
-        }
-
-        #datatable {
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        #datatable th, #datatable td {
-            padding: 10px;
-        }
-
-        #datatable tr {
-            border-radius: 10px;
-        }
-
-        .form-group {
-            margin: 20px 0;
-        }
-
         .form-style-1 {
             max-width: 400px;
             padding: 20px 12px 10px 20px;
@@ -81,45 +55,55 @@
         }
 
 
-        #plan-table, #default-plan {
+        #default-plan {
             border: solid thin;
-            font-size: 9px;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 8px;
+            table-layout: fixed;
+        }
+
+        #default-plan tr {
+            height: 26px;
         }
 
         table {
             border-collapse: unset !important;
         }
 
-        #plan-table caption, #default-plan caption {
+        #default-plan caption {
             padding-bottom: 0.5em;
         }
 
-        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+        #default-plan th, #default-plan td {
             border: solid thin;
-            padding: 0.5rem 0.5rem;
+            padding: 0.1rem 0;
         }
 
-        #plan-table td, #default-plan td {
-            white-space: nowrap;
+        #default-plan td {
+            direction: rtl;
         }
 
-        #plan-table th, #default-plan th {
+        #default-plan th {
             font-weight: normal;
         }
 
-        #plan-table td, #default-plan td {
+        #default-plan td {
             vertical-align: top;
         }
 
-        #plan-table th, #default-plan th {
+        #default-plan th {
             padding: 0.2em;
             vertical-align: middle;
             text-align: center;
         }
 
-        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+        #default-plan td {
+            vertical-align: middle;
+        }
+
+        tbody td:first-child::after, #default-plan tbody td:first-child::after {
             content: leader(". ");
-        '
         }
 
         table tr:first-child > td {
@@ -185,36 +169,6 @@
 
             create_default_plan();
             $('#base-sidebar li:eq(5)').addClass('active');
-
-            $('.nBtn').on('click', function (event) {
-                event.preventDefault();
-
-                validMaghta = [];
-                validClasses = [];
-                validTeachers = [];
-
-                if($('#karshenasi-id').is(':checked')) {
-                    validMaghta.push("KARSHENASI");
-                }
-                if($('#arshad-id').is(':checked')) {
-                    validMaghta.push("ARSHAD");
-                }
-                if($('#doctora-id').is(':checked')) {
-                    validMaghta.push("DOCTORA");
-                }
-
-                $('[id^=idclassroom]').each( function () {
-                    if($(this).is(':checked'))
-                        validClasses.push(parseInt($(this).val()));
-                });
-
-                $('[id^=idteacher]').each( function () {
-                    if($(this).is(':checked'))
-                        validTeachers.push(parseInt($(this).val()));
-                });
-
-                create_default_plan();
-            });
         });
 
         function create_default_plan() {
@@ -229,6 +183,7 @@
             row.style.top = "0px";
             row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "900";
+            row.style.height= "19px";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
             cell.style.fontWeight = "bold";
@@ -250,6 +205,7 @@
             row2.style.top = "30px";
             row2.style.backgroundColor = "#a9caf4";
             row2.style.zIndex = "900";
+            row2.style.height= "19px";
             for (var j = 0; j < times.length; j++) {
                 var cell4 = row2.insertCell(0);
                 cell4.innerHTML = "زوج";
@@ -331,6 +287,34 @@
                 expanded3 = false;
             }
         }
+
+        function filterClick() {
+            validMaghta = [];
+            validClasses = [];
+            validTeachers = [];
+
+            if($('#karshenasi-id').is(':checked')) {
+                validMaghta.push("KARSHENASI");
+            }
+            if($('#arshad-id').is(':checked')) {
+                validMaghta.push("ARSHAD");
+            }
+            if($('#doctora-id').is(':checked')) {
+                validMaghta.push("DOCTORA");
+            }
+
+            $('[id^=idclassroom]').each( function () {
+                if($(this).is(':checked'))
+                    validClasses.push(parseInt($(this).val()));
+            });
+
+            $('[id^=idteacher]').each( function () {
+                if($(this).is(':checked'))
+                    validTeachers.push(parseInt($(this).val()));
+            });
+
+            create_default_plan();
+        }
     </script>
 
 </head>
@@ -359,12 +343,6 @@
             <div class="card">
                 <div class="row">
                     <div class="col-sm-2" style="font-size: 0.8em;">
-                        <div style="padding: 0;">
-                            <button class="btn btn-primary nBtn" style="width: 100%">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                                <span style="margin: 5px;">فیلتر</span>
-                            </button>
-                        </div>
                         <div class="multiselect">
                             <div class="selectBox" onclick="showCheckboxes1()">
                                 <select>
@@ -373,9 +351,9 @@
                                 <div class="overSelect"></div>
                             </div>
                             <div id="checkboxes1">
-                                <label for="karshenasi-id"><input type="checkbox" id="karshenasi-id" value="KARSHENASI" /> کارشناسی</label>
-                                <label for="arshad-id"><input type="checkbox" id="arshad-id" value="ARSHAD" /> کارشناسی ارشد</label>
-                                <label for="doctora-id"><input type="checkbox" id="doctora-id" value="DOCTORA" /> دکترا</label>
+                                <label for="karshenasi-id"><input type="checkbox" id="karshenasi-id" value="KARSHENASI" onclick="filterClick()" /> کارشناسی</label>
+                                <label for="arshad-id"><input type="checkbox" id="arshad-id" value="ARSHAD" onclick="filterClick()" /> کارشناسی ارشد</label>
+                                <label for="doctora-id"><input type="checkbox" id="doctora-id" value="DOCTORA" onclick="filterClick()" /> دکترا</label>
                             </div>
                         </div>
                         <div class="multiselect">
@@ -387,7 +365,7 @@
                             </div>
                             <div id="checkboxes2">
                                 <th th:each="classroom :${classrooms}">
-                                    <label th:for="'idclassroom' + ${classroom.id}"><input type="checkbox" th:id="'idclassroom' + ${classroom.id}" th:value="${classroom.id}" th:text="' ' + ${classroom.name}" /></label>
+                                    <label th:for="'idclassroom' + ${classroom.id}"><input type="checkbox" onclick="filterClick()" th:id="'idclassroom' + ${classroom.id}" th:value="${classroom.id}" th:text="' ' + ${classroom.name}" /></label>
                                 </th>
                             </div>
                         </div>
@@ -400,7 +378,7 @@
                             </div>
                             <div id="checkboxes3">
                                 <th th:each="teacher :${teachers}">
-                                    <label th:for="'idteacher' + ${teacher.id}"><input type="checkbox" th:id="'idteacher' + ${teacher.id}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}" /></label>
+                                    <label th:for="'idteacher' + ${teacher.id}"><input type="checkbox" onclick="filterClick()" th:id="'idteacher' + ${teacher.id}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}" /></label>
                                 </th>
                             </div>
                         </div>

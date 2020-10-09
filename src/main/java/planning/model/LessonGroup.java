@@ -36,10 +36,10 @@ public class LessonGroup {
     @Column
     private int jalaseNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Teacher teacher;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Lesson lesson;
 
     @ManyToOne(fetch = FetchType.LAZY)

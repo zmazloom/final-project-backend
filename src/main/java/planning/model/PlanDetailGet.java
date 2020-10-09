@@ -36,4 +36,10 @@ public class PlanDetailGet {
     private long classroomId;
     private String classroomName;
 
+    //group
+    private long groupId;
+    private String number;
+    private int zarfiat;
+    private int jalaseNumber;
+
 }

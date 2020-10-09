@@ -4,112 +4,51 @@
 <head>
 
     <style>
-        #datatable_wrapper {
-            width: 80%;
-            margin: auto;
-        }
-
-        .pagination {
-            float: left;
-        }
-
-        #datatable {
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        #datatable th, #datatable td {
-            padding: 10px;
-        }
-
-        #datatable tr {
-            border-radius: 10px;
-        }
-
-        .form-group {
-            margin: 20px 0;
-        }
-
-        .form-style-1 {
-            max-width: 400px;
-            padding: 20px 12px 10px 20px;
-            font-size: 11px;
-        }
-
-        .form-style-1 li {
-            padding: 0;
-            display: block;
-            list-style: none;
-            margin: 10px 0 0 0;
-        }
-
-        .form-style-1 label {
-            margin: 0 0 3px 0;
-            padding: 0px;
-            display: block;
-            font-weight: bold;
-        }
-
-        form-style-1 .field-divided {
-            width: 49%;
-        }
-
-        .form-style-1 .field-long {
-            width: 100%;
-        }
-
-        .form-style-1 .field-select {
-            width: 100%;
-        }
-
-        .form-style-1 .field-textarea {
-            height: 100px;
-        }
-
-
-        #plan-table, #default-plan {
+        .default-plan {
             border: solid thin;
-            font-size: 9px;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 7px;
         }
 
         table {
             border-collapse: unset !important;
         }
 
-        #plan-table caption, #default-plan caption {
+        .default-plan caption {
             padding-bottom: 0.5em;
         }
 
-        #plan-table th, #plan-table td, #default-plan th, #default-plan td {
+        .default-plan th, .default-plan td {
             border: solid thin;
-            padding: 0.5rem 0.5rem;
+            padding: 0.1rem 0;
         }
 
-        #plan-table td, #default-plan td {
-            white-space: nowrap;
+        .default-plan td {
+            /*height: 24px;*/
+            direction: rtl;
+            overflow: hidden;
+        }
+        .default-plan tr {
+            height: 24px;
         }
 
-        #plan-table th, #default-plan th {
+        .default-plan th {
             font-weight: normal;
         }
 
-        #plan-table td, #default-plan td {
-            vertical-align: top;
+        .default-plan {
+            table-layout: fixed;
         }
 
-        #plan-table th, #default-plan th {
+        .default-plan th {
             padding: 0.2em;
             vertical-align: middle;
             text-align: center;
         }
 
-        #plan-table tbody td:first-child::after, #default-plan tbody td:first-child::after {
+        .default-plan tbody td:first-child::after {
             content: leader(". ");
-        }
-
-        #plan-table td {
-            height: 35px;
-            vertical-align: middle;
         }
 
         table tr:first-child > td {
@@ -122,7 +61,28 @@
             text-align: right;
             font-size: 11px;
         }
+        a {
+            cursor: pointer;
+        }
+        .select2-dropdown {
+            direction: rtl;
+        }
 
+        .bold-cell {
+            border-color: #f25755 !important;
+            box-shadow: 0 4px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 9px 0 rgba(0, 0, 0, 0.19);
+            border-width: 2px !important;
+            background-color: white !important;
+        }
+
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            padding-right: 0 !important;
+            exte
+        }
+
+        #groupselect {
+            margin-bottom: 20px;
+        }
     </style>
 
     <script type="text/javascript" th:inline="javascript">
@@ -136,94 +96,108 @@
         var classroom = [[${classrooms}]];
         var lessons = [[${lessons}]];
         var teachers = [[${teachers}]];
+        var groups = [[${groups}]];
         var showTeacherTimes = [[${teachertimes}]];
 
         var selectedTimes = [];
 
         $(document).ready(function () {
-            $("select").select2({
-                dropdownParent: $("#myModalCreate")
+            $("#groupselect select").select2({
+                dropdownParent: $("#groupselect")
             });
+
+            document.getElementById("sidebar-toggle-link").click();
+
             $('#base-sidebar li:eq(4)').addClass('active');
 
-            create_default_plan();
+            if(selectedTimes.length === 0) {
+                for (var i = 0; i < result.length; i++) {
+                    var highlightTime = {
+                        classroomId: result[i].classroomId,
+                        groupId: result[i].groupId,
+                        lessonId: result[i].lessonId,
+                        teacherId: result[i].teacherId,
+                        time: result[i].time.substring(result[i].time.search(/\d/)),
+                        day: result[i].time.substring(0, result[i].time.search(/\d/)),
+                        weekType: result[i].weekType,
+                        name: result[i].name
+                    };
+                    selectedTimes.push(highlightTime);
+                }
+            }
+
+            create_default_plan("default-plan1");
+            create_default_plan("default-plan2");
+            create_default_plan("default-plan3");
+            create_default_plan("default-plan4");
+            create_default_plan("default-plan5");
+            create_default_plan("default-plan6");
             set_options();
 
-            $('.nBtn, .table .eBtn').on('click', function (event) {
-                event.preventDefault();
-                var href = $(this).attr('href');
-                var text = $(this).attr('name');
-                //for update plan
-                if (text == 'edit') {
-                } else {
-                    if(selectedTimes.length === 0) {
-                        for (var i = 0; i < result.length; i++) {
-                            var highlightTime = {
-                                classroomId: result[i].classroomId,
-                                teacherId: result[i].teacherId,
-                                lessonId: result[i].lessonId,
-                                time: result[i].time.substring(result[i].time.search(/\d/)),
-                                day: result[i].time.substring(0, result[i].time.search(/\d/)),
-                                weekType: result[i].weekType,
-                                name: result[i].name,
-                                lastName: result[i].lastName
-                            };
-                            selectedTimes.push(highlightTime);
-                        }
-                    }
-                    //for creating plan
-                    $('.myFormCreate #myModalCreate').modal();
-                }
-            });
-            //for delete plan
-            $('.table .delBtn').on('click', function (event) {
-                event.preventDefault();
-                var href = $(this).attr('href');
-                $('#removeModalCenter #delRef').attr('href', href);
-                $('#removeModalCenter').modal();
-            });
         });
 
+        function set_group() {
+            event.preventDefault();
+            if (document.getElementById("group").value === ""){
+                //nothing
+            }
+            else {
+                create_default_plan("default-plan1");
+                create_default_plan("default-plan2");
+                create_default_plan("default-plan3");
+                create_default_plan("default-plan4");
+                create_default_plan("default-plan5");
+                create_default_plan("default-plan6");
+
+                highlight_cell("default-plan1");
+                highlight_cell("default-plan2");
+                highlight_cell("default-plan3");
+                highlight_cell("default-plan4");
+                highlight_cell("default-plan5");
+                highlight_cell("default-plan6");
+            }
+        }
+
         function checkWarningSelection(highlightTime) {
-            if(highlightTime != null && selectedTimes.length > 0) {
+            if (highlightTime != null && selectedTimes.length > 0) {
                 var lessonUnit = 0;
 
-                for(var j = 0; j < lessons.length; j++) {
-                    if(lessons[j].id === highlightTime.lessonId) {
+                for (var j = 0; j < lessons.length; j++) {
+                    if (lessons[j].id === highlightTime.lessonId) {
                         lessonUnit = lessons[j].unit;
                         break;
                     }
                 }
-                if(lessonUnit === "ZERO")
+                if (lessonUnit === "ZERO")
                     lessonUnit = 0;
-                else if(lessonUnit === "ONE")
+                else if (lessonUnit === "ONE")
                     lessonUnit = 1;
-                else if(lessonUnit === "TWO")
+                else if (lessonUnit === "TWO")
                     lessonUnit = 2;
-                else if(lessonUnit === "THREE")
+                else if (lessonUnit === "THREE")
                     lessonUnit = 3;
-                else if(lessonUnit === "FOUR")
+                else if (lessonUnit === "FOUR")
                     lessonUnit = 4;
 
                 var lessonCount = 0;
                 for (var i = 0; i < selectedTimes.length; i++) {
-                    if(selectedTimes[i] != null) {
+                    if (selectedTimes[i] != null) {
                         if (selectedTimes[i].lessonId === highlightTime.lessonId) {
                             lessonCount = lessonCount + 1;
                         }
                     }
                 }
 
-                if(lessonCount >= lessonUnit)
+                if (lessonCount >= lessonUnit)
                     return "تعداد زمان انتخاب شده برای درس، بیشتر از واحد آن خواهد شد.";
                 else return "";
             }
         }
 
         function checkIgnoreSelection(highlightTime) {
-            if(highlightTime != null && selectedTimes.length > 0) {
-                for (var i = 0; i<selectedTimes.length; i++) {
-                    if(selectedTimes[i] != null) {
+            if (highlightTime != null && selectedTimes.length > 0) {
+                for (var i = 0; i < selectedTimes.length; i++) {
+                    if (selectedTimes[i] != null) {
                         if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
                             return "درس دیگری در این زمان برای استاد ثبت شده است.";
                         }
@@ -234,8 +208,8 @@
             return "";
         }
 
-        function highlight_cell() {
-            var table = document.getElementById('plan-table');
+        function highlight_cell(tableIdInFile) {
+            var table = document.getElementById(tableIdInFile);
             var cells = table.getElementsByTagName('td');
 
             for (var i = 0; i < cells.length; i++) {
@@ -243,52 +217,82 @@
                 var cell = cells[i];
                 // do something on onclick event for cell
                 cell.onclick = function () {
+                    var groupSelect = document.getElementById("group").value;
+
+                    var teacherSelect = null;
+                    var lessonSelect = null;
+                    if(groupSelect != null) {
+                        for (var i = 0; i < groups.length; i++) {
+                            if(groupSelect == groups[i].groupId) {
+                                teacherSelect = groups[i].teacherId;
+                                lessonSelect = groups[i].lessonId;
+                                break;
+                            }
+                        }
+                    }
+
                     // Get the row id where the cell exists
                     var rowId = this.parentNode.rowIndex;
-
                     if (rowId >= 2 && this.cellIndex < 2 * times.length) {
-                        var classroomId = classroom[rowId - 2].id;
-                        var teacherId = parseInt(document.getElementById("teacher").value);
-                        var lessonId = parseInt(document.getElementById("lesson").value);
+                        var day;
+                        var classId = (rowId - 1) % classroom.length - 1;
+                        if (classId < 0) classId = classroom.length - 1;
+                        var classroomId = classroom[classId].id;
+                        var groupId = parseInt(document.getElementById("group").value);
                         var time = times[Math.round((2 * times.length - this.cellIndex) / 2) - 1];
-                        var day = document.getElementById("day").value;
-                        var name = $("#lesson option:selected").text();
-                        var lastName = $("#teacher option:selected").text();
+                        var dayId = tableIdInFile.toString().substring(12) - 1;// Math.trunc((rowId-2) / classroom.length)  ;
+                        var day = days[dayId];
+                        var name = $("#group option:selected").text();
                         var weekType = '';
                         if (this.cellIndex % 2 === 0)
                             weekType = "FARD";
                         else weekType = "ZOJ";
-                        var highlightTime = {classroomId: classroomId, teacherId: teacherId, lessonId: lessonId, time: time, day: day, weekType: weekType, name: name, lastName: lastName};
+                        var highlightTime = {
+                            classroomId: classroomId,
+                            lessonId: lessonSelect,
+                            teacherId: teacherSelect,
+                            groupId: groupId,
+                            time: time,
+                            day: day,
+                            weekType: weekType,
+                            name: name
+                        };
 
                         var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day && selectedTime.weekType === weekType));
                         // if this time is not selected, then select
                         if (!checkTime.length) {
-                            var warningSelection = checkWarningSelection(highlightTime);
-                            var ignoreSelection = checkIgnoreSelection(highlightTime);
+                            var warningSelection = null;//checkWarningSelection(highlightTime);
+                            var ignoreSelection = null;//checkIgnoreSelection(highlightTime);
 
-                            if(ignoreSelection != null && ignoreSelection.length > 0)
+                            if (ignoreSelection != null && ignoreSelection.length > 0)
                                 alert(ignoreSelection);
                             else {
+                                var a = document.createElement('a');
+                                var link;
                                 if (warningSelection != null && warningSelection.length > 0) {
                                     if (confirm(warningSelection + " آیا مطمئن هستید؟")) {
                                         this.style.backgroundColor = "yellow";
-                                        this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
+                                        link = document.createTextNode($("#group option:selected").text());
+                                        a.title =  $("#group option:selected").text();
+                                        a.appendChild(link);
+                                        this.appendChild(a);
                                         selectedTimes.push(highlightTime);
                                     }
                                 } else {
-                                    this.style.backgroundColor = "yellow";
-                                    this.innerHTML = $("#lesson option:selected").text() + " (" + $("#teacher option:selected").text() + ")";
-                                    selectedTimes.push(highlightTime);
+                                    if (confirm(" آیا مطمئن هستید؟")) {
+                                        link = document.createTextNode($("#group option:selected").text());
+                                        a.title = $("#group option:selected").text();
+                                        a.appendChild(link);
+                                        this.appendChild(a);
+                                        selectedTimes.push(highlightTime);
+                                    }
                                 }
                             }
                         }
                         // if this time is selected before, then deselect (double click = deselect)
                         else {
                             if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
-                                if(this.style.borderColor != "green")
-                                    this.style.backgroundColor = "white";
-                                else
-                                    this.style.backgroundColor = "#c6ffb3";
+                                this.classList.remove('bold-cell');
                                 this.innerHTML = "";
                                 var index;
                                 selectedTimes.some(function (entry, i) {
@@ -301,6 +305,9 @@
                             }
                         }
                     }
+
+                    //send data to backend
+                    handleClickPlanning();
                 }
             }
         }
@@ -319,8 +326,24 @@
             },
         });
 
-        function create_default_plan() {
-            var defaultPlan = document.getElementById("default-plan");
+        function create_default_plan(tableIdInFile) {
+            var groupSelect = document.getElementById("group").value;
+
+            var teacherSelect = null;
+            var lessonSelect = null;
+            if(groupSelect != null) {
+                for (var i = 0; i < groups.length; i++) {
+                    if(groupSelect == groups[i].groupId) {
+                        teacherSelect = groups[i].teacherId;
+                        lessonSelect = groups[i].lessonId;
+                        break;
+                    }
+                }
+            }
+
+            var defaultPlan = document.getElementById(tableIdInFile);
+            defaultPlan.innerHTML = "";
+
             //create thead
             var header = defaultPlan.createTHead();
             var row = header.insertRow(0);
@@ -328,6 +351,8 @@
             row.style.top = "0px";
             row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "900";
+            row.style.fontSize = "9px";
+            row.style.height= "19px";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
             cell.style.fontWeight = "bold";
@@ -343,22 +368,43 @@
                 cell3.style.backgroundColor = "rgb(178 251 255)";
                 cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
+                cell3.style.fontSize = "9px";
             }
             var row2 = header.insertRow(1);
             row2.style.position = "sticky";
-            row2.style.top = "30px";
+            row2.style.top = "24px";
             row2.style.backgroundColor = "#a9caf4";
             row2.style.zIndex = "900";
+            row2.style.fontSize = "9px"
+            row2.style.height= "19px";
             for (var j = 0; j < times.length; j++) {
                 var cell4 = row2.insertCell(0);
                 cell4.innerHTML = "زوج";
                 cell4.style.fontWeight = "bold";
+                cell4.style.fontSize = "9px";
                 var cell5 = row2.insertCell(0);
                 cell5.innerHTML = "فرد";
                 cell5.style.fontWeight = "bold";
+                cell5.style.fontSize = "9px";
             }
+
             //create tbody
-            for (var n = 0; n < days.length; n++) {                     //loop on days
+            var n = null;
+            if(tableIdInFile === "default-plan1")
+                n = 0;
+            else if(tableIdInFile === "default-plan2")
+                n = 1;
+            else if(tableIdInFile === "default-plan3")
+                n = 2;
+            else if(tableIdInFile === "default-plan4")
+                n = 3;
+            else if(tableIdInFile === "default-plan5")
+                n = 4;
+            else if(tableIdInFile === "default-plan6")
+                n = 5;
+
+
+            if(n != null) {
                 for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
                     var row3 = defaultPlan.insertRow();
                     var cell6 = row3.insertCell(0);
@@ -376,15 +422,54 @@
                     for (var t = 0; t < times.length; t++) {         //loop on times
                         var cell8 = row3.insertCell(0);
                         var cell9 = row3.insertCell(0);
-                        for (var b = 0; b < result.length; b++) {          //loop on result
-                            if (result[b].time === days[n] + times[t] && result[b].classroomName === classroom[m].name) {
-                                if (result[b].weekType === "ZOJ") {
-                                    cell8.innerHTML = result[b].name + " (" + result[b].lastName + ")";
-                                } else if (result[b].weekType === "FARD") {
-                                    cell9.innerHTML = result[b].name + " (" + result[b].lastName + ")";
+
+                        if(teacherSelect != null) {
+                            for (var tt = 0; tt < showTeacherTimes.length; tt++) {//loop on showTeacherTimes
+                                if (showTeacherTimes[tt].time === days[n] + times[t] && showTeacherTimes[tt].teacherId == teacherSelect) {
+                                    if(showTeacherTimes[tt].priority == 1) {
+                                        cell8.style.border = "1px solid green";
+                                        cell9.style.border = "1px solid green";
+                                        cell8.style.backgroundColor = "rgb(203 245 189)";
+                                        cell9.style.backgroundColor = "rgb(203 245 189)";
+                                    }
+                                    else if(showTeacherTimes[tt].priority == 2) {
+                                        cell8.style.border = "1px solid #c3c303";
+                                        cell9.style.border = "1px solid #c3c303";
+                                        cell8.style.backgroundColor = "rgb(253 253 190)";
+                                        cell9.style.backgroundColor = "rgb(253 253 190)";
+                                    }
+                                    else if(showTeacherTimes[tt].priority == 3) {
+                                        cell8.style.border = "1px solid red";
+                                        cell9.style.border = "1px solid red";
+                                        cell8.style.backgroundColor = "rgb(239 187 187)";
+                                        cell9.style.backgroundColor = "rgb(239 187 187)";
+                                    }
+
                                 }
                             }
+                        }
 
+                        for (var b = 0; b < selectedTimes.length; b++) {          //loop on selectedTimes
+                            if (selectedTimes[b].time === times[t] && selectedTimes[b].day === days[n] && selectedTimes[b].classroomId === classroom[m].id) {
+                                var a = document.createElement('a');
+                                var link;
+                                if (selectedTimes[b].weekType === "ZOJ") {
+                                    link = document.createTextNode(selectedTimes[b].name);
+                                    a.title = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
+                                    a.appendChild(link);
+                                    cell8.appendChild(a);
+                                    if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
+                                        cell8.classList.add('bold-cell');
+                                } else if (selectedTimes[b].weekType === "FARD") {
+                                    link = document.createTextNode(selectedTimes[b].name);
+                                    a.title = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
+                                    a.appendChild(link);
+                                    cell9.appendChild(a);
+                                    if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
+                                        cell9.classList.add('bold-cell');
+                                }
+
+                            }
                         }
 
                     }
@@ -394,139 +479,14 @@
         }
 
         function set_options() {
-            var selectLesson = document.getElementById("lesson");
-            for (var i = 0; i < lessons.length; i++) {
+            var selectGroup = document.getElementById("group");
+            for (var i = 0; i < groups.length; i++) {
                 var option = document.createElement("option");
-                option.text = lessons[i].name;
-                option.value = lessons[i].id;
-                option.style.textAlign = "right";
-                selectLesson.add(option);
-            }
-
-            var selectTeacher = document.getElementById("teacher");
-            for (var i = 0; i < teachers.length; i++) {
-                var option = document.createElement("option");
-                option.text = teachers[i].firstName + ' ' + teachers[i].lastName;
-                option.value = teachers[i].id;
-                selectTeacher.add(option);
-            }
-
-            var selectDay = document.getElementById("day");
-            for (var i = 0; i < days.length; i++) {
-                var option = document.createElement("option");
-                option.text = persianDays[i];
-                option.value = days[i];
-                selectDay.add(option);
-            }
-
-        }
-
-        function create_plan_table() {
-            var lessonSelect = document.getElementById("lesson");
-            var teacherSelect = document.getElementById("teacher");
-            var daySelect = document.getElementById("day");
-
-            if (lessonSelect.value != 0 && teacherSelect.value != 0 && daySelect.value != 0) {
-                var planTable = document.getElementById("plan-table");
-                planTable.deleteTHead();
-                //create thead
-                var header = planTable.createTHead();
-                var row = header.insertRow(0);
-                row.style.position = "sticky";
-                row.style.top = "0px";
-                row.style.backgroundColor = "rgb(178 251 255)";
-                row.style.zIndex = "99999";
-                row.style.fontWeight = "bold";
-                var cell = row.insertCell(0);
-                cell.innerHTML = "روز";
-                cell.style.fontWeight = "bold";
-                cell.rowSpan = 2;
-                var cell2 = row.insertCell(0);
-                cell2.innerHTML = "کلاس";
-                cell2.style.fontWeight = "bold";
-                cell2.rowSpan = 2;
-                for (var i = 0; i < times.length; i++) {
-                    var cell3 = row.insertCell(0);
-                    cell3.innerHTML = persianTimes[i];
-                    cell3.style.fontWeight = "bold";
-                    cell3.style.backgroundColor = "rgb(178 251 255)";
-                    cell3.style.direction = "rtl";
-                    cell3.colSpan = 2;
-                }
-                var row2 = header.insertRow(1);
-                row2.style.position = "sticky";
-                row2.style.top = "30px";
-                row2.style.backgroundColor = "#a9caf4";
-                row2.style.zIndex = "9999";
-                for (var j = 0; j < times.length; j++) {
-                    var cell4 = row2.insertCell(0);
-                    cell4.innerHTML = "زوج";
-                    cell4.style.fontWeight = "bold";
-                    var cell5 = row2.insertCell(0);
-                    cell5.style.fontWeight = "bold";
-                    cell5.innerHTML = "فرد";
-                }
-                //create tbody
-                for (var n = 0; n < days.length; n++) {                     //loop on days
-                    if (days[n] === document.getElementById('day').value) {
-                        for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
-                            var row3 = planTable.insertRow();
-                            var cell6 = row3.insertCell(0);
-                            cell6.innerHTML = persianDays[n];
-                            cell6.style.position = "sticky";
-                            cell6.style.right = "0px";
-                            cell6.style.fontWeight = "bold";
-                            cell6.style.backgroundColor = "antiquewhite";
-                            var cell7 = row3.insertCell(0);
-                            cell7.innerHTML = classroom[m].name;
-                            cell7.style.fontWeight = "bold";
-                            cell7.style.position = "sticky";
-                            cell7.style.right = "41px";
-                            cell7.style.backgroundColor = "antiquewhite";
-                            for (var t = 0; t < times.length; t++) {         //loop on times
-                                var cell8 = row3.insertCell(0);
-                                var cell9 = row3.insertCell(0);
-
-                                //show teacher times:
-                                for (var tt = 0; tt < showTeacherTimes.length; tt++) {//loop on showTeacherTimes
-                                    if (showTeacherTimes[tt].time === days[n] + times[t] && showTeacherTimes[tt].teacherId == parseInt(document.getElementById("teacher").value)) {
-                                        cell8.style.border = "1px solid green";
-                                        cell9.style.border = "1px solid green";
-                                        cell8.style.backgroundColor = "#c6ffb3";
-                                        cell9.style.backgroundColor = "#c6ffb3";
-                                    }
-                                }
-
-                                //show planning:
-                                for (var b = 0; b < selectedTimes.length; b++) {//loop on result
-                                    if (selectedTimes[b] != null) {
-                                        if (selectedTimes[b].day + selectedTimes[b].time === days[n] + times[t] && selectedTimes[b].classroomId === classroom[m].id) {
-                                            if (selectedTimes[b].weekType === "ZOJ") {
-                                                cell8.innerHTML = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
-                                            } else if (selectedTimes[b].weekType === "FARD") {
-                                                cell9.innerHTML = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
-                                            }
-                                        }
-                                    }
-                                }
-                                // if now select then highlight
-                                var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroom[m].id && selectedTime.time === times[t] && selectedTime.day === days[n]));
-                                if (checkTime.length) {
-                                    for (var k = 0; k < checkTime.length; k++) {
-                                        if (checkTime[k].weekType === 'ZOJ')
-                                            cell8.style.backgroundColor = "yellow";
-                                        else cell9.style.backgroundColor = "yellow";
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
-                highlight_cell();
+                option.text = groups[i].name + ' - ' + groups[i].lastName;
+                option.value = groups[i].groupId;
+                selectGroup.add(option);
             }
         }
-
 
         function handleClickPlanning() {
             event.preventDefault();
@@ -536,10 +496,9 @@
             var planId = [[${planId}]];
 
             for (var i = 0; i < selectedTimes.length; i++) {
-                if(selectedTimes[i] != null) {
-                    var jsonCellTable = '{"teacherId": ' + selectedTimes[i].teacherId +
-                        ', "classroomId": ' + selectedTimes[i].classroomId +
-                        ', "lessonId": ' + selectedTimes[i].lessonId +
+                if (selectedTimes[i] != null) {
+                    var jsonCellTable = '{"classroomId": ' + selectedTimes[i].classroomId +
+                        ', "groupId": ' + selectedTimes[i].groupId +
                         ',"time": "' + selectedTimes[i].day + selectedTimes[i].time + '"' +
                         ',"weekType": "' + selectedTimes[i].weekType + '"}';
 
@@ -548,28 +507,21 @@
                 }
             }
 
-            if(jsonCellTables.length > 1)
+            if (jsonCellTables.length > 1)
                 jsonCellTables = jsonCellTables.substring(0, jsonCellTables.length - 1) + ']';
             else
                 jsonCellTables = jsonCellTables + ']';
 
-            console.log(jsonCellTables);
-            selectedTimes = [];
             $.ajax({
                 type: "POST",
                 url: '/api/plan/' + planId + "/planning",
                 data: jsonCellTables,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
-            }).done (function (response) {
-                alert("برنامه ریزی با موفیت ذخیره شد.");
-                $('.myFormCreate #myModalCreate').modal('hide');
-                location.reload();
+            }).done(function (response) {
             })
-            .fail(function(response) {
+            .fail(function (response) {
                 alert(JSON.parse(response.responseText).message);
-                $('.myFormCreate #myModalCreate').modal('hide');
-                location.reload();
             })
         }
     </script>
@@ -595,205 +547,33 @@
 
 
         <!-- Main content -->
-        <section class="content container-fluid" style="padding: 30px; margin-top: 10px;">
+        <section class="content container-fluid" style="padding: 30px 5px 5px 5px; margin-top: 10px;">
 
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
-                    <div class="col-sm-12" style="padding: 0;">
-                        <button class="btn btn-primary nBtn">
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                            <span style="margin: 5px;">ویرایش برنامه ریزی</span>
-                        </button>
-                    </div>
-                </div>
-                <div style="overflow-x:auto;overflow-y: auto;">
-                    <table id="default-plan" style="direction: ltr;text-align: center">
-                    </table>
-                </div>
-
-            </div>
-
-            <!--#Modal form for plan update-->
-            <div class="myFormUpdate">
-                <form th:action="@{/plan/update}" method="post">
-                    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog"
-                         aria-labelledby="updateModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
-                                <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش
-                                        برنامه</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                            style="outline: none;">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <input type="hidden" class="form-control" id="id" name="id" value=""/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name" class="col-form-label">نام</label>
-                                        <input type="text" class="form-control" id="name" name="name" value=""
-                                               style="border-radius: 2px;"/>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="timeType" class="col-form-label">زمانبندی</label>
-                                                <select name="timeType" id="timeType" disabled>
-                                                    <option value="TWO_HOURS">2 ساعت</option>
-                                                    <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">
-                                        انصراف
-                                    </button>
-                                    <input type="submit" class="btn btn-primary" value="ویرایش" style="outline: none;"/>
-                                </div>
-                            </div>
+                    <div class="col-sm-3" style="font-size: 0.8em;">
+                        <div id="groupselect">
+                            <select id="group" class="select2" name="group" data-width="100%" required onchange="set_group()">
+                                <option value="">یک گروه را انتخاب کنید...</option>
+                            </select>
                         </div>
                     </div>
-                </form>
-            </div>
-            <!--End update form-->
-
-            <!--#Modal for plan create-->
-            <div class="myFormCreate">
-                <form onSubmit="JavaScript:handleClickPlanning()">
-                    <div class="modal fade" id="myModalCreate" tabindex="-1"  role="dialog"
-                         aria-labelledby="modalLabelCreate" aria-hidden="true">
-                        <div class="modal-dialog" role="document" style="width: 95%;">
-                            <div class="modal-content" style="border-radius: 5px; overflow: hidden;">
-                                <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="updateModalLabel" style="display: inline;">ویرایش برنامه ریزی</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body" style="padding: 25px 10px;">
-                                    <div class="row">
-                                        <div class="col-sm-3">
-                                            <div class="form-style-1">
-                                                <div style="margin-bottom: 15px;">
-                                                    <label>درس </label>
-                                                    <select id="lesson" name="lesson" data-width="80%" onchange="create_plan_table()">
-                                                        <option value="">یک درس را انتخاب کنید...</option>
-                                                    </select>
-                                                </div>
-                                                <div style="margin-bottom: 15px;">
-                                                    <label>استاد </label>
-                                                    <select id="teacher" name="teacher"  data-width="80%" onchange="create_plan_table()">
-                                                        <option value="">یک استاد را انتخاب کنید...</option>
-                                                    </select>
-                                                </div>
-                                                <div style="margin-bottom: 15px;">
-                                                    <label>روز هفته </label>
-                                                    <select id="day" name="day" data-width="80%" onchange="create_plan_table()">
-                                                        <option value="">یک روز را انتخاب کنید...</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <div style="overflow-x:auto;">
-                                                <table id="plan-table" style="direction: ltr;text-align: center; margin: 0 auto;">
-
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="showSelectedTimes"></div>
-                                    <div class="modal-footer" style="padding: 15px 0;">
-                                        <button type="button" class="btn btn" data-dismiss="modal"
-                                                style="outline: none;">انصراف
-                                        </button>
-                                        <input type="submit" class="btn btn-primary" value="ذخیره"
-                                               style="outline: none;"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!--End form-->
-
-            <!-- #Modal for removing plan -->
-            <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog"
-                 aria-labelledby="removeModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
-                        <div class="modal-header" style="background-color: #ecebeb;">
-                            <h5 class="modal-title" id="deleteModalLabel" style="display: inline;">حذف برنامه</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                    style="outline: none;">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>آیا از حذف برنامه اطمینان دارید؟</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف
-                            </button>
-                            <a href="" class="btn btn-primary" id="delRef" style="outline: none;">تایید</a>
-                        </div>
+                    <div class="col-md-9">
+                        <table class="default-plan" id="default-plan1" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
+                        <table class="default-plan" id="default-plan2" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
+                        <table class="default-plan" id="default-plan3" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
+                        <table class="default-plan" id="default-plan4" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
+                        <table class="default-plan" id="default-plan5" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
+                        <table class="default-plan" id="default-plan6" style="direction: ltr;text-align: center;width: -moz-available">
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <!--#Modal form for update planning-->
-            <div class="myFormCopy">
-                <form th:action="@{/plan/copy}" method="post">
-                    <div class="modal fade" id="copyModal" tabindex="-1" role="dialog" aria-labelledby="copyModalLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
-                                <div class="modal-header" style="background-color: #ecebeb;">
-                                    <h5 class="modal-title" id="copyModalLabel" style="display: inline;">کپی برنامه</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                            style="outline: none;">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <input type="hidden" class="form-control" id="id" name="id" value=""/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name" class="col-form-label">نام برنامه جدید</label>
-                                        <input type="text" class="form-control" id="name" name="name" value=""
-                                               style="border-radius: 2px;"/>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="timeType" class="col-form-label">زمانبندی</label>
-                                                <select name="timeType" id="timeType" disabled>
-                                                    <option value="TWO_HOURS">2 ساعت</option>
-                                                    <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">
-                                        انصراف
-                                    </button>
-                                    <input type="submit" class="btn btn-primary" value="کپی" style="outline: none;"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!--End copy form-->
 
         </section>
         <!-- /.content -->

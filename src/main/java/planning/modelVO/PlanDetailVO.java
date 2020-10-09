@@ -15,13 +15,10 @@ import javax.validation.constraints.NotNull;
 public class PlanDetailVO {
 
     @NotNull
-    private Long teacherId;
+    private Long groupId;
 
     @NotNull
     private Long classroomId;
-
-    @NotNull
-    private Long lessonId;
 
     @NotNull
     private Time time;

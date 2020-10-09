@@ -444,6 +444,7 @@ public class PanelController {
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
             ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
             ResponseEntity<Result<List<LessonVO>>> lessonVOList = lessonController.getAllLessons();
+            ResponseEntity<Result<List<LessonGroupVO>>> lessonGroupVOList = groupController.getAllLessonGroups(id);
             ResponseEntity<Result<List<AllTeacherTimeGet>>> teacherTimeVOList = teacherController.getAllTeacherTimes(id);
 
             model.addAttribute("planId", id);
@@ -455,6 +456,11 @@ public class PanelController {
                 model.addAttribute("reports", planVOList.getBody().getResult());
             else
                 model.addAttribute("reports", new ArrayList<PlanVO>());
+
+            if (lessonGroupVOList.getBody() != null && lessonGroupVOList.getBody().getResult() != null)
+                model.addAttribute("groups", lessonGroupVOList.getBody().getResult());
+            else
+                model.addAttribute("groups", new ArrayList<LessonGroupVO>());
 
             if (lessonVOList.getBody() != null && lessonVOList.getBody().getResult() != null)
                 model.addAttribute("lessons", lessonVOList.getBody().getResult());
@@ -502,6 +508,7 @@ public class PanelController {
             model.addAttribute("teachertimes", new ArrayList<AllTeacherTimeGet>());
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("user", new TeacherVO());
+            model.addAttribute("groups", new LessonGroupVO());
         }
 
         if (AJAX_HEADER_VALUE.equals(request.getHeader(AJAX_HEADER_NAME)))
@@ -737,7 +744,7 @@ public class PanelController {
 
         model.addAttribute("user", user);
 
-        if(user.getRole().equals(Role.ROLE_ADMIN))
+        if (user.getRole().equals(Role.ROLE_ADMIN))
             model.addAttribute("role", "admin");
         else model.addAttribute("role", "user");
 

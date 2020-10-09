@@ -27,11 +27,8 @@ public class PlanDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     private Plan plan;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Lesson lesson;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Teacher teacher;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private LessonGroup group;
 
     @Column
     @Enumerated

@@ -533,15 +533,16 @@ public class PanelController {
             plan = planController.getPlanById(id);
             ResponseEntity<Result<List<PlanDetailGet>>> planVOList = planController.getPlanDetails(id);
             ResponseEntity<Result<List<ClassroomVO>>> classroomVOList = classroomController.getAllClassrooms();
-            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = teacherController.getAllTeachers();
-            List<Long> classroomIds = new ArrayList<>();
-            List<Long> teacherIds = new ArrayList<>();
+            ResponseEntity<Result<List<LessonVO>>> lessonVOList = groupController.getAllPanelGroupLessons(id);
+            ResponseEntity<Result<List<TeacherVO>>> teacherVOList = groupController.getAllPanelGroupTeachers(id);
+
 
             if (planVOList.getBody() != null && planVOList.getBody().getResult() != null)
                 model.addAttribute("reports", planVOList.getBody().getResult());
             else
                 model.addAttribute("reports", new ArrayList<PlanVO>());
 
+            List<Long> classroomIds = new ArrayList<>();
             if (classroomVOList.getBody() != null && classroomVOList.getBody().getResult() != null) {
                 model.addAttribute("classrooms", classroomVOList.getBody().getResult());
                 for (ClassroomVO classroomVO : classroomVOList.getBody().getResult()) {
@@ -553,16 +554,37 @@ public class PanelController {
                 model.addAttribute("classroomIds", new ArrayList<Long>());
             }
 
+            List<LessonVO> lessonVOS = new ArrayList<>();
+            List<Long> lessonIds = new ArrayList<>();
+            if (lessonVOList.getBody() != null && lessonVOList.getBody().getResult() != null) {
+                List<LessonVO> lessonGroupVOS = lessonVOList.getBody().getResult();
+                for (LessonVO lessonVO : lessonGroupVOS) {
+                    LessonVO lesson = new LessonVO();
+                    lesson.setName(lessonVO.getName());
+                    lesson.setCode(lessonVO.getCode());
+                    lesson.setId(lessonVO.getId());
+                    lessonVOS.add(lesson);
+                    lessonIds.add(lessonVO.getId());
+                }
+            }
+            model.addAttribute("lessons", lessonVOS);
+            model.addAttribute("lessonIds", lessonIds);
+
+            List<TeacherVO> teacherVOS = new ArrayList<>();
+            List<Long> teacherIds = new ArrayList<>();
             if (teacherVOList.getBody() != null && teacherVOList.getBody().getResult() != null) {
-                model.addAttribute("teachers", teacherVOList.getBody().getResult());
-                for (TeacherVO teacherVO : teacherVOList.getBody().getResult()) {
+                List<TeacherVO> teacherGroupVOS = teacherVOList.getBody().getResult();
+                for (TeacherVO teacherVO : teacherGroupVOS) {
+                    TeacherVO teacher = new TeacherVO();
+                    teacher.setFirstName(teacherVO.getFirstName());
+                    teacher.setLastName(teacherVO.getLastName());
+                    teacher.setId(teacherVO.getId());
+                    teacherVOS.add(teacher);
                     teacherIds.add(teacherVO.getId());
                 }
-                model.addAttribute("teacherIds", teacherIds);
-            } else {
-                model.addAttribute("teachers", new ArrayList<TeacherVO>());
-                model.addAttribute("teacherIds", new ArrayList<Long>());
             }
+            model.addAttribute("teachers", teacherVOS);
+            model.addAttribute("teacherIds", teacherIds);
 
             if (user != null)
                 model.addAttribute("user", user);
@@ -574,6 +596,8 @@ public class PanelController {
             model.addAttribute("classrooms", new ArrayList<ClassroomVO>());
             model.addAttribute("teachers", new ArrayList<TeacherVO>());
             model.addAttribute("teacherIds", new ArrayList<Long>());
+            model.addAttribute("lessons", new ArrayList<TeacherVO>());
+            model.addAttribute("lessonIds", new ArrayList<Long>());
             model.addAttribute("classroomIds", new ArrayList<Long>());
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("user", new TeacherVO());

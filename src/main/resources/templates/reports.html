@@ -59,12 +59,12 @@
             border: solid thin;
             width: 100%;
             margin-bottom: 10px;
-            font-size: 8px;
+            font-size: 7px;
             table-layout: fixed;
         }
 
         #default-plan tr {
-            height: 26px;
+            height: 45px;
         }
 
         table {
@@ -132,16 +132,25 @@
             margin: 8px 0;
         }
 
-        #checkboxes1, #checkboxes2, #checkboxes3 {
+        #checkboxes1, #checkboxes2, #checkboxes3, #checkboxes4 {
             display: none;
             border: 1px #dadada solid;
             background-color: #e2f7f7;
         }
-        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label {
+        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label, #checkboxes4 label {
             display: block;
         }
-        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover {
+        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover, #checkboxes4 label:hover {
             background-color: #1e90ff;
+        }
+
+        .hrtbl {
+            margin: 7px auto !important;
+            border-top: 1px dashed black;
+            width: 85%;
+        }
+        .ptbl {
+            margin: 0 !important;
         }
     </style>
 
@@ -156,6 +165,7 @@
         var validMaghta = ["KARSHENASI", "ARSHAD", "DOCTORA"];
         var validClasses = [[${classroomIds}]];
         var validTeachers = [[${teacherIds}]];
+        var validLessons = [[${lessonIds}]];
         var validTerms = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
         //full report
@@ -183,15 +193,13 @@
             row.style.top = "0px";
             row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "900";
-            row.style.height= "19px";
+            row.style.fontSize = "10px";
             var cell = row.insertCell(0);
             cell.innerHTML = "روز";
             cell.style.fontWeight = "bold";
-            cell.rowSpan = 2;
             var cell2 = row.insertCell(0);
             cell2.innerHTML = "کلاس";
             cell2.style.fontWeight = "bold";
-            cell2.rowSpan = 2;
             for (var i = 0; i < times.length; i++) {
                 var cell3 = row.insertCell(0);
                 cell3.innerHTML = persianTimes[i];
@@ -199,20 +207,7 @@
                 cell3.style.backgroundColor = "rgb(178 251 255)";
                 cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
-            }
-            var row2 = header.insertRow(1);
-            row2.style.position = "sticky";
-            row2.style.top = "30px";
-            row2.style.backgroundColor = "#a9caf4";
-            row2.style.zIndex = "900";
-            row2.style.height= "19px";
-            for (var j = 0; j < times.length; j++) {
-                var cell4 = row2.insertCell(0);
-                cell4.innerHTML = "زوج";
-                cell4.style.fontWeight = "bold";
-                var cell5 = row2.insertCell(0);
-                cell5.style.fontWeight = "bold";
-                cell5.innerHTML = "فرد";
+                cell3.style.fontSize = "10px";
             }
             //create tbody
             for (var n = 0; n < days.length; n++) {                     //loop on days
@@ -224,29 +219,39 @@
                     cell6.style.right = "0px";
                     cell6.style.fontWeight = "bold";
                     cell6.style.backgroundColor = "antiquewhite";
+                    cell6.style.fontSize = "10px";
                     var cell7 = row3.insertCell(0);
                     cell7.innerHTML = classroom[m].name;
                     cell7.style.fontWeight = "bold";
                     cell7.style.position = "sticky";
                     cell7.style.right = "48px";
                     cell7.style.backgroundColor = "antiquewhite";
+                    cell7.style.fontSize = "10px";
+
                     for (var t = 0; t < times.length; t++) {         //loop on times
                         var cell8 = row3.insertCell(0);
-                        var cell9 = row3.insertCell(0);
+                        cell8.colSpan = 2;
+                        var cell8TextZoj = "";
+                        var cell8TextFard = "";
                         for (var b = 0; b < reports.length; b++) {          //loop on result
                             if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m].name) {
                                 if(validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
-                                    validTeachers.includes(reports[b].teacherId)) {
+                                    validTeachers.includes(reports[b].teacherId) &&
+                                    validLessons.includes(reports[b].lessonId)) {
                                     if (reports[b].weekType === "ZOJ") {
-                                        cell8.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                        cell8TextZoj = "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(زوج)" + "</span>";
                                     } else if (reports[b].weekType === "FARD") {
-                                        cell9.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+                                        cell8TextFard = "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(فرد)" + "</span>";
                                     }
                                 }
                             }
-
                         }
 
+                        if(cell8TextZoj !== "" && cell8TextFard !== "") {
+                            cell8.innerHTML = cell8TextZoj + "<hr class='hrtbl'>" + cell8TextFard;
+                        }
+                        else
+                            cell8.innerHTML = cell8TextZoj + cell8TextFard;
                     }
 
                 }
@@ -256,6 +261,7 @@
         var expanded1 = false;
         var expanded2 = false;
         var expanded3 = false;
+        var expanded4 = false;
 
         function showCheckboxes1() {
             var checkboxes = document.getElementById("checkboxes1");
@@ -287,11 +293,22 @@
                 expanded3 = false;
             }
         }
+        function showCheckboxes4() {
+            var checkboxes = document.getElementById("checkboxes4");
+            if (!expanded4) {
+                checkboxes.style.display = "block";
+                expanded4 = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded4 = false;
+            }
+        }
 
         function filterClick() {
             validMaghta = [];
             validClasses = [];
             validTeachers = [];
+            validLessons = [];
 
             if($('#karshenasi-id').is(':checked')) {
                 validMaghta.push("KARSHENASI");
@@ -311,6 +328,11 @@
             $('[id^=idteacher]').each( function () {
                 if($(this).is(':checked'))
                     validTeachers.push(parseInt($(this).val()));
+            });
+
+            $('[id^=idlesson]').each( function () {
+                if($(this).is(':checked'))
+                    validLessons.push(parseInt($(this).val()));
             });
 
             create_default_plan();
@@ -379,6 +401,19 @@
                             <div id="checkboxes3">
                                 <th th:each="teacher :${teachers}">
                                     <label th:for="'idteacher' + ${teacher.id}"><input type="checkbox" onclick="filterClick()" th:id="'idteacher' + ${teacher.id}" th:value="${teacher.id}" th:text="' ' + ${teacher.firstName} + ' ' + ${teacher.lastName}" /></label>
+                                </th>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes4()">
+                                <select>
+                                    <option>فیلتر بر اساس درس</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes4">
+                                <th th:each="lesson :${lessons}">
+                                    <label th:for="'idlesson' + ${lesson.id}"><input type="checkbox" onclick="filterClick()" th:id="'idlesson' + ${lesson.id}" th:value="${lesson.id}" th:text="' ' + ${lesson.name} + ' (' + ${lesson.code} + ')'" /></label>
                                 </th>
                             </div>
                         </div>

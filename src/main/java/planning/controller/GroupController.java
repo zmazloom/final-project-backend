@@ -10,10 +10,14 @@ import planning.message.CommonMessage;
 import planning.message.PlanMessage;
 import planning.model.*;
 import planning.modelVO.LessonGroupVO;
+import planning.modelVO.LessonVO;
+import planning.modelVO.TeacherVO;
 import planning.repository.LessonGroupCRUD;
 import planning.repository.PlanCRUD;
 import planning.service.GroupService;
+import planning.service.LessonService;
 import planning.service.LoginService;
+import planning.service.TeacherService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -29,6 +33,8 @@ public class GroupController {
     private final PlanCRUD planCRUD;
     private final GroupService groupService;
     private final LoginService loginService;
+    private final LessonService lessonService;
+    private final TeacherService teacherService;
 
     @PostMapping(value = "/plan/{planId}")
     public ResponseEntity<Result<LessonGroupVO>> savePlanGroup(HttpServletRequest request,
@@ -100,6 +106,30 @@ public class GroupController {
         return ResponseEntity.ok(ResFact.<Boolean>build()
                 .setResult(true)
                 .setMessage(PlanMessage.getGroupDeleted(groupId.toString()))
+                .get());
+    }
+
+    @GetMapping(value = "/plan/{planId}/lesson")
+    public ResponseEntity<Result<List<LessonVO>>> getAllPanelGroupLessons(@PathVariable("planId") @NotNull Long planId) {
+        Plan plan = planCRUD.getPlanById(planId);
+
+        if (plan == null)
+            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
+
+        return ResponseEntity.ok(ResFact.<List<LessonVO>>build()
+                .setResult(lessonService.getLessonVOs(lessonGroupCRUD.getPlanLessons(plan)))
+                .get());
+    }
+
+    @GetMapping(value = "/plan/{planId}/teacher")
+    public ResponseEntity<Result<List<TeacherVO>>> getAllPanelGroupTeachers(@PathVariable("planId") @NotNull Long planId) {
+        Plan plan = planCRUD.getPlanById(planId);
+
+        if (plan == null)
+            throw ResourceNotFoundException.getInstance(PlanMessage.getPlanNotFound(planId.toString()));
+
+        return ResponseEntity.ok(ResFact.<List<TeacherVO>>build()
+                .setResult(teacherService.getTeacherVOs(lessonGroupCRUD.getPlanTeachers(plan)))
                 .get());
     }
 }

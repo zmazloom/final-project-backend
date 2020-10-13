@@ -4,6 +4,23 @@
 <head>
 
     <style>
+        #loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #444444;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .center {
+            margin: 50px auto;
+        }
+
         #datatable_wrapper{
             width: 80%;
             margin: auto;
@@ -26,7 +43,7 @@
         }
     </style>
 
-    <script>
+    <script type="text/javascript" th:inline="javascript">
         $(document).ready(function () {
             $('#base-sidebar li:eq(5)').addClass('active');
 
@@ -90,6 +107,13 @@
                     $('.myFormCreate #nimsal').val('0');
                     $('.myFormCreate #myModalCreate').modal();
                 }
+                else if (text == 'pouya') {
+                    //for creating plan
+                    $('.myFormCreate #filePouya').val();
+                    $('.myFormCreate #namePouya').val('');
+                    $('.myFormCreate #nimsalPouya').val('0');
+                    $('.myFormCreate #myModalPouya').modal();
+                }
             });
             //for delete plan
             $('.table .delBtn').on('click', function (event) {
@@ -99,6 +123,35 @@
                 $('#removeModalCenter').modal();
             });
         });
+
+        function handleClickPouyaPlan() {
+            event.preventDefault();
+
+            var formData = new FormData();
+            formData.append('name', document.getElementById("namePouya").value);
+            formData.append('nimsal', document.getElementById("nimsalPouya").value);
+            formData.append('file', $('input[type=file]')[0].files[0]);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/plan/pouya',
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                beforeSend: function(xhr){
+                    document.getElementById("formPouya").innerHTML = "<div id=\"loader\" class=\"center\"></div>";
+                },
+            }).done (function (response) {
+                alert('برنامه زمانی اضافه شد.')
+                $('.myFormCreate #myModalPouya').modal('hide');
+                location.reload();
+            })
+            .fail(function(response) {
+                alert(JSON.parse(response.responseText).message);
+                location.reload();
+            })
+        }
     </script>
 
 </head>
@@ -130,6 +183,10 @@
                         <button class="btn btn-primary nBtn" name="add">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                             <span style="margin: 5px;">برنامه جدید</span>
+                        </button>
+                        <button class="btn btn-primary nBtn" name="pouya">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <span style="margin: 5px;">وارد کردن از پرتال</span>
                         </button>
                     </div>
                 </div>
@@ -359,6 +416,52 @@
                 </form>
             </div>
             <!--End copy form-->
+
+            <!--#Modal for plan create from pouya-->
+            <div class="myFormCreate">
+                <form onSubmit="JavaScript:handleClickPouyaPlan()">
+                    <div class="modal fade" id="myModalPouya" tabindex="-1" role="dialog"
+                         aria-labelledby="modalLabelPouya" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="border-radius: 5px; top: 30px; overflow: hidden;">
+                                <div class="modal-header" style="background-color: #ecebeb;">
+                                    <h5 class="modal-title" id="pouyaModalLabel" style="display: inline;">برنامه پرتال</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="outline: none;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" id ="formPouya">
+                                    <div class="form-group">
+                                        <label for="namePouya" class="col-form-label">نام</label><em style="color: red;"> *</em>
+                                        <input type="text" class="form-control" id="namePouya" name="namePouya" value="" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('نام برنامه را وارد کنید.')" oninput="setCustomValidity('')" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label for="filePouya" class="col-form-label">فایل html</label><em style="color: red;"> *</em>
+                                            <input type="file" class="form-control-file" id="filePouya" name="filePouya" style="border-radius: 2px;" required="" oninvalid="this.setCustomValidity('فایل را وارد کنید.')" oninput="setCustomValidity('')" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="nimsalPouya" class="col-form-label">نیمسال</label>
+                                                <select name="nimsalPouya" id="nimsalPouya">
+                                                    <option value="0">هیچکدام</option>
+                                                    <option value="1">نیمسال اول</option>
+                                                    <option value="2">نیمسال دوم</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer" style="padding: 15px 0;">
+                                        <button type="button" class="btn btn" data-dismiss="modal" style="outline: none;">انصراف</button>
+                                        <input type="submit" class="btn btn-primary" value="ذخیره" style="outline: none;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--End form-->
 
         </section>
         <!-- /.content -->

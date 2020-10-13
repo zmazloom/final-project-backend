@@ -146,9 +146,13 @@ public class PlanController {
     }
 
     @PostMapping(value = "/pouya")
-    public ResponseEntity<Result<String>> addPouyaPlanning(@RequestParam("name") String name,
+    public ResponseEntity<Result<String>> addPouyaPlanning(HttpServletRequest request,
+                                                           @RequestParam("name") String name,
                                                            @RequestParam("nimsal") int nimsal,
                                                            @RequestParam(value = "file") MultipartFile file) {
+        if (!loginService.checkServiceAccess(request, Role.ROLE_ADMIN))
+            throw AccessDeniedException.getInstance(CommonMessage.getRequestDenied());
+
         if (file == null)
             throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("فایل"));
         if (name == null || name.equals(""))

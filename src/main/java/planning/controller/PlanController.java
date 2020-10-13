@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import planning.exception.AccessDeniedException;
-import planning.exception.ResourceConflictException;
-import planning.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
+import planning.exception.*;
 import planning.message.CommonMessage;
 import planning.message.PlanMessage;
 import planning.model.*;
@@ -143,5 +142,31 @@ public class PlanController {
         return ResponseEntity.ok(ResFact.<PlanVO>build()
                 .setResult(planService.getPlanVO(planService.copyPlan(plan, name)))
                 .get());
+    }
+
+    @PostMapping(value = "/pouya")
+    public ResponseEntity<Result<String>> addPouyaPlanning(@RequestParam("name") String name,
+                                                                 @RequestParam("nimsal") int nimsal,
+                                                                 @RequestParam(value = "file") MultipartFile file) {
+        if (file == null)
+            throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("فایل"));
+        if (name == null || name.equals(""))
+            throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("نام"));
+
+        try {
+            List<Course> courses = planService.pasreToCourses(file);
+            Plan plan = planService.addPlan(PlanVO.builder().name(name).nimsal(nimsal).timeType(TimeType.TWO_HOURS).build());
+            planService.convertCoursesToThisProject(plan, courses);
+
+            return ResponseEntity.ok(ResFact.<String>build()
+                    .setResult("برنامه با موفقیت اضافه شد.")
+                    .get());
+
+//            return ResponseEntity.ok(ResFact.<List<Course>>build()
+//                    .setResult(courses)
+//                    .get());
+        } catch (Exception ex) {
+            throw InternalServerException.getInstance(ex.getMessage());
+        }
     }
 }

@@ -27,14 +27,14 @@ public class GroupService {
 
         return LessonGroupVO.builder()
                 .groupId(lessonGroup.getId())
-                .teacherId(lessonGroup.getTeacher().getId())
-                .firstName(lessonGroup.getTeacher().getFirstName())
-                .lastName(lessonGroup.getTeacher().getLastName())
-                .teacherName(lessonGroup.getTeacher().getFirstName() + " " + lessonGroup.getTeacher().getLastName())
-                .lessonId(lessonGroup.getLesson().getId())
-                .name(lessonGroup.getLesson().getName())
-                .code(lessonGroup.getLesson().getCode())
-                .lessonName(lessonGroup.getLesson().getName() + (lessonGroup.getLesson().getCode() != null ? " - " + lessonGroup.getLesson().getCode() : ""))
+                .teacherId(lessonGroup.getTeacher() != null ? lessonGroup.getTeacher().getId() : null)
+                .firstName(lessonGroup.getTeacher() != null ? lessonGroup.getTeacher().getFirstName() : "")
+                .lastName(lessonGroup.getTeacher() != null ? lessonGroup.getTeacher().getLastName() : "")
+                .teacherName(lessonGroup.getTeacher() != null ? lessonGroup.getTeacher().getFirstName() + " " + lessonGroup.getTeacher().getLastName() : "")
+                .lessonId(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getId() : null)
+                .name(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getName() : null)
+                .code(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getCode() : 0)
+                .lessonName(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getName() + (lessonGroup.getLesson().getCode() != null ? " - " + lessonGroup.getLesson().getCode() : "") : "")
                 .planId(lessonGroup.getPlan().getId())
                 .number(lessonGroup.getNumber())
                 .jalaseNumber(lessonGroup.getJalaseNumber())
@@ -54,8 +54,8 @@ public class GroupService {
         lessonGroup.setNumber(lessonGroupVO.getNumber());
         lessonGroup.setZarfiat(lessonGroupVO.getZarfiat());
         lessonGroup.setJalaseNumber(lessonGroupVO.getJalaseNumber());
-        lessonGroup.setTeacher(teacherCRUD.getTeacherById(lessonGroupVO.getTeacherId()));
-        lessonGroup.setLesson(lessonCRUD.getLessonById(lessonGroupVO.getLessonId()));
+        lessonGroup.setTeacher(lessonGroupVO.getTeacherId() != null ? teacherCRUD.getTeacherById(lessonGroupVO.getTeacherId()) : null);
+        lessonGroup.setLesson(lessonGroupVO.getLessonId() != null ? lessonCRUD.getLessonById(lessonGroupVO.getLessonId()) : null);
         lessonGroup.setPlan(plan);
 
         return lessonGroupCRUD.saveAndFlush(lessonGroup);

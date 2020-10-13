@@ -130,7 +130,8 @@ public class PlanController {
 
     @PostMapping(value = "/{planId}/copy")
     public ResponseEntity<Result<PlanVO>> copyPlan(@PathVariable("planId") @NotNull Long planId,
-                                                   @RequestBody @NotNull @NotEmpty String name) {
+                                                   @RequestBody @NotNull @NotEmpty String name,
+                                                   @RequestParam("nimsal") int nimsal) {
         Plan plan = planCRUD.getPlanById(planId);
 
         if (plan == null)
@@ -140,14 +141,14 @@ public class PlanController {
             throw ResourceConflictException.getInstance(PlanMessage.getDuplicatePlan(name));
 
         return ResponseEntity.ok(ResFact.<PlanVO>build()
-                .setResult(planService.getPlanVO(planService.copyPlan(plan, name)))
+                .setResult(planService.getPlanVO(planService.copyPlan(plan, name, nimsal)))
                 .get());
     }
 
     @PostMapping(value = "/pouya")
     public ResponseEntity<Result<String>> addPouyaPlanning(@RequestParam("name") String name,
-                                                                 @RequestParam("nimsal") int nimsal,
-                                                                 @RequestParam(value = "file") MultipartFile file) {
+                                                           @RequestParam("nimsal") int nimsal,
+                                                           @RequestParam(value = "file") MultipartFile file) {
         if (file == null)
             throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("فایل"));
         if (name == null || name.equals(""))
@@ -161,10 +162,6 @@ public class PlanController {
             return ResponseEntity.ok(ResFact.<String>build()
                     .setResult("برنامه با موفقیت اضافه شد.")
                     .get());
-
-//            return ResponseEntity.ok(ResFact.<List<Course>>build()
-//                    .setResult(courses)
-//                    .get());
         } catch (Exception ex) {
             throw InternalServerException.getInstance(ex.getMessage());
         }

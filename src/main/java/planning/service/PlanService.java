@@ -33,6 +33,7 @@ public class PlanService {
     private final LessonService lessonService;
     private final GroupService groupService;
     private final ClassroomService classroomService;
+    private final TeacherTimeCRUD teacherTimeCRUD;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -74,11 +75,15 @@ public class PlanService {
         }
     }
 
-    public Plan copyPlan(Plan plan, String name) {
+    public Plan copyPlan(Plan plan, String name, int nimsal) {
         Plan copyPlan = new Plan();
         copyPlan.setName(name);
         copyPlan.setTimeType(plan.getTimeType());
-        planCRUD.saveAndFlush(copyPlan);
+        copyPlan.setNimsal(nimsal);
+        Plan newPlan = planCRUD.saveAndFlush(copyPlan);
+
+        copyGroups(plan, newPlan);
+        copyTeacherTimes(plan, newPlan);
 
         return copyPlan;
     }
@@ -179,66 +184,68 @@ public class PlanService {
             Element container = htmlFile.getElementsByClass("container-fluid").stream()
                     .filter(elem -> !elem.parent().tagName().equalsIgnoreCase("body")).findAny().orElse(null);
 
-            Element table = container.getElementsByTag("table").stream().filter(elem -> elem.attributes().get("border").equals("1")).findAny().orElse(null);
+            Element table = container != null ? container.getElementsByTag("table").stream().filter(elem -> elem.attributes().get("border").equals("1")).findAny().orElse(null) : null;
 
-            List<Element> rows = table.getElementsByTag("tr");
+            List<Element> rows = table != null ? table.getElementsByTag("tr") : null;
 
             List<Course> courses = new ArrayList<>();
 
-            rows.forEach(row -> {
-                List<Element> cols = row.getElementsByTag("td");
-                if (cols == null || cols.isEmpty())
-                    return;
+            if (rows != null) {
+                rows.forEach(row -> {
+                    List<Element> cols = row.getElementsByTag("td");
+                    if (cols == null || cols.isEmpty())
+                        return;
 
-                Teacher professor;
-                professor = Teacher.builder().lastName(cols.get(8).childNode(0).toString().replace("&nbsp;", "")).build();
+                    Teacher professor;
+                    professor = Teacher.builder().lastName(cols.get(8).childNode(0).toString().replace("&nbsp;", "")).build();
 
-                String name = cols.get(3).childNode(0).toString();
-                String degree = "";
-                List<Course.Time> times = new ArrayList<>();
-                Classroom classroom = new Classroom();
+                    String name = cols.get(3).childNode(0).toString();
+                    String degree = "";
+                    List<Course.Time> times = new ArrayList<>();
+                    Classroom classroom = new Classroom();
 
-                String title = cols.get(10).childNode(0).attributes().get("title");
-                if (title != null && !title.isEmpty()) {
-                    String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
-                    String[] tags = body.split("<br>");
-                    for (String tag : tags) {
-                        Document html = Jsoup.parse(tag);
-                        if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("مقطع")) {
-                            degree = html.getElementsByTag("body").get(0).childNode(1).toString();
-                            if (degree != null && degree.length() > 2)
-                                degree = degree.substring(1);
-                        } else if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("جلسه")) {
-                            String time = html.getElementsByTag("body").get(0).childNode(1).toString();
-                            times.add(Course.Time.builder()
-                                    .time(time.substring(1, time.indexOf("(")))
-                                    .type(time.contains("زوج") ? PlanDetail.WeekType.ZOJ :
-                                            (time.contains("فرد") ? PlanDetail.WeekType.FARD : PlanDetail.WeekType.HAR))
-                                    .build());
+                    String title = cols.get(10).childNode(0).attributes().get("title");
+                    if (title != null && !title.isEmpty()) {
+                        String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
+                        String[] tags = body.split("<br>");
+                        for (String tag : tags) {
+                            Document html = Jsoup.parse(tag);
+                            if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("مقطع")) {
+                                degree = html.getElementsByTag("body").get(0).childNode(1).toString();
+                                if (degree != null && degree.length() > 2)
+                                    degree = degree.substring(1);
+                            } else if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("جلسه")) {
+                                String time = html.getElementsByTag("body").get(0).childNode(1).toString();
+                                times.add(Course.Time.builder()
+                                        .time(time.substring(1, time.indexOf("(")))
+                                        .type(time.contains("زوج") ? PlanDetail.WeekType.ZOJ :
+                                                (time.contains("فرد") ? PlanDetail.WeekType.FARD : PlanDetail.WeekType.HAR))
+                                        .build());
 
-                            if (time.contains("کلاس")) {
-                                try {
-                                    classroom.setName(time.substring(time.indexOf("کلاس") + 4, time.indexOf(")")));
-                                } catch (Exception ignored) {
+                                if (time.contains("کلاس")) {
+                                    try {
+                                        classroom.setName(time.substring(time.indexOf("کلاس") + 4, time.indexOf(")")));
+                                    } catch (Exception ignored) {
+                                    }
                                 }
                             }
                         }
+
                     }
 
-                }
-
-                courses.add(Course.builder()
-                        .number(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
-                        .code(Integer.valueOf(cols.get(2).childNode(0).toString()))
-                        .name(name)
-                        .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
-                        .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))
-                        .teacher(professor)
-                        .degree(degree)
-                        .times(times)
-                        .classroom(classroom)
-                        .build());
-            });
+                    courses.add(Course.builder()
+                            .number(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
+                            .code(Integer.valueOf(cols.get(2).childNode(0).toString()))
+                            .name(name)
+                            .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
+                            .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))
+                            .teacher(professor)
+                            .degree(degree)
+                            .times(times)
+                            .classroom(classroom)
+                            .build());
+                });
+            }
 
             return courses;
         } finally {
@@ -515,6 +522,57 @@ public class PlanService {
         }
 
         return null;
+    }
+
+    private void copyGroups(Plan plan, Plan newPlan) {
+        if (plan != null && newPlan != null) {
+            List<LessonGroup> lessonGroups = lessonGroupCRUD.getAllLessonGroups(plan);
+
+            if (lessonGroups != null && !lessonGroups.isEmpty()) {
+                for (LessonGroup lessonGroup : lessonGroups) {
+                    LessonGroup newLessonGroup = new LessonGroup();
+                    newLessonGroup.setPlan(newPlan);
+                    newLessonGroup.setLesson(lessonGroup.getLesson());
+                    newLessonGroup.setTeacher(lessonGroup.getTeacher());
+                    newLessonGroup.setJalaseNumber(lessonGroup.getJalaseNumber());
+                    newLessonGroup.setNumber(lessonGroup.getNumber());
+                    newLessonGroup.setZarfiat(lessonGroup.getZarfiat());
+                    LessonGroup lessonGroupSaved = lessonGroupCRUD.saveAndFlush(newLessonGroup);
+
+                    List<PlanDetail> planDetails = planDetailCRUD.getPlanDetailByGroup(plan, lessonGroup);
+                    if (planDetails != null && !planDetails.isEmpty()) {
+                        for (PlanDetail planDetail : planDetails) {
+                            PlanDetail newPlanDetail = new PlanDetail();
+                            newPlanDetail.setGroup(lessonGroupSaved);
+                            newPlanDetail.setClassroom(planDetail.getClassroom());
+                            newPlanDetail.setPlan(newPlan);
+                            newPlanDetail.setTime(planDetail.getTime());
+                            newPlanDetail.setWeekType(planDetail.getWeekType());
+
+                            planDetailCRUD.saveAndFlush(newPlanDetail);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private void copyTeacherTimes(Plan plan, Plan newPlan) {
+        if (plan != null && newPlan != null) {
+            List<TeacherTime> teacherTimes = teacherTimeCRUD.getAllTeacherTimes(plan);
+
+            if (teacherTimes != null && !teacherTimes.isEmpty()) {
+                for (TeacherTime teacherTime : teacherTimes) {
+                    TeacherTime newTeacherTime = new TeacherTime();
+                    newTeacherTime.setPlan(newPlan);
+                    newTeacherTime.setPriority(teacherTime.getPriority());
+                    newTeacherTime.setTeacher(teacherTime.getTeacher());
+                    newTeacherTime.setTime(teacherTime.getTime());
+                    teacherTimeCRUD.saveAndFlush(newTeacherTime);
+                }
+            }
+        }
     }
 
 }

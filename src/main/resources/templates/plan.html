@@ -78,7 +78,7 @@
                             $('.myFormCopy #id').val(plan.id);
                             $('.myFormCopy #name').val('');
                             $('.myFormCopy #timeType').val(plan.timeType);
-                            // $('.myFormCopy #nimsal').val(plan.timeType);
+                            $('.myFormCopy #nimsal').val(plan.timeType);
                             $('.myFormCopy #copyModal').modal();
                         }
                     });
@@ -334,6 +334,16 @@
                                                 <select name="timeType" id="timeType" disabled>
                                                     <option value="TWO_HOURS">2 ساعت</option>
                                                     <option value="ONE_THIRTY_HOURS">1 ساعت و 30 دقیقه</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="nimsal" class="col-form-label">نیمسال</label>
+                                                <select name="nimsal" id="nimsal">
+                                                    <option value="0">هیچکدام</option>
+                                                    <option value="1">نیمسال اول</option>
+                                                    <option value="2">نیمسال دوم</option>
                                                 </select>
                                             </div>
                                         </div>

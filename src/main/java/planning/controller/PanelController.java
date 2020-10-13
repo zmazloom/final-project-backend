@@ -414,7 +414,7 @@ public class PanelController {
             return "redirect:/login";
 
         try {
-            ResponseEntity<Result<PlanVO>> copiedPlan = planController.copyPlan(planVO.getId(), planVO.getName());
+            ResponseEntity<Result<PlanVO>> copiedPlan = planController.copyPlan(planVO.getId(), planVO.getName(), planVO.getNimsal());
 
             if (copiedPlan.getBody() != null && copiedPlan.getBody().getResult() != null)
                 return "redirect:/plan";

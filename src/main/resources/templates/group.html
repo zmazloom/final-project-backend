@@ -154,7 +154,9 @@
             var selectLesson = document.getElementById("lesson");
             for (var i = 0; i < lessons.length; i++) {
                 var option = document.createElement("option");
-                option.text = lessons[i].name;
+                if(lessons[i].code == null)
+                    option.text = lessons[i].name;
+                else option.text = lessons[i].name + " - " + lessons[i].code;
                 option.value = lessons[i].id;
                 option.style.textAlign = "right";
                 selectLesson.add(option);
@@ -173,7 +175,9 @@
             var selectLesson = document.getElementById("updatelesson");
             for (var i = 0; i < lessons.length; i++) {
                 var option = document.createElement("option");
-                option.text = lessons[i].name;
+                if(lessons[i].code == null)
+                    option.text = lessons[i].name;
+                else option.text = lessons[i].name + " - " + lessons[i].code;
                 option.value = lessons[i].id;
                 option.style.textAlign = "right";
                 selectLesson.add(option);

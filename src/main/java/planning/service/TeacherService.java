@@ -79,7 +79,7 @@ public class TeacherService {
     }
 
     public Teacher addTeacher(TeacherAddVO teacherAddVO, MultipartFile avatar) {
-        validateTeacherInsert(teacherAddVO);
+//        validateTeacherInsert(teacherAddVO);
 
         Teacher teacher = new Teacher();
 
@@ -152,8 +152,8 @@ public class TeacherService {
     }
 
     private void validateTeacherInsert(TeacherAddVO teacherAddVO) {
-        if (teacherAddVO.getUsername() == null || teacherAddVO.getUsername().equals("") || teacherAddVO.getUsername().length() < 4)
-            throw InvalidRequestException.getInstance(TeacherMessage.getInvalidUsername());
+        if (teacherAddVO.getUsername() == null || teacherAddVO.getUsername().equals(""))
+            throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("usernmae"));
 
         if (teacherAddVO.getFirstName() == null || teacherAddVO.getFirstName().equals(""))
             throw InvalidRequestException.getInstance(CommonMessage.getParamRequired("firstName"));

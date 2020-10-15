@@ -88,7 +88,7 @@ public class TeacherService {
         }
 
         if (teacherAddVO.getPassword() == null || teacherAddVO.getPassword().equals(""))
-            teacher.setPassword(PasswordUtils.generatePassword());
+            teacher.setPassword("123456789");
         else
             teacher.setPassword(teacherAddVO.getPassword());
 

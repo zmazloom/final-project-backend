@@ -4,6 +4,9 @@
 <head>
 
     <style>
+        a[class^="groupLink"] {
+            display: block;
+        }
         .default-plan {
             border: solid thin;
             width: 100%;
@@ -77,7 +80,6 @@
 
         .select2-container .select2-selection--single .select2-selection__rendered {
             padding-right: 0 !important;
-            exte
         }
 
         #groupselect {
@@ -111,18 +113,7 @@
             $('#base-sidebar li:eq(4)').addClass('active');
 
             if(selectedTimes.length === 0) {
-                for (var i = 0; i < result.length; i++) {
-                    var highlightTime = {
-                        classroomId: result[i].classroomId,
-                        groupId: result[i].groupId,
-                        lessonId: result[i].lessonId,
-                        teacherId: result[i].teacherId,
-                        time: result[i].time.substring(result[i].time.search(/\d/)),
-                        day: result[i].time.substring(0, result[i].time.search(/\d/)),
-                        name: result[i].name
-                    };
-                    selectedTimes.push(highlightTime);
-                }
+                fullSelectedTimes(result);
             }
 
             create_default_plan("default-plan1");
@@ -159,37 +150,36 @@
 
         function checkWarningSelection(highlightTime) {
             if (highlightTime != null && selectedTimes.length > 0) {
-                var lessonUnit = 0;
+                var groupJalaseNumber  = 0;
 
-                for (var j = 0; j < lessons.length; j++) {
-                    if (lessons[j].id === highlightTime.lessonId) {
-                        lessonUnit = lessons[j].unit;
+                for (var j = 0; j < groups.length; j++) {
+                    if (groups[j].groupId  === highlightTime.groupId) {
+                        groupJalaseNumber = groups[j].jalaseNumber;
                         break;
                     }
                 }
-                if (lessonUnit === "ZERO")
-                    lessonUnit = 0;
-                else if (lessonUnit === "ONE")
-                    lessonUnit = 1;
-                else if (lessonUnit === "TWO")
-                    lessonUnit = 1;
-                else if (lessonUnit === "THREE")
-                    lessonUnit = 2;
-                else if (lessonUnit === "FOUR")
-                    lessonUnit = 2;
 
-                var lessonCount = 0;
+                if (groupJalaseNumber === 3 || groupJalaseNumber === 4)
+                    groupJalaseNumber = 2;
+
+                var warnMessage = "";
+                var groupCount = 0;
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
-                        if (selectedTimes[i].lessonId === highlightTime.lessonId) {
-                            lessonCount = lessonCount + 1;
+                        if (selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time) {
+                            if(checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
+                                warnMessage = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.";
+                            }
+                        }
+                        if (selectedTimes[i].groupId === highlightTime.groupId) {
+                            groupCount = groupCount + 1;
                         }
                     }
                 }
 
-                if (lessonCount >= lessonUnit)
-                    return "تعداد زمان انتخاب شده برای درس، بیشتر از واحد آن خواهد شد.";
-                else return "";
+                if (groupCount >= groupJalaseNumber)
+                    return warnMessage + " تعداد زمان انتخاب شده، بیشتر از تعداد جلسه مشخص شده آن خواهد شد.";
+                else return warnMessage;
             }
         }
 
@@ -198,7 +188,9 @@
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
                         if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time) {
-                            return "درس دیگری در این زمان برای استاد ثبت شده است.";
+                            if(checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
+                                return "درس دیگری در این زمان برای استاد ثبت شده است.";
+                            }
                         }
                     }
                 }
@@ -207,9 +199,83 @@
             return "";
         }
 
+        function checkLessonTerms(lesson1Id, lesson2Id) {
+            var terms1 = [], terms2 = [];
+
+            for(var ll = 0; ll < lessons.length; ll++) {
+                if(lessons[ll].id === lesson1Id)
+                    terms1 = lessons[ll].term;
+                if(lessons[ll].id === lesson2Id)
+                    terms2 = lessons[ll].term;
+            }
+
+            if(terms1.includes(1) || terms1.includes(3) || terms1.includes(5) || terms1.includes(7)) {
+                if(terms2.includes(1) || terms2.includes(3) || terms2.includes(5) || terms2.includes(7)) {
+                    return true;
+                }
+            }
+
+            if(terms1.includes(2) || terms1.includes(4) || terms1.includes(6) || terms1.includes(8)) {
+                if(terms2.includes(2) || terms2.includes(4) || terms2.includes(6) || terms2.includes(8)) {
+                    return true;
+                }
+            }
+
+            return false
+        }
+
         function highlight_cell(tableIdInFile) {
             var table = document.getElementById(tableIdInFile);
+            var alinks = table.getElementsByTagName('a');
             var cells = table.getElementsByTagName('td');
+
+            for (var i = 0; i < alinks.length; i++) {
+                // Take each cell
+                var alink = alinks[i];
+
+                alink.onclick = function () {
+                    // Get the row id where the cell exists
+                    var rowId = this.parentNode.parentNode.rowIndex;
+                    if (rowId >= 1 && this.parentNode.cellIndex < times.length) {
+                        var classId = (rowId - 1) % classroom.length;
+                        if (classId < 0) classId = classroom.length;
+                        var classroomId = classroom[classId].id;
+                        var time = times[times.length - this.parentNode.cellIndex - 1];
+                        var dayId = tableIdInFile.toString().substring(12) - 1;
+                        var day = days[dayId];
+
+                        var groupIdLink = this.getAttribute("class");
+                        if(groupIdLink != null && groupIdLink.length > 9)
+                            groupIdLink = groupIdLink.substring(9);
+
+                        console.log(selectedTimes);
+                        console.log(groupIdLink);
+                        console.log(classroomId);
+                        console.log(time);
+                        console.log(day);
+
+                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
+
+                        if (checkTime.length) {
+                            if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
+                                this.innerHTML = "";
+                                this.style.display = "none";
+                                var index;
+                                selectedTimes.some(function (entry, i) {
+                                    if (entry.groupId == groupIdLink && entry.classroomId === classroomId && entry.time === time && entry.day === day) {
+                                        index = i;
+                                        return true;
+                                    }
+                                });
+                                delete proxy[index];
+
+                                //send data to backend
+                                handleClickPlanning();
+                            }
+                        }
+                    }
+                }
+            }
 
             for (var i = 0; i < cells.length; i++) {
                 // Take each cell
@@ -218,45 +284,42 @@
                 cell.onclick = function () {
                     var groupSelect = document.getElementById("group").value;
 
-                    var teacherSelect = null;
-                    var lessonSelect = null;
-                    if(groupSelect != null) {
-                        for (var i = 0; i < groups.length; i++) {
-                            if(groupSelect == groups[i].groupId) {
-                                teacherSelect = groups[i].teacherId;
-                                lessonSelect = groups[i].lessonId;
-                                break;
+                    if(groupSelect !== null && groupSelect > 0) {
+                        var teacherSelect = null;
+                        var lessonSelect = null;
+                        if (groupSelect != null) {
+                            for (var i = 0; i < groups.length; i++) {
+                                if (groupSelect == groups[i].groupId) {
+                                    teacherSelect = groups[i].teacherId;
+                                    lessonSelect = groups[i].lessonId;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    // Get the row id where the cell exists
-                    var rowId = this.parentNode.rowIndex;
-                    if (rowId >= 1 && this.cellIndex < times.length) {
-                        var day;
-                        var classId = (rowId - 1) % classroom.length;
-                        if (classId < 0) classId = classroom.length;
-                        var classroomId = classroom[classId].id;
-                        var groupId = parseInt(document.getElementById("group").value);
-                        var time = times[times.length - this.cellIndex - 1];
-                        var dayId = tableIdInFile.toString().substring(12) - 1;
-                        var day = days[dayId];
-                        var name = $("#group option:selected").text();
-                        var highlightTime = {
-                            classroomId: classroomId,
-                            lessonId: lessonSelect,
-                            teacherId: teacherSelect,
-                            groupId: groupId,
-                            time: time,
-                            day: day,
-                            name: name
-                        };
+                        // Get the row id where the cell exists
+                        var rowId = this.parentNode.rowIndex;
+                        if (rowId >= 1 && this.cellIndex < times.length) {
+                            var classId = (rowId - 1) % classroom.length;
+                            if (classId < 0) classId = classroom.length;
+                            var classroomId = classroom[classId].id;
+                            var groupId = parseInt(document.getElementById("group").value);
+                            var time = times[times.length - this.cellIndex - 1];
+                            var dayId = tableIdInFile.toString().substring(12) - 1;
+                            var day = days[dayId];
+                            var name = $("#group option:selected").text();
+                            var highlightTime = {
+                                classroomId: classroomId,
+                                lessonId: lessonSelect,
+                                teacherId: teacherSelect,
+                                groupId: groupId,
+                                time: time,
+                                day: day,
+                                name: name
+                            };
 
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
-                        // if this time is not selected, then select
-                        if (!checkTime.length) {
-                            var warningSelection = null;//checkWarningSelection(highlightTime);
-                            var ignoreSelection = null;//checkIgnoreSelection(highlightTime);
+                            var warningSelection = checkWarningSelection(highlightTime);
+                            var ignoreSelection = checkIgnoreSelection(highlightTime);
 
                             if (ignoreSelection != null && ignoreSelection.length > 0)
                                 alert(ignoreSelection);
@@ -265,43 +328,40 @@
                                 var link;
                                 if (warningSelection != null && warningSelection.length > 0) {
                                     if (confirm(warningSelection + " آیا مطمئن هستید؟")) {
-                                        this.style.backgroundColor = "yellow";
                                         link = document.createTextNode($("#group option:selected").text());
-                                        a.title =  $("#group option:selected").text();
+                                        a.title = $("#group option:selected").text();
+                                        a.style.padding = "2px 0";
+                                        a.style.color = "#313761";
+                                        a.setAttribute("class", "groupLink" + groupId);
+
                                         a.appendChild(link);
                                         this.appendChild(a);
                                         selectedTimes.push(highlightTime);
+
+                                        //send data to backend
+                                        handleClickPlanning();
+                                        highlight_cell(tableIdInFile);
                                     }
                                 } else {
                                     if (confirm(" آیا مطمئن هستید؟")) {
                                         link = document.createTextNode($("#group option:selected").text());
                                         a.title = $("#group option:selected").text();
+                                        a.style.padding = "2px 0";
+                                        a.style.color = "#313761";
+                                        a.setAttribute("class", "groupLink" + groupId);
+
                                         a.appendChild(link);
                                         this.appendChild(a);
                                         selectedTimes.push(highlightTime);
+
+                                        //send data to backend
+                                        handleClickPlanning();
+                                        highlight_cell(tableIdInFile);
                                     }
                                 }
                             }
                         }
-                        // if this time is selected before, then deselect (double click = deselect)
-                        else {
-                            if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
-                                this.classList.remove('bold-cell');
-                                this.innerHTML = "";
-                                var index;
-                                selectedTimes.some(function (entry, i) {
-                                    if (entry.classroomId === classroomId && entry.time === time && entry.day === day) {
-                                        index = i;
-                                        return true;
-                                    }
-                                });
-                                delete proxy[index];
-                            }
-                        }
                     }
-
-                    //send data to backend
-                    handleClickPlanning();
                 }
             }
         }
@@ -309,12 +369,6 @@
         // "delete" is triggered when an element is removed from the selectedTimes array.
         var proxy = new Proxy(selectedTimes, {
             deleteProperty: function (target, property) {
-                // remove deselected time
-                var ul = document.getElementById('selectedTimesList');
-
-                if (target.length === 0)
-                    ul.removeChild(ul.children[0]);
-
                 delete target[property];
                 return true;
             },
@@ -417,16 +471,25 @@
                         }
 
                         for (var b = 0; b < selectedTimes.length; b++) {          //loop on selectedTimes
-                            if (selectedTimes[b].time === times[t] && selectedTimes[b].day === days[n] && selectedTimes[b].classroomId === classroom[m].id) {
-                                var a = document.createElement('a');
-                                var link;
+                            if(selectedTimes[b] !== undefined) {
+                                if (selectedTimes[b].time === times[t] && selectedTimes[b].day === days[n] && selectedTimes[b].classroomId === classroom[m].id) {
+                                    var a = document.createElement('a');
+                                    a.setAttribute("class", "groupLink" + selectedTimes[b].groupId);
+                                    var link;
                                     link = document.createTextNode(selectedTimes[b].name);
                                     a.title = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
+                                    a.style.padding = "2px 0";
+                                    a.style.color = "#313761";
+
+                                    if(cell8.innerHTML !== "")
+                                        a.style.borderTop = "1px dashed";
+
                                     a.appendChild(link);
                                     cell8.appendChild(a);
                                     if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
                                         cell8.classList.add('bold-cell');
 
+                                }
                             }
                         }
 
@@ -480,6 +543,22 @@
                 .fail(function (response) {
                     alert(JSON.parse(response.responseText).message);
                 })
+        }
+
+        function fullSelectedTimes(result) {
+            for (var i = 0; i < result.length; i++) {
+                var highlightTime = {
+                    classroomId: result[i].classroomId,
+                    groupId: result[i].groupId,
+                    lessonId: result[i].lessonId,
+                    teacherId: result[i].teacherId,
+                    time: result[i].time.substring(result[i].time.search(/\d/)),
+                    day: result[i].time.substring(0, result[i].time.search(/\d/)),
+                    name: result[i].name,
+                    lastName: result[i].lastName
+                };
+                selectedTimes.push(highlightTime);
+            }
         }
     </script>
 

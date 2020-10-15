@@ -337,9 +337,9 @@ public class PlanService {
 
                     if (course.getDegree() != null) {
                         if (course.getDegree().equalsIgnoreCase("کارشناسی ارشد"))
-                            newLesson.setGrade(Grade.KARSHENASI);
+                            newLesson.setGrade(Grade.ARSHAD);
                         else if (course.getDegree().equalsIgnoreCase("دکترا"))
-                            newLesson.setGrade(Grade.KARSHENASI);
+                            newLesson.setGrade(Grade.DOCTORA);
                         else
                             newLesson.setGrade(Grade.KARSHENASI);
                     } else

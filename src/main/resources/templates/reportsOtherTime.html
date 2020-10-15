@@ -151,6 +151,7 @@
         }
         .ptbl {
             margin: 0 !important;
+            display: block;
         }
     </style>
 
@@ -234,7 +235,10 @@
                                 if(validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
                                     validTeachers.includes(reports[b].teacherId) &&
                                     validLessons.includes(reports[b].lessonId)) {
-                                    cell8.innerHTML = reports[b].name + " (" + reports[b].lastName + ")";
+
+                                    if(cell8.innerHTML !== null && cell8.innerHTML.length > 0)
+                                        cell8.innerHTML = cell8.innerHTML + "<hr class='hrtbl'>" + reports[b].name + " (" + reports[b].lastName + ")";
+                                    else cell8.innerHTML = cell8.innerHTML + reports[b].name + " (" + reports[b].lastName + ")";
                                 }
                             }
 

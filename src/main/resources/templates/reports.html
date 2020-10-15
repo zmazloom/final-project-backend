@@ -151,6 +151,7 @@
         }
         .ptbl {
             margin: 0 !important;
+            display: block;
         }
     </style>
 
@@ -239,9 +240,9 @@
                                     validTeachers.includes(reports[b].teacherId) &&
                                     validLessons.includes(reports[b].lessonId)) {
                                     if (reports[b].weekType === "ZOJ") {
-                                        cell8TextZoj = "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(زوج)" + "</span>";
+                                        cell8TextZoj = cell8TextZoj + "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(زوج)" + "</span>";
                                     } else if (reports[b].weekType === "FARD") {
-                                        cell8TextFard = "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(فرد)" + "</span>";
+                                        cell8TextFard = cell8TextFard + "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(فرد)" + "</span>";
                                     }
                                 }
                             }

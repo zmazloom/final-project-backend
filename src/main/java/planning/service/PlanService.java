@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -181,16 +182,13 @@ public class PlanService {
         try {
             Document htmlFile = Jsoup.parse(file, "UTF-8");
 
-            Element container = htmlFile.getElementsByClass("container-fluid").stream()
-                    .filter(elem -> !elem.parent().tagName().equalsIgnoreCase("body")).findAny().orElse(null);
-
-            Element table = container != null ? container.getElementsByTag("table").stream().filter(elem -> elem.attributes().get("border").equals("1")).findAny().orElse(null) : null;
+            Element table = htmlFile.getElementsByTag("table").get(1);
 
             List<Element> rows = table != null ? table.getElementsByTag("tr") : null;
 
             List<Course> courses = new ArrayList<>();
 
-            if (rows != null) {
+            if (rows != null && rows.size() > 0) {
                 rows.forEach(row -> {
                     List<Element> cols = row.getElementsByTag("td");
                     if (cols == null || cols.isEmpty())
@@ -204,7 +202,7 @@ public class PlanService {
                     List<Course.Time> times = new ArrayList<>();
                     Classroom classroom = new Classroom();
 
-                    String title = cols.get(10).childNode(0).attributes().get("title");
+                    String title = cols.get(10).childNode(0).attributes().get("onclick");
                     if (title != null && !title.isEmpty()) {
                         String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
                         String[] tags = body.split("<br>");
@@ -248,6 +246,8 @@ public class PlanService {
             }
 
             return courses;
+        } catch (Exception ex) {
+            return Collections.emptyList();
         } finally {
             file.delete();
         }
@@ -358,6 +358,17 @@ public class PlanService {
                             newLesson.setUnit(Unit.ZERO);
                     } else
                         newLesson.setUnit(Unit.ZERO);
+
+                    List<Integer> terms = new ArrayList<>();
+                    terms.add(1);
+                    terms.add(2);
+                    terms.add(3);
+                    terms.add(4);
+                    terms.add(5);
+                    terms.add(6);
+                    terms.add(7);
+                    terms.add(8);
+                    newLesson.setTerm(terms);
 
                     Lesson newLessonSaved = lessonService.addLesson(newLesson);
                     if (lessons != null)

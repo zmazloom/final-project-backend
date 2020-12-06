@@ -123,29 +123,31 @@
             create_default_plan("default-plan5");
             create_default_plan("default-plan6");
             set_options();
+            highlight_cell("default-plan1");
+            highlight_cell("default-plan2");
+            highlight_cell("default-plan3");
+            highlight_cell("default-plan4");
+            highlight_cell("default-plan5");
+            highlight_cell("default-plan6");
 
         });
 
         function set_group() {
             event.preventDefault();
-            if (document.getElementById("group").value === ""){
-                //nothing
-            }
-            else {
-                create_default_plan("default-plan1");
-                create_default_plan("default-plan2");
-                create_default_plan("default-plan3");
-                create_default_plan("default-plan4");
-                create_default_plan("default-plan5");
-                create_default_plan("default-plan6");
 
-                highlight_cell("default-plan1");
-                highlight_cell("default-plan2");
-                highlight_cell("default-plan3");
-                highlight_cell("default-plan4");
-                highlight_cell("default-plan5");
-                highlight_cell("default-plan6");
-            }
+            create_default_plan("default-plan1");
+            create_default_plan("default-plan2");
+            create_default_plan("default-plan3");
+            create_default_plan("default-plan4");
+            create_default_plan("default-plan5");
+            create_default_plan("default-plan6");
+
+            highlight_cell("default-plan1");
+            highlight_cell("default-plan2");
+            highlight_cell("default-plan3");
+            highlight_cell("default-plan4");
+            highlight_cell("default-plan5");
+            highlight_cell("default-plan6");
         }
 
         function checkWarningSelection(highlightTime) {
@@ -234,43 +236,48 @@
                 var alink = alinks[i];
 
                 alink.onclick = function () {
-                    // Get the row id where the cell exists
-                    var rowId = this.parentNode.parentNode.rowIndex;
-                    if (rowId >= 1 && this.parentNode.cellIndex < times.length) {
-                        var classId = (rowId - 1) % classroom.length;
-                        if (classId < 0) classId = classroom.length;
-                        var classroomId = classroom[classId].id;
-                        var time = times[times.length - this.parentNode.cellIndex - 1];
-                        var dayId = tableIdInFile.toString().substring(12) - 1;
-                        var day = days[dayId];
+                    var groupSelect = document.getElementById("group").value;
+                    if(!(groupSelect > 0)) {
+                        // Get the row id where the cell exists
+                        var rowId = this.parentNode.parentNode.rowIndex;
+                        if (rowId >= 1 && this.parentNode.cellIndex < times.length) {
+                            var classId = (rowId - 1) % classroom.length;
+                            if (classId < 0) classId = classroom.length;
+                            var classroomId = classroom[classId].id;
+                            var time = times[times.length - this.parentNode.cellIndex - 1];
+                            var dayId = tableIdInFile.toString().substring(12) - 1;
+                            var day = days[dayId];
 
-                        var groupIdLink = this.getAttribute("class");
-                        if(groupIdLink != null && groupIdLink.length > 9)
-                            groupIdLink = groupIdLink.substring(9);
+                            var groupIdLink = this.getAttribute("class");
+                            if (groupIdLink != null && groupIdLink.length > 9)
+                                groupIdLink = groupIdLink.substring(9);
 
-                        console.log(selectedTimes);
-                        console.log(groupIdLink);
-                        console.log(classroomId);
-                        console.log(time);
-                        console.log(day);
+                            console.log(selectedTimes);
+                            console.log(groupIdLink);
+                            console.log(classroomId);
+                            console.log(time);
+                            console.log(day);
 
-                        var checkTime = selectedTimes.filter(selectedTime => (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
+                            var checkTime = selectedTimes.filter(selectedTime = > (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day)
+                        )
+                            ;
 
-                        if (checkTime.length) {
-                            if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
-                                this.innerHTML = "";
-                                this.style.display = "none";
-                                var index;
-                                selectedTimes.some(function (entry, i) {
-                                    if (entry.groupId == groupIdLink && entry.classroomId === classroomId && entry.time === time && entry.day === day) {
-                                        index = i;
-                                        return true;
-                                    }
-                                });
-                                delete proxy[index];
+                            if (checkTime.length) {
+                                if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
+                                    this.innerHTML = "";
+                                    this.style.display = "none";
+                                    var index;
+                                    selectedTimes.some(function (entry, i) {
+                                        if (entry.groupId == groupIdLink && entry.classroomId === classroomId && entry.time === time && entry.day === day) {
+                                            index = i;
+                                            return true;
+                                        }
+                                    });
+                                    delete proxy[index];
 
-                                //send data to backend
-                                handleClickPlanning();
+                                    //send data to backend
+                                    handleClickPlanning();
+                                }
                             }
                         }
                     }

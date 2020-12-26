@@ -91,6 +91,36 @@
         #groupselect {
             margin-bottom: 20px;
         }
+
+        .multiselect {
+            margin: 8px 0;
+        }
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+            background-color: #e2f7f7;
+        }
+        #checkboxes label {
+            display: block;
+        }
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }
     </style>
 
     <script type="text/javascript" th:inline="javascript">
@@ -109,6 +139,8 @@
 
         var selectedTimes = [];
 
+        var validErrors = ["ERROR1", "ERROR2", "ERROR3", "ERROR4"];
+
         $(document).ready(function () {
             var list = $("#groupselect select").select2({
                 dropdownParent: $("#groupselect"),
@@ -118,6 +150,9 @@
             }).on("select2:closed", function(e) {
                 list.select2("open");
             });
+
+            var checkboxes = $( ':checkbox' );
+            checkboxes.prop( 'checked', true );
 
             document.getElementById("sidebar-toggle-link").click();
 
@@ -190,13 +225,21 @@
                     }
                 }
 
-                var warnMessage = "";
+                var warnMessage1 = "";
+                var warnMessage2 = "";
                 var groupCount = 0;
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
-                        if (selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                        if (validErrors.includes("ERROR2") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
                             if(checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
-                                warnMessage = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.";
+                                warnMessage1 = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.\n";
+                            }
+                        }
+                        if (validErrors.includes("ERROR4") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                            var sameTerm = checkSameLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId);
+                            if(sameTerm != null && sameTerm !== 0) {
+                                console.log(selectedTimes[i]);
+                                warnMessage2 = warnMessage2 + "این درس با درس " + selectedTimes[i].name + " برای ترم " + sameTerm + " در یک زمان برگزار می شود.\n";
                             }
                         }
                         if (selectedTimes[i].groupId === highlightTime.groupId) {
@@ -205,14 +248,14 @@
                     }
                 }
 
-                if (groupCount >= groupJalaseNumber)
-                    return warnMessage + " تعداد زمان انتخاب شده، بیشتر از تعداد جلسه مشخص شده آن خواهد شد.";
-                else return warnMessage;
+                if (groupCount >= groupJalaseNumber && validErrors.includes("ERROR3"))
+                    return warnMessage1 + warnMessage2 + " تعداد زمان انتخاب شده، بیشتر از تعداد جلسه مشخص شده آن خواهد شد.\n";
+                else return warnMessage1 + warnMessage2;
             }
         }
 
         function checkIgnoreSelection(highlightTime) {
-            if (highlightTime != null && selectedTimes.length > 0) {
+            if (validErrors.includes("ERROR1") && highlightTime != null && selectedTimes.length > 0) {
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
                         if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
@@ -225,6 +268,36 @@
             }
 
             return "";
+        }
+
+        function checkSameLessonTerms(lesson1Id, lesson2Id) {
+            var terms1 = [], terms2 = [];
+
+            for(var ll = 0; ll < lessons.length; ll++) {
+                if(lessons[ll].id === lesson1Id)
+                    terms1 = lessons[ll].term;
+                if(lessons[ll].id === lesson2Id)
+                    terms2 = lessons[ll].term;
+            }
+
+            if(terms1.includes(1) && terms2.includes(1))
+                return 1;
+            else if (terms1.includes(2) && terms2.includes(2))
+                return 2;
+            else if (terms1.includes(3) && terms2.includes(3))
+                return 3;
+            else if (terms1.includes(4) && terms2.includes(4))
+                return 4;
+            else if (terms1.includes(5) && terms2.includes(5))
+                return 5;
+            else if (terms1.includes(6) && terms2.includes(6))
+                return 6;
+            else if (terms1.includes(7) && terms2.includes(7))
+                return 7;
+            else if (terms1.includes(8) && terms2.includes(8))
+                return 8;
+
+            return 0;
         }
 
         function checkLessonTerms(lesson1Id, lesson2Id) {
@@ -378,21 +451,19 @@
                                         highlight_cell(tableIdInFile);
                                     }
                                 } else {
-                                    if (confirm(" آیا مطمئن هستید؟")) {
-                                        link = document.createTextNode($("#group option:selected").text());
-                                        a.title = $("#group option:selected").text();
-                                        a.style.padding = "2px 0";
-                                        a.style.color = "#313761";
-                                        a.setAttribute("class", "groupLink" + groupId);
+                                    link = document.createTextNode($("#group option:selected").text());
+                                    a.title = $("#group option:selected").text();
+                                    a.style.padding = "2px 0";
+                                    a.style.color = "#313761";
+                                    a.setAttribute("class", "groupLink" + groupId);
 
-                                        a.appendChild(link);
-                                        this.appendChild(a);
-                                        selectedTimes.push(highlightTime);
+                                    a.appendChild(link);
+                                    this.appendChild(a);
+                                    selectedTimes.push(highlightTime);
 
-                                        //send data to backend
-                                        handleClickPlanning();
-                                        highlight_cell(tableIdInFile);
-                                    }
+                                    //send data to backend
+                                    handleClickPlanning();
+                                    highlight_cell(tableIdInFile);
                                 }
                             }
                         }
@@ -675,6 +746,35 @@
                 selectedTimes.push(highlightTime);
             }
         }
+
+        var expanded = false;
+        function showCheckboxes() {
+            var checkboxes = document.getElementById("checkboxes");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+
+        function filterClick() {
+            validErrors = [];
+
+            if ($('#error1').is(':checked')) {
+                validErrors.push("ERROR1");
+            }
+            if ($('#error2').is(':checked')) {
+                validErrors.push("ERROR2");
+            }
+            if ($('#error3').is(':checked')) {
+                validErrors.push("ERROR3");
+            }
+            if ($('#error4').is(':checked')) {
+                validErrors.push("ERROR4");
+            }
+        }
     </script>
 
 </head>
@@ -703,7 +803,21 @@
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-3" style="font-size: 0.8em;">
-                        <div id="groupselect">
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes()">
+                                <select>
+                                    <option>فیلتر بر اساس خطاها</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes">
+                                <label th:for="error1"><input type="checkbox" onclick="filterClick()" th:id="error1" th:value="error1" th:text="'تداخل' + ' ' + 'زمان' + ' ' + 'دروس' + ' ' + 'یک' + ' ' + 'استاد'" /></label>
+                                <label th:for="error2"><input type="checkbox" onclick="filterClick()" th:id="error2" th:value="error2" th:text="'همزمانی' + ' ' + 'دروس' + ' ' + 'در' + ' ' + 'یک' + ' ' + 'کلاس'" /></label>
+                                <label th:for="error3"><input type="checkbox" onclick="filterClick()" th:id="error3" th:value="error3" th:text="'سقف' + ' ' + 'تعداد' + ' ' + 'جلسه' + ' ' + 'هر' + ' ' + 'درس'" /></label>
+                                <label th:for="error4"><input type="checkbox" onclick="filterClick()" th:id="error4" th:value="error4" th:text="'همزمانی' + ' ' + 'دروس' + ' ' + 'با' + ' ' + 'ترم' + ' ' + 'مشابه'" /></label>
+                            </div>
+                        </div>
+                        <div id="groupselect" style="position: relative;">
                             <select id="group" class="select2" name="group" data-width="100%" required onchange="set_group()">
                                 <option value="">یک گروه را انتخاب کنید...</option>
                             </select>

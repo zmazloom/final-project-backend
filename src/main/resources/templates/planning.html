@@ -77,8 +77,14 @@
             direction: rtl;
         }
 
-        .bold-cell {
+        .bold-cell-lesson {
             border-color: #f25755 !important;
+            box-shadow: 0 4px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 9px 0 rgba(0, 0, 0, 0.19);
+            border-width: 2px !important;
+            background-color: white !important;
+        }
+        .bold-cell-teacher {
+            border-color: blue !important;
             box-shadow: 0 4px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 9px 0 rgba(0, 0, 0, 0.19);
             border-width: 2px !important;
             background-color: white !important;
@@ -120,6 +126,17 @@
         }
         #checkboxes label:hover {
             background-color: #1e90ff;
+        }
+        .square {
+            height: 8px;
+            width: 8px;
+            display: inline-block;
+        }
+        #square-teacher {
+            background-color: blue;
+        }
+        #square-lesson {
+            background-color: #f25755 ;
         }
     </style>
 
@@ -486,11 +503,13 @@
 
             var teacherSelect = null;
             var lessonSelect = null;
+            var termSelect = null;
             if(groupSelect != null) {
                 for (var i = 0; i < groups.length; i++) {
                     if(groupSelect == groups[i].groupId) {
                         teacherSelect = groups[i].teacherId;
                         lessonSelect = groups[i].lessonId;
+                        termSelect = groups[i].term;
                         break;
                     }
                 }
@@ -622,7 +641,9 @@
                                         a.appendChild(link);
                                         cell8.appendChild(a);
                                         if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
-                                            cell8.classList.add('bold-cell');
+                                            cell8.classList.add('bold-cell-lesson');
+                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect !== selectedTimes[b].lessonId && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true)
+                                            cell8.classList.add('bold-cell-teacher');
                                     } else if (selectedTimes[b].weekType === "FARD") {
                                         link = document.createTextNode(selectedTimes[b].name);
                                         a.title = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
@@ -635,7 +656,9 @@
                                         a.appendChild(link);
                                         cell9.appendChild(a);
                                         if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
-                                            cell9.classList.add('bold-cell');
+                                            cell9.classList.add('bold-cell-lesson');
+                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect !== selectedTimes[b].lessonId && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true)
+                                            cell9.classList.add('bold-cell-teacher');
                                     }
                                 }
                             }
@@ -683,14 +706,6 @@
 
                 countGroup++;
             });
-
-            // var jalasatPorShode = getGroupJalasatPorShode(groups[i].groupId);
-            // option.text = option.text + " (" + jalasatPorShode + " از " + groups[i].jalaseNumber + ")";
-            // option.style.backgroundColor = "red";
-            // if(jalasatPorShode > groups[i].jalaseNumber)
-            //     option.style.backgroundColor = "red";
-            // else if(jalasatPorShode === groups[i].jalaseNumber)
-            //     option.style.backgroundColor = "green";
         }
 
         function handleClickPlanning() {
@@ -803,6 +818,16 @@
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-3" style="font-size: 0.8em;">
+                        <div style="margin-bottom: 25px; font-size: 1.2em;">
+                            <div class="col-sm-4" style="padding-right: 0;">
+                                <div class="square" id="square-lesson"></div>
+                                <span>درس</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="square" id="square-teacher"></div>
+                                <span>استاد</span>
+                            </div>
+                        </div>
                         <div class="multiselect">
                             <div class="selectBox" onclick="showCheckboxes()">
                                 <select>

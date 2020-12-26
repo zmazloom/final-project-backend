@@ -252,10 +252,9 @@
                                 warnMessage1 = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.\n";
                             }
                         }
-                        if (validErrors.includes("ERROR4") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                        if (validErrors.includes("ERROR4") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType && selectedTimes[i].grade === highlightTime.grade) {
                             var sameTerm = checkSameLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId);
                             if(sameTerm != null && sameTerm !== 0) {
-                                console.log(selectedTimes[i]);
                                 warnMessage2 = warnMessage2 + "این درس با درس " + selectedTimes[i].name + " برای ترم " + sameTerm + " در یک زمان برگزار می شود.\n";
                             }
                         }
@@ -428,6 +427,7 @@
                             var dayId = tableIdInFile.toString().substring(12) - 1;
                             var day = days[dayId];
                             var name = $("#group option:selected").text();
+                            var grade = getLessonGrade(groupId);
                             var weekType = '';
                             if (this.cellIndex % 2 === 0)
                                 weekType = "FARD";
@@ -440,7 +440,8 @@
                                 time: time,
                                 day: day,
                                 weekType: weekType,
-                                name: name
+                                name: name,
+                                grade: grade
                             };
 
                             var warningSelection = checkWarningSelection(highlightTime);
@@ -756,7 +757,8 @@
                     day: result[i].time.substring(0, result[i].time.search(/\d/)),
                     weekType: result[i].weekType,
                     name: result[i].name,
-                    lastName: result[i].lastName
+                    lastName: result[i].lastName,
+                    grade: result[i].grade
                 };
                 selectedTimes.push(highlightTime);
             }
@@ -789,6 +791,18 @@
             if ($('#error4').is(':checked')) {
                 validErrors.push("ERROR4");
             }
+        }
+
+        function getLessonGrade(groupId) {
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i] != null) {
+                    if (groups[i].groupId === groupId) {
+                        return groups[i].grade;
+                    }
+                }
+            }
+
+            return "";
         }
     </script>
 

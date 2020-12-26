@@ -252,15 +252,7 @@
                             if (groupIdLink != null && groupIdLink.length > 9)
                                 groupIdLink = groupIdLink.substring(9);
 
-                            console.log(selectedTimes);
-                            console.log(groupIdLink);
-                            console.log(classroomId);
-                            console.log(time);
-                            console.log(day);
-
-                            var checkTime = selectedTimes.filter(selectedTime = > (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day)
-                        )
-                            ;
+                            var checkTime = selectedTimes.filter(selectedTime = > (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
 
                             if (checkTime.length) {
                                 if (confirm("برای حذف این ساعت مطمعن هستید؟")) {

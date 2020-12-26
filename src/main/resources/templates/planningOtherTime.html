@@ -4,6 +4,13 @@
 <head>
 
     <style>
+        #select2-group-results {
+            min-height: 400px;
+        }
+        .select2-results {
+            min-height: 400px;
+        }
+
         a[class^="groupLink"] {
             display: block;
         }
@@ -71,8 +78,14 @@
             direction: rtl;
         }
 
-        .bold-cell {
+        .bold-cell-lesson {
             border-color: #f25755 !important;
+            box-shadow: 0 4px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 9px 0 rgba(0, 0, 0, 0.19);
+            border-width: 2px !important;
+            background-color: white !important;
+        }
+        .bold-cell-teacher {
+            border-color: blue !important;
             box-shadow: 0 4px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 9px 0 rgba(0, 0, 0, 0.19);
             border-width: 2px !important;
             background-color: white !important;
@@ -84,6 +97,47 @@
 
         #groupselect {
             margin-bottom: 20px;
+        }
+
+        .multiselect {
+            margin: 8px 0;
+        }
+        .selectBox {
+            position: relative;
+        }
+
+        .selectBox select {
+            width: 100%;
+            font-weight: bold;
+        }
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+            background-color: #e2f7f7;
+        }
+        #checkboxes label {
+            display: block;
+        }
+        #checkboxes label:hover {
+            background-color: #1e90ff;
+        }
+        .square {
+            height: 8px;
+            width: 8px;
+            display: inline-block;
+        }
+        #square-teacher {
+            background-color: blue;
+        }
+        #square-lesson {
+            background-color: #f25755 ;
         }
     </style>
 
@@ -103,10 +157,20 @@
 
         var selectedTimes = [];
 
+        var validErrors = ["ERROR1", "ERROR2", "ERROR3", "ERROR4"];
+
         $(document).ready(function () {
-            $("#groupselect select").select2({
-                dropdownParent: $("#groupselect")
+            var list = $("#groupselect select").select2({
+                dropdownParent: $("#groupselect"),
+                closeOnSelect: false
+            }).on("select2:closing", function(e) {
+                e.preventDefault();
+            }).on("select2:closed", function(e) {
+                list.select2("open");
             });
+
+            var checkboxes = $( ':checkbox' );
+            checkboxes.prop( 'checked', true );
 
             document.getElementById("sidebar-toggle-link").click();
 
@@ -123,6 +187,7 @@
             create_default_plan("default-plan5");
             create_default_plan("default-plan6");
             set_options();
+            highlightGroups();
             highlight_cell("default-plan1");
             highlight_cell("default-plan2");
             highlight_cell("default-plan3");
@@ -130,6 +195,10 @@
             highlight_cell("default-plan5");
             highlight_cell("default-plan6");
 
+        });
+
+        $(document).on('keyup', '.select2-search__field', function (e) {
+            highlightGroups();
         });
 
         function set_group() {
@@ -150,6 +219,19 @@
             highlight_cell("default-plan6");
         }
 
+        function getGroupJalasatPorShode(specificGroupId) {
+            var groupCount = 0;
+            for (var i = 0; i < selectedTimes.length; i++) {
+                if (selectedTimes[i] != null) {
+                    if (selectedTimes[i].groupId === specificGroupId) {
+                        groupCount = groupCount + 1;
+                    }
+                }
+            }
+
+            return groupCount;
+        }
+
         function checkWarningSelection(highlightTime) {
             if (highlightTime != null && selectedTimes.length > 0) {
                 var groupJalaseNumber  = 0;
@@ -164,13 +246,20 @@
                 if (groupJalaseNumber === 3 || groupJalaseNumber === 4)
                     groupJalaseNumber = 2;
 
-                var warnMessage = "";
+                var warnMessage1 = "";
+                var warnMessage2 = "";
                 var groupCount = 0;
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
-                        if (selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time) {
+                        if (validErrors.includes("ERROR2") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time) {
                             if(checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
-                                warnMessage = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.";
+                                warnMessage1 = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.\n";
+                            }
+                        }
+                        if (validErrors.includes("ERROR4") && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].grade === highlightTime.grade) {
+                            var sameTerm = checkSameLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId);
+                            if(sameTerm != null && sameTerm !== 0) {
+                                warnMessage2 = warnMessage2 + "این درس با درس " + selectedTimes[i].name + " برای ترم " + sameTerm + " در یک زمان برگزار می شود.\n";
                             }
                         }
                         if (selectedTimes[i].groupId === highlightTime.groupId) {
@@ -179,14 +268,14 @@
                     }
                 }
 
-                if (groupCount >= groupJalaseNumber)
-                    return warnMessage + " تعداد زمان انتخاب شده، بیشتر از تعداد جلسه مشخص شده آن خواهد شد.";
-                else return warnMessage;
+                if (groupCount >= groupJalaseNumber && validErrors.includes("ERROR3"))
+                    return warnMessage1 + warnMessage2 + " تعداد زمان انتخاب شده، بیشتر از تعداد جلسه مشخص شده آن خواهد شد.\n";
+                else return warnMessage1 + warnMessage2;
             }
         }
 
         function checkIgnoreSelection(highlightTime) {
-            if (highlightTime != null && selectedTimes.length > 0) {
+            if (validErrors.includes("ERROR1") && highlightTime != null && selectedTimes.length > 0) {
                 for (var i = 0; i < selectedTimes.length; i++) {
                     if (selectedTimes[i] != null) {
                         if (selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time) {
@@ -199,6 +288,36 @@
             }
 
             return "";
+        }
+
+        function checkSameLessonTerms(lesson1Id, lesson2Id) {
+            var terms1 = [], terms2 = [];
+
+            for(var ll = 0; ll < lessons.length; ll++) {
+                if(lessons[ll].id === lesson1Id)
+                    terms1 = lessons[ll].term;
+                if(lessons[ll].id === lesson2Id)
+                    terms2 = lessons[ll].term;
+            }
+
+            if(terms1.includes(1) && terms2.includes(1))
+                return 1;
+            else if (terms1.includes(2) && terms2.includes(2))
+                return 2;
+            else if (terms1.includes(3) && terms2.includes(3))
+                return 3;
+            else if (terms1.includes(4) && terms2.includes(4))
+                return 4;
+            else if (terms1.includes(5) && terms2.includes(5))
+                return 5;
+            else if (terms1.includes(6) && terms2.includes(6))
+                return 6;
+            else if (terms1.includes(7) && terms2.includes(7))
+                return 7;
+            else if (terms1.includes(8) && terms2.includes(8))
+                return 8;
+
+            return 0;
         }
 
         function checkLessonTerms(lesson1Id, lesson2Id) {
@@ -252,7 +371,7 @@
                             if (groupIdLink != null && groupIdLink.length > 9)
                                 groupIdLink = groupIdLink.substring(9);
 
-                            var checkTime = selectedTimes.filter(selectedTime = > (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
+                            var checkTime = selectedTimes.filter(selectedTime => (selectedTime.groupId == groupIdLink && selectedTime.classroomId === classroomId && selectedTime.time === time && selectedTime.day === day));
 
                             if (checkTime.length) {
                                 if (confirm("برای حذف این ساعت مطمعن هستید؟")) {
@@ -273,6 +392,7 @@
                             }
                         }
                     }
+                    highlightGroups();
                 }
             }
 
@@ -307,6 +427,7 @@
                             var dayId = tableIdInFile.toString().substring(12) - 1;
                             var day = days[dayId];
                             var name = $("#group option:selected").text();
+                            var grade = getLessonGrade(groupId);
                             var highlightTime = {
                                 classroomId: classroomId,
                                 lessonId: lessonSelect,
@@ -314,7 +435,8 @@
                                 groupId: groupId,
                                 time: time,
                                 day: day,
-                                name: name
+                                name: name,
+                                grade: grade
                             };
 
                             var warningSelection = checkWarningSelection(highlightTime);
@@ -342,25 +464,24 @@
                                         highlight_cell(tableIdInFile);
                                     }
                                 } else {
-                                    if (confirm(" آیا مطمئن هستید؟")) {
-                                        link = document.createTextNode($("#group option:selected").text());
-                                        a.title = $("#group option:selected").text();
-                                        a.style.padding = "2px 0";
-                                        a.style.color = "#313761";
-                                        a.setAttribute("class", "groupLink" + groupId);
+                                    link = document.createTextNode($("#group option:selected").text());
+                                    a.title = $("#group option:selected").text();
+                                    a.style.padding = "2px 0";
+                                    a.style.color = "#313761";
+                                    a.setAttribute("class", "groupLink" + groupId);
 
-                                        a.appendChild(link);
-                                        this.appendChild(a);
-                                        selectedTimes.push(highlightTime);
+                                    a.appendChild(link);
+                                    this.appendChild(a);
+                                    selectedTimes.push(highlightTime);
 
-                                        //send data to backend
-                                        handleClickPlanning();
-                                        highlight_cell(tableIdInFile);
-                                    }
+                                    //send data to backend
+                                    handleClickPlanning();
+                                    highlight_cell(tableIdInFile);
                                 }
                             }
                         }
                     }
+                    highlightGroups();
                 }
             }
         }
@@ -378,11 +499,13 @@
 
             var teacherSelect = null;
             var lessonSelect = null;
+            var termSelect = null;
             if(groupSelect != null) {
                 for (var i = 0; i < groups.length; i++) {
                     if(groupSelect == groups[i].groupId) {
                         teacherSelect = groups[i].teacherId;
                         lessonSelect = groups[i].lessonId;
+                        termSelect = groups[i].term;
                         break;
                     }
                 }
@@ -486,7 +609,9 @@
                                     a.appendChild(link);
                                     cell8.appendChild(a);
                                     if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
-                                        cell8.classList.add('bold-cell');
+                                        cell8.classList.add('bold-cell-lesson');
+                                    if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect !== selectedTimes[b].lessonId && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true)
+                                        cell8.classList.add('bold-cell-teacher');
 
                                 }
                             }
@@ -502,10 +627,53 @@
             var selectGroup = document.getElementById("group");
             for (var i = 0; i < groups.length; i++) {
                 var option = document.createElement("option");
-                option.text = groups[i].name + ' - ' + groups[i].lastName;
+
+                if (groups[i].lastName != null && groups[i].lastName !== "")
+                    option.text = groups[i].name + ' - ' + groups[i].lastName;
+                else option.text = groups[i].name;
+                if (groups[i].code != null && groups[i].code > 0)
+                    option.text = option.text + " - کد " + groups[i].code;
+
                 option.value = groups[i].groupId;
                 selectGroup.add(option);
             }
+        }
+
+        function highlightGroups() {
+            $("#group").select2('open');
+
+            var countGroup = 0;
+
+            $('[id^=select2-group-result-]').each(function () {
+                var jalasatPorShode = getGroupJalasatPorShode(groups[countGroup].groupId);
+                var baseJalaseNumber = groups[countGroup].jalaseNumber;
+
+                if(baseJalaseNumber === 3) {
+                    if(jalasatPorShode >= 3)
+                        jalasatPorShode = jalasatPorShode + 1;
+                    else if(jalasatPorShode === 2)
+                        jalasatPorShode = 3;
+                }
+                if(baseJalaseNumber === 4) {
+                    if(jalasatPorShode >= 3)
+                        jalasatPorShode = jalasatPorShode + 1;
+                    else if(jalasatPorShode === 2)
+                        jalasatPorShode = 4;
+                }
+
+                var firstParantez = this.innerHTML.indexOf("(");
+                if(firstParantez != null && firstParantez > 0)
+                    this.innerHTML = this.innerHTML.substring(0, this.innerHTML.indexOf("(")) + " (" + jalasatPorShode + " از " + groups[countGroup].jalaseNumber + ")";
+                else
+                    this.innerHTML = this.innerHTML + " (" + jalasatPorShode + " از " + groups[countGroup].jalaseNumber + ")";
+
+                if(jalasatPorShode > groups[countGroup].jalaseNumber)
+                    this.style.backgroundColor = "red";
+                else if(jalasatPorShode === groups[countGroup].jalaseNumber)
+                    this.style.backgroundColor = "green";
+
+                countGroup++;
+            });
         }
 
         function handleClickPlanning() {
@@ -554,10 +722,52 @@
                     time: result[i].time.substring(result[i].time.search(/\d/)),
                     day: result[i].time.substring(0, result[i].time.search(/\d/)),
                     name: result[i].name,
-                    lastName: result[i].lastName
+                    lastName: result[i].lastName,
+                    grade: result[i].grade
                 };
                 selectedTimes.push(highlightTime);
             }
+        }
+
+        var expanded = false;
+        function showCheckboxes() {
+            var checkboxes = document.getElementById("checkboxes");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+
+        function filterClick() {
+            validErrors = [];
+
+            if ($('#error1').is(':checked')) {
+                validErrors.push("ERROR1");
+            }
+            if ($('#error2').is(':checked')) {
+                validErrors.push("ERROR2");
+            }
+            if ($('#error3').is(':checked')) {
+                validErrors.push("ERROR3");
+            }
+            if ($('#error4').is(':checked')) {
+                validErrors.push("ERROR4");
+            }
+        }
+
+        function getLessonGrade(groupId) {
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i] != null) {
+                    if (groups[i].groupId === groupId) {
+                        return groups[i].grade;
+                    }
+                }
+            }
+
+            return "";
         }
     </script>
 
@@ -587,7 +797,31 @@
             <div class="card">
                 <div class="row" style="width: 100%; outline: none; margin: 0 auto 20px auto;">
                     <div class="col-sm-3" style="font-size: 0.8em;">
-                        <div id="groupselect">
+                        <div style="margin-bottom: 25px; font-size: 1.2em;">
+                            <div class="col-sm-4" style="padding-right: 0;">
+                                <div class="square" id="square-lesson"></div>
+                                <span>درس</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="square" id="square-teacher"></div>
+                                <span>استاد</span>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes()">
+                                <select>
+                                    <option>فیلتر بر اساس خطاها</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes">
+                                <label th:for="error1"><input type="checkbox" onclick="filterClick()" th:id="error1" th:value="error1" th:text="'تداخل' + ' ' + 'زمان' + ' ' + 'دروس' + ' ' + 'یک' + ' ' + 'استاد'" /></label>
+                                <label th:for="error2"><input type="checkbox" onclick="filterClick()" th:id="error2" th:value="error2" th:text="'همزمانی' + ' ' + 'دروس' + ' ' + 'در' + ' ' + 'یک' + ' ' + 'کلاس'" /></label>
+                                <label th:for="error3"><input type="checkbox" onclick="filterClick()" th:id="error3" th:value="error3" th:text="'سقف' + ' ' + 'تعداد' + ' ' + 'جلسه' + ' ' + 'هر' + ' ' + 'درس'" /></label>
+                                <label th:for="error4"><input type="checkbox" onclick="filterClick()" th:id="error4" th:value="error4" th:text="'همزمانی' + ' ' + 'دروس' + ' ' + 'با' + ' ' + 'ترم' + ' ' + 'مشابه'" /></label>
+                            </div>
+                        </div>
+                        <div id="groupselect" style="position: relative;">
                             <select id="group" class="select2" name="group" data-width="100%" required onchange="set_group()">
                                 <option value="">یک گروه را انتخاب کنید...</option>
                             </select>

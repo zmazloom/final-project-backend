@@ -252,7 +252,7 @@
                                 warnMessage1 = "در این ساعت، کلاس توسط درس دیگری رزرو شده است.\n";
                             }
                         }
-                        if (validErrors.includes("ERROR4") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType && selectedTimes[i].grade === highlightTime.grade) {
+                        if (validErrors.includes("ERROR4") && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType && selectedTimes[i].grade === highlightTime.grade) {
                             var sameTerm = checkSameLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId);
                             if(sameTerm != null && sameTerm !== 0) {
                                 warnMessage2 = warnMessage2 + "این درس با درس " + selectedTimes[i].name + " برای ترم " + sameTerm + " در یک زمان برگزار می شود.\n";

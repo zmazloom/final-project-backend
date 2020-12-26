@@ -7,4 +7,4 @@
 #### mvn spring-boot: run
 ##### Finally, open the localhost:8087 address in your browser.
 
-###### Note: The h2 database is located in the /data folder in the project path, for ease of use a database with the names of professors and classes used in one semester that we have placed in the project file, whenever you need to retrieve the project from scratch its contents Replace.
+###### Note: The h2 database is located in the /data folder in the project path, for ease of use a database with the names of professors used in one semester that we have placed in the project file, whenever you need to retrieve the project from scratch its contents Replace.

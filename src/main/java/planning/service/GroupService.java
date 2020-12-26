@@ -33,6 +33,7 @@ public class GroupService {
                 .teacherName(lessonGroup.getTeacher() != null ? lessonGroup.getTeacher().getFirstName() + " " + lessonGroup.getTeacher().getLastName() : "")
                 .lessonId(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getId() : null)
                 .name(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getName() : null)
+                .grade(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getGrade() : null)
                 .code(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getCode() : 0)
                 .lessonName(lessonGroup.getLesson() != null ? lessonGroup.getLesson().getName() + (lessonGroup.getLesson().getCode() != null ? " - " + lessonGroup.getLesson().getCode() : "") : "")
                 .planId(lessonGroup.getPlan().getId())

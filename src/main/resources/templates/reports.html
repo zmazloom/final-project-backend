@@ -2,8 +2,26 @@
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/planninglayout}">
 <head>
+    <style id="table_style" type="text/css">
+        @media print {
+            #firstrow {
+                background-color: rgb(178 251 255) !important;
+                -webkit-print-color-adjust: exact;
+            }
 
-    <style>
+            .rightcolumn {
+                background-color: antiquewhite !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+        #firstrow {
+            background-color: rgb(178 251 255);
+        }
+
+        .rightcolumn {
+            background-color: antiquewhite;
+        }
+
         .form-style-1 {
             max-width: 400px;
             padding: 20px 12px 10px 20px;
@@ -132,15 +150,15 @@
             margin: 8px 0;
         }
 
-        #checkboxes1, #checkboxes2, #checkboxes3, #checkboxes4 {
+        #checkboxes1, #checkboxes2, #checkboxes3, #checkboxes4, #checkboxes5, #checkboxes6 {
             display: none;
             border: 1px #dadada solid;
             background-color: #e2f7f7;
         }
-        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label, #checkboxes4 label {
+        #checkboxes1 label, #checkboxes2 label, #checkboxes3 label, #checkboxes4 label, #checkboxes5 label, #checkboxes6 label {
             display: block;
         }
-        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover, #checkboxes4 label:hover {
+        #checkboxes1 label:hover, #checkboxes2 label:hover, #checkboxes3 label:hover, #checkboxes4 label:hover, #checkboxes5 label:hover, #checkboxes6 label:hover {
             background-color: #1e90ff;
         }
 
@@ -168,6 +186,8 @@
         var validTeachers = [[${teacherIds}]];
         var validLessons = [[${lessonIds}]];
         var validTerms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+        var validDays = ["SHANBE", "YEKSHANBE", "DOSHANBE", "SESHANBE", "CHARSHANBE", "PANJSHANBE"];
+        var validShow = ["TEACHER", "LESSON", "GROUP", "CODE"];
 
         //full report
         var reports = [[${reports}]];
@@ -190,9 +210,9 @@
             //create thead
             var header = defaultPlan.createTHead();
             var row = header.insertRow(0);
+            row.id = "firstrow";
             row.style.position = "sticky";
             row.style.top = "0px";
-            row.style.backgroundColor = "rgb(178 251 255)";
             row.style.zIndex = "900";
             row.style.fontSize = "10px";
             var cell = row.insertCell(0);
@@ -205,7 +225,6 @@
                 var cell3 = row.insertCell(0);
                 cell3.innerHTML = persianTimes[i];
                 cell3.style.fontWeight = "bold";
-                cell3.style.backgroundColor = "rgb(178 251 255)";
                 cell3.style.direction = "rtl";
                 cell3.colSpan = 2;
                 cell3.style.fontSize = "10px";
@@ -213,46 +232,80 @@
             //create tbody
             for (var n = 0; n < days.length; n++) {                     //loop on days
                 for (var m = 0; m < classroom.length; m++) {           //loop on classrooms
-                    var row3 = defaultPlan.insertRow();
-                    var cell6 = row3.insertCell(0);
-                    cell6.innerHTML = persianDays[n];
-                    cell6.style.position = "sticky";
-                    cell6.style.right = "0px";
-                    cell6.style.fontWeight = "bold";
-                    cell6.style.backgroundColor = "antiquewhite";
-                    cell6.style.fontSize = "10px";
-                    var cell7 = row3.insertCell(0);
-                    cell7.innerHTML = classroom[m].name;
-                    cell7.style.fontWeight = "bold";
-                    cell7.style.position = "sticky";
-                    cell7.style.right = "48px";
-                    cell7.style.backgroundColor = "antiquewhite";
-                    cell7.style.fontSize = "10px";
 
-                    for (var t = 0; t < times.length; t++) {         //loop on times
-                        var cell8 = row3.insertCell(0);
-                        cell8.colSpan = 2;
-                        var cell8TextZoj = "";
-                        var cell8TextFard = "";
-                        for (var b = 0; b < reports.length; b++) {          //loop on result
-                            if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m].name) {
-                                if(validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
-                                    validTeachers.includes(reports[b].teacherId) &&
-                                    validLessons.includes(reports[b].lessonId)) {
-                                    if (reports[b].weekType === "ZOJ") {
-                                        cell8TextZoj = cell8TextZoj + "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(زوج)" + "</span>";
-                                    } else if (reports[b].weekType === "FARD") {
-                                        cell8TextFard = cell8TextFard + "<span class='ptbl'>" + reports[b].name + " - " + reports[b].lastName + " " + "(فرد)" + "</span>";
+                    if(validDays.includes(days[n])) {
+
+                        var row3 = defaultPlan.insertRow();
+                        var cell6 = row3.insertCell(0);
+                        cell6.innerHTML = persianDays[n];
+                        cell6.className = "rightcolumn";
+                        cell6.style.position = "sticky";
+                        cell6.style.right = "0px";
+                        cell6.style.fontWeight = "bold";
+                        cell6.style.backgroundColor = "antiquewhite";
+                        cell6.style.fontSize = "10px";
+                        var cell7 = row3.insertCell(0);
+                        cell7.innerHTML = classroom[m].name;
+                        cell7.className = "rightcolumn";
+                        cell7.style.fontWeight = "bold";
+                        cell7.style.position = "sticky";
+                        cell7.style.right = "48px";
+                        cell7.style.backgroundColor = "antiquewhite";
+                        cell7.style.fontSize = "10px";
+
+                        for (var t = 0; t < times.length; t++) {         //loop on times
+                            var cell8 = row3.insertCell(0);
+                            cell8.colSpan = 2;
+                            var cell8TextZoj = "";
+                            var cell8TextFard = "";
+                            for (var b = 0; b < reports.length; b++) {          //loop on result
+                                if (reports[b].time === days[n] + times[t] && reports[b].classroomName === classroom[m].name) {
+                                    if (validMaghta.includes(reports[b].grade) && validClasses.includes(reports[b].classroomId) &&
+                                        validTeachers.includes(reports[b].teacherId) &&
+                                        validLessons.includes(reports[b].lessonId)) {
+
+                                        var cellText = "";
+                                        if(validShow.includes("LESSON"))
+                                            cellText = reports[b].name;
+                                        if(validShow.includes("TEACHER")) {
+                                            if(cellText !== "")
+                                                cellText = cellText + " - " + reports[b].lastName;
+                                            else
+                                                cellText = reports[b].lastName;
+                                        }
+                                        if(validShow.includes("GROUP")) {
+                                            if(cellText !== "")
+                                                cellText = cellText + " - گروه " +  reports[b].number;
+                                            else
+                                                cellText = reports[b].number;
+                                        }
+                                        if(validShow.includes("CODE")) {
+                                            if(cellText !== "")
+                                                cellText = cellText + " - کد " + reports[b].code;
+                                            else
+                                                cellText = reports[b].code;
+                                        }
+
+                                        if (reports[b].weekType === "ZOJ") {
+                                            if(cellText !== "")
+                                                cellText = cellText + " " + "(زوج)";
+
+                                            cell8TextZoj = cell8TextZoj + "<span class='ptbl'>" + cellText + "</span>";
+                                        } else if (reports[b].weekType === "FARD") {
+                                            if(cellText !== "")
+                                                cellText = cellText + " " + "(فرد)";
+
+                                            cell8TextFard = cell8TextFard + "<span class='ptbl'>" + cellText + "</span>";
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if(cell8TextZoj !== "" && cell8TextFard !== "") {
-                            cell8.innerHTML = cell8TextZoj + "<hr class='hrtbl'>" + cell8TextFard;
+                            if (cell8TextZoj !== "" && cell8TextFard !== "") {
+                                cell8.innerHTML = cell8TextZoj + "<hr class='hrtbl'>" + cell8TextFard;
+                            } else
+                                cell8.innerHTML = cell8TextZoj + cell8TextFard;
                         }
-                        else
-                            cell8.innerHTML = cell8TextZoj + cell8TextFard;
                     }
 
                 }
@@ -263,6 +316,8 @@
         var expanded2 = false;
         var expanded3 = false;
         var expanded4 = false;
+        var expanded5 = false;
+        var expanded6 = false;
 
         function showCheckboxes1() {
             var checkboxes = document.getElementById("checkboxes1");
@@ -304,12 +359,34 @@
                 expanded4 = false;
             }
         }
+        function showCheckboxes5() {
+            var checkboxes = document.getElementById("checkboxes5");
+            if (!expanded5) {
+                checkboxes.style.display = "block";
+                expanded5 = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded5 = false;
+            }
+        }
+        function showCheckboxes6() {
+            var checkboxes = document.getElementById("checkboxes6");
+            if (!expanded6) {
+                checkboxes.style.display = "block";
+                expanded6 = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded6 = false;
+            }
+        }
 
         function filterClick() {
             validMaghta = [];
             validClasses = [];
             validTeachers = [];
             validLessons = [];
+            validDays = [];
+            validShow = [];
 
             if($('#karshenasi-id').is(':checked')) {
                 validMaghta.push("KARSHENASI");
@@ -336,7 +413,78 @@
                     validLessons.push(parseInt($(this).val()));
             });
 
+            if($('#idDay1').is(':checked')) {
+                validDays.push("SHANBE");
+            }
+            if($('#idDay2').is(':checked')) {
+                validDays.push("YEKSHANBE");
+            }
+            if($('#idDay3').is(':checked')) {
+                validDays.push("DOSHANBE");
+            }
+            if($('#idDay4').is(':checked')) {
+                validDays.push("SESHANBE");
+            }
+            if($('#idDay5').is(':checked')) {
+                validDays.push("CHARSHANBE");
+            }
+            if($('#idDay6').is(':checked')) {
+                validDays.push("PANJSHANBE");
+            }
+
+            if($('#teachershow').is(':checked')) {
+                validShow.push("TEACHER");
+            }
+            if($('#lessonshow').is(':checked')) {
+                validShow.push("LESSON");
+            }
+            if($('#groupshow').is(':checked')) {
+                validShow.push("GROUP");
+            }
+            if($('#codeshow').is(':checked')) {
+                validShow.push("CODE");
+            }
+
             create_default_plan();
+        }
+
+        function createPDF() {
+            var planId = [[${planId}]];
+
+            $.ajax({
+                type: "GET",
+                url: '/api/plan/' + planId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done(function (response) {
+                var planName = response.result.name;
+                var reportName = "گزارش برنامه " + planName;
+
+                var printWindow = window.open('', '', 'height=600,width=600');
+                printWindow.document.write('<html><head><title>' + reportName + '</title>');
+
+                //Print the Table CSS.
+                var table_style = document.getElementById("table_style").innerHTML;
+                printWindow.document.write('<style type = "text/css">');
+                printWindow.document.write(table_style);
+                printWindow.document.write('</style>');
+                printWindow.document.write('</head>');
+
+                //Print the DIV contents i.e. the HTML Table.
+                printWindow.document.write('<body>');
+                var divContents = document.getElementById("dvContents").innerHTML;
+                printWindow.document.write(divContents);
+                printWindow.document.write('</body>');
+                printWindow.document.write('</html>');
+
+                printWindow.document.close();
+                printWindow.print();
+
+
+            })
+                .fail(function (response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
         }
     </script>
 
@@ -366,6 +514,9 @@
             <div class="card">
                 <div class="row">
                     <div class="col-sm-2" style="font-size: 0.8em;">
+                        <div>
+                            <button type="button" class="btn btn-primary" style="outline: none; width: 100%;" onclick="createPDF()"><i class="fa fa-file-pdf-o" style="font-size:1.5em;"></i></button>
+                        </div>
                         <div class="multiselect">
                             <div class="selectBox" onclick="showCheckboxes1()">
                                 <select>
@@ -418,14 +569,45 @@
                                 </th>
                             </div>
                         </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes5()">
+                                <select>
+                                    <option>فیلتر بر اساس روز</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes5">
+                                <label th:for="idDay1"><input type="checkbox" onclick="filterClick()" th:id="idDay1" th:value="1" th:text="شنبه" /></label>
+                                <label th:for="idDay2"><input type="checkbox" onclick="filterClick()" th:id="idDay2" th:value="2" th:text="يكشنبه" /></label>
+                                <label th:for="idDay3"><input type="checkbox" onclick="filterClick()" th:id="idDay3" th:value="3" th:text="دوشنبه" /></label>
+                                <label th:for="idDay4"><input type="checkbox" onclick="filterClick()" th:id="idDay4" th:value="4" th:text="'سه' + ' ' + 'شنبه'" /></label>
+                                <label th:for="idDay5"><input type="checkbox" onclick="filterClick()" th:id="idDay5" th:value="5" th:text="چهارشنبه" /></label>
+                                <label th:for="idDay6"><input type="checkbox" onclick="filterClick()" th:id="idDay6" th:value="6" th:text="'پنج' + ' ' + 'شنبه'" /></label>
+                            </div>
+                        </div>
+                        <div class="multiselect">
+                            <div class="selectBox" onclick="showCheckboxes6()">
+                                <select>
+                                    <option>فیلتر بر اساس متن نمایشی</option>
+                                </select>
+                                <div class="overSelect"></div>
+                            </div>
+                            <div id="checkboxes6">
+                                <label th:for="teachershow"><input type="checkbox" onclick="filterClick()" th:id="teachershow" th:value="teachershow" th:text="'نمایش' + ' ' + 'نام' + ' ' + 'استاد'" /></label>
+                                <label th:for="lessonshow"><input type="checkbox" onclick="filterClick()" th:id="lessonshow" th:value="lessonshow" th:text="'نمایش' + ' ' + 'نام' + ' ' + 'درس'" /></label>
+                                <label th:for="groupshow"><input type="checkbox" onclick="filterClick()" th:id="groupshow" th:value="groupshow" th:text="'نمایش' + ' ' + 'شماره' + ' ' + 'گروه'" /></label>
+                                <label th:for="codeshow"><input type="checkbox" onclick="filterClick()" th:id="codeshow" th:value="codeshow" th:text="'نمایش' + ' ' + 'کد' + ' ' + 'درس'" /></label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-sm-10">
-                        <div style="overflow-x:auto;overflow-y: auto;">
+                        <div id="dvContents" style="overflow-x:auto;overflow-y: auto;">
                             <table id="default-plan" style="direction: ltr;text-align: center; margin: 0 auto;">
                             </table>
                         </div>
                     </div>
+                </div>
             </div>
 
         </section>

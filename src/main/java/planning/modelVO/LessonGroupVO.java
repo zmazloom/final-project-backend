@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import planning.model.Grade;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,6 +27,7 @@ public class LessonGroupVO {
     private String name;
     private Integer code;
     private String lessonName;
+    private Grade grade;
 
     private Long planId;
 

@@ -631,8 +631,8 @@
                 if (groups[i].lastName != null && groups[i].lastName !== "")
                     option.text = groups[i].name + ' - ' + groups[i].lastName;
                 else option.text = groups[i].name;
-                if (groups[i].code != null && groups[i].code > 0)
-                    option.text = option.text + " - کد " + groups[i].code;
+                if (groups[i].number != null && groups[i].number > 0)
+                    option.text = option.text + " - گروه " + groups[i].number;
 
                 option.value = groups[i].groupId;
                 selectGroup.add(option);

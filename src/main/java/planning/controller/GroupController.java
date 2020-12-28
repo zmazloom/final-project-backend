@@ -109,6 +109,25 @@ public class GroupController {
                 .get());
     }
 
+    @DeleteMapping("/groups")
+    public ResponseEntity<Result<Boolean>> deleteLessonGroups(@RequestParam("groupIds") @NotNull List<Long> groupIds) {
+        if (!groupIds.isEmpty()) {
+            for (Long groupId : groupIds) {
+                LessonGroup lessonGroup = lessonGroupCRUD.getLessonGroupById(groupId);
+
+                if (lessonGroup == null)
+                    throw ResourceNotFoundException.getInstance(PlanMessage.getGroupNotFound(groupId.toString()));
+
+                groupService.deleteLessonGroup(lessonGroup);
+            }
+        }
+
+        return ResponseEntity.ok(ResFact.<Boolean>build()
+                .setResult(true)
+                .setMessage(PlanMessage.getGroupsDeleted())
+                .get());
+    }
+
     @GetMapping(value = "/plan/{planId}/lesson")
     public ResponseEntity<Result<List<LessonVO>>> getAllPanelGroupLessons(@PathVariable("planId") @NotNull Long planId) {
         Plan plan = planCRUD.getPlanById(planId);

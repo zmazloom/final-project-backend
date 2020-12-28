@@ -94,9 +94,11 @@ public class PlanService {
         List<PlanDetailGet> planDetailGets = new ArrayList<>();
         if (planDetails != null && !planDetails.isEmpty()) {
             for (PlanDetail planDetail : planDetails) {
-                PlanDetailGet planDetailGet = new PlanDetailGet();
 
-                if (planDetail.getGroup() != null) {
+                if (planDetail.getGroup() != null && !planDetail.getGroup().isRemoved()) {
+                    PlanDetailGet planDetailGet = new PlanDetailGet();
+
+
                     planDetailGet.setGroupId(planDetail.getGroup().getId());
                     planDetailGet.setJalaseNumber(planDetail.getGroup().getJalaseNumber());
                     planDetailGet.setZarfiat(planDetail.getGroup().getZarfiat());
@@ -117,17 +119,18 @@ public class PlanService {
                         planDetailGet.setUnit(planDetail.getGroup().getLesson().getUnit());
                         planDetailGet.setLessonId(planDetail.getGroup().getLesson().getId());
                     }
-                }
-                if (planDetail.getClassroom() != null) {
-                    planDetailGet.setClassroomName(planDetail.getClassroom().getName());
-                    planDetailGet.setClassroomId(planDetail.getClassroom().getId());
-                }
 
-                planDetailGet.setId(planDetail.getId());
-                planDetailGet.setTime(planDetail.getTime());
-                planDetailGet.setWeekType(planDetail.getWeekType());
+                    if (planDetail.getClassroom() != null) {
+                        planDetailGet.setClassroomName(planDetail.getClassroom().getName());
+                        planDetailGet.setClassroomId(planDetail.getClassroom().getId());
+                    }
 
-                planDetailGets.add(planDetailGet);
+                    planDetailGet.setId(planDetail.getId());
+                    planDetailGet.setTime(planDetail.getTime());
+                    planDetailGet.setWeekType(planDetail.getWeekType());
+
+                    planDetailGets.add(planDetailGet);
+                }
             }
         }
 
@@ -232,8 +235,8 @@ public class PlanService {
                     }
 
                     courses.add(Course.builder()
-                            .number(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
-                            .code(Integer.valueOf(cols.get(2).childNode(0).toString()))
+                            .code(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
+                            .number(Integer.valueOf(cols.get(2).childNode(0).toString()))
                             .name(name)
                             .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
                             .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))

@@ -88,6 +88,9 @@
 
             $('#base-sidebar li:eq(3)').addClass('active');
 
+            var checkboxes = $( ':checkbox' );
+            checkboxes.prop( 'checked', false );
+
             set_options();
             set_update_options();
 
@@ -144,6 +147,32 @@
                 $('#removeModalCenter').modal();
             });
         });
+
+        function removeGroups() {
+            var deleteGroups = $('input:checked');
+
+            var groupIds = "";
+
+            for(var i=0; i<deleteGroups.length; i++) {
+                if(groupIds !== "")
+                    groupIds+= "," + deleteGroups[i].id.substring(5);
+                else
+                    groupIds+= deleteGroups[i].id.substring(5);
+            }
+
+            console.log(groupIds);
+
+            $.ajax({
+                type: "DELETE",
+                url: '/api/group/groups?groupIds=' + groupIds,
+                dataType: "json"
+            }).done(function (response) {
+                location.reload();
+            })
+                .fail(function (response) {
+                    alert(JSON.parse(response.responseText).message);
+                })
+        }
     </script>
 
     <script type="text/javascript" th:inline="javascript">
@@ -337,10 +366,14 @@
                     </div>
 
                     <div class="col-sm-9">
+                        <button onclick="removeGroups()" class="btn btn-primary nBtn" style="font-size: 0.6em; margin-bottom: 5px;">
+                            <span style="margin: 5px;">حذف چند گروه</span>
+                        </button>
                         <table id="datatable" class="table table-striped table-hover " style="margin: 10px auto 0 auto;">
                         <thead style="background-color: #a7b6bf;">
                         <tr>
                             <th style="display:none;">شناسه</th>
+                            <th></th>
                             <th>درس</th>
                             <th>استاد</th>
                             <th>شماره گروه</th>
@@ -353,6 +386,7 @@
                         <tbody>
                         <tr th:each="group :${groups}">
                             <td th:text="${group.groupId}" style="display: none;"></td>
+                            <td><input type="checkbox" th:id="'check' + ${group.groupId}" th:value="'check' + ${group.groupId}" /></td>
                             <td th:text="${group.lessonName}"></td>
                             <td th:text="${group.teacherName}"></td>
                             <td th:text="${group.number}"></td>

@@ -20,6 +20,8 @@ public class PlanMessage {
 
     private static final String FA_GROUP_DELETED = "گروه با شناسه " + "{GROUPID}" + " حذف شد.";
 
+    private static final String FA_GROUPS_DELETED = "گروه ها حذف شدند.";
+
     public static String getDuplicatePlan(String planName) {
         return FA_DUPLICATE_PLAN.replace("{PLANNAME}", planName);
     }
@@ -54,6 +56,10 @@ public class PlanMessage {
 
     public static String getGroupDeleted(String groupId) {
         return FA_GROUP_DELETED.replace("{GROUPID}", groupId);
+    }
+
+    public static String getGroupsDeleted() {
+        return FA_GROUPS_DELETED;
     }
 
 

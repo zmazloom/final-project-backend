@@ -156,7 +156,7 @@
 
         var selectedTimes = [];
 
-        var validErrors = ["ERROR1", "ERROR2", "ERROR3", "ERROR4"];
+        var validErrors = ["ERROR1", "ERROR3", "ERROR4"];
 
         $(document).ready(function () {
             var list = $("#groupselect select").select2({
@@ -170,6 +170,8 @@
 
             var checkboxes = $( ':checkbox' );
             checkboxes.prop( 'checked', true );
+
+            $( '#error2' ).prop( 'checked', false );
 
             document.getElementById("sidebar-toggle-link").click();
 
@@ -194,6 +196,9 @@
             highlight_cell("default-plan5");
             highlight_cell("default-plan6");
 
+            var allProblems = getAllGroupProblems();
+            $('#groupAllProblems').html(allProblems);
+
         });
 
         $(document).on('keyup', '.select2-search__field', function (e) {
@@ -216,6 +221,10 @@
             highlight_cell("default-plan4");
             highlight_cell("default-plan5");
             highlight_cell("default-plan6");
+
+            var groupSelect = document.getElementById("group").value;
+            var problem = findAndGetGroupProblems(groupSelect);
+            $('#groupProblem').html(problem);
         }
 
         function getGroupJalasatPorShode(specificGroupId) {
@@ -342,6 +351,7 @@
         }
 
         function highlight_cell(tableIdInFile) {
+            var clickOnLink = false;
             var table = document.getElementById(tableIdInFile);
             var alinks = table.getElementsByTagName('a');
             var cells = table.getElementsByTagName('td');
@@ -352,7 +362,9 @@
 
                 alink.onclick = function () {
                     var groupSelect = document.getElementById("group").value;
-                    if(!(groupSelect > 0)) {
+                    if(groupSelect != null && groupSelect > 0) {
+                        clickOnLink = true;
+                    }
                         // Get the row id where the cell exists
                         var rowId = this.parentNode.parentNode.rowIndex;
                         if (rowId >= 2 && this.parentNode.cellIndex < 2 * times.length) {
@@ -388,10 +400,13 @@
 
                                     //send data to backend
                                     handleClickPlanning();
+
+                                    var allProblems = getAllGroupProblems();
+                                    $('#groupAllProblems').html(allProblems);
                                 }
                             }
                         }
-                    }
+                    // }
                     highlightGroups();
                 }
             }
@@ -403,14 +418,16 @@
                 cell.onclick = function () {
                     var groupSelect = document.getElementById("group").value;
 
-                    if(groupSelect !== null && groupSelect > 0) {
+                    if(groupSelect !== null && groupSelect > 0 && !clickOnLink) {
                         var teacherSelect = null;
-                        var lessonSelect = null;
+                        var lessonSelectId = null;
+                        var lessonSelectName = null;
                         if (groupSelect != null) {
                             for (var i = 0; i < groups.length; i++) {
                                 if (groupSelect == groups[i].groupId) {
                                     teacherSelect = groups[i].teacherId;
-                                    lessonSelect = groups[i].lessonId;
+                                    lessonSelectId = groups[i].lessonId;
+                                    lessonSelectName = groups[i].lesson;
                                     break;
                                 }
                             }
@@ -434,7 +451,8 @@
                             else weekType = "ZOJ";
                             var highlightTime = {
                                 classroomId: classroomId,
-                                lessonId: lessonSelect,
+                                lessonId: lessonSelectId,
+                                name: lessonSelectName,
                                 teacherId: teacherSelect,
                                 groupId: groupId,
                                 time: time,
@@ -467,6 +485,9 @@
                                         //send data to backend
                                         handleClickPlanning();
                                         highlight_cell(tableIdInFile);
+
+                                        var allProblems = getAllGroupProblems();
+                                        $('#groupAllProblems').html(allProblems);
                                     }
                                 } else {
                                     link = document.createTextNode($("#group option:selected").text());
@@ -482,6 +503,9 @@
                                     //send data to backend
                                     handleClickPlanning();
                                     highlight_cell(tableIdInFile);
+
+                                    var allProblems = getAllGroupProblems();
+                                    $('#groupAllProblems').html(allProblems);
                                 }
                             }
                         }
@@ -596,7 +620,11 @@
                     cell7.style.backgroundColor = "antiquewhite";
                     for (var t = 0; t < times.length; t++) {         //loop on times
                         var cell8 = row3.insertCell(0);
+                        cell8.style.paddingTop = "3em";
+                        cell8.style.paddingBottom = "3em";
                         var cell9 = row3.insertCell(0);
+                        cell9.style.paddingTop = "3em";
+                        cell9.style.paddingBottom = "3em";
 
                         if(teacherSelect != null) {
                             for (var tt = 0; tt < showTeacherTimes.length; tt++) {//loop on showTeacherTimes
@@ -640,11 +668,13 @@
                                             a.style.borderTop = "1px dashed";
 
                                         a.appendChild(link);
-                                        cell8.appendChild(a);
-                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
-                                            cell8.classList.add('bold-cell-lesson');
-                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect !== selectedTimes[b].lessonId && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true)
-                                            cell8.classList.add('bold-cell-teacher');
+                                        cell8.appendChild(a);;
+                                        if (selectedTimes[b].groupId == groupSelect)
+                                            cell8.className = 'bold-cell-lesson';
+                                        else if (selectedTimes[b].groupId != groupSelect && teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true) {
+                                            if(!cell8.classList.contains("bold-cell-lesson"))
+                                                cell8.classList.add('bold-cell-teacher');
+                                        }
                                     } else if (selectedTimes[b].weekType === "FARD") {
                                         link = document.createTextNode(selectedTimes[b].name);
                                         a.title = selectedTimes[b].name + " (" + selectedTimes[b].lastName + ")";
@@ -656,10 +686,12 @@
 
                                         a.appendChild(link);
                                         cell9.appendChild(a);
-                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect === selectedTimes[b].lessonId)
-                                            cell9.classList.add('bold-cell-lesson');
-                                        if (teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && lessonSelect !== selectedTimes[b].lessonId && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true)
-                                            cell9.classList.add('bold-cell-teacher');
+                                        if (selectedTimes[b].groupId == groupSelect)
+                                            cell9.className = 'bold-cell-lesson';
+                                        else if (selectedTimes[b].groupId != groupSelect && teacherSelect != null && teacherSelect === selectedTimes[b].teacherId && lessonSelect != null && checkLessonTerms(selectedTimes[b].lessonId, lessonSelect) === true) {
+                                            if(!cell9.classList.contains("bold-cell-lesson"))
+                                                cell9.classList.add('bold-cell-teacher');
+                                        }
                                     }
                                 }
                             }
@@ -791,6 +823,9 @@
             if ($('#error4').is(':checked')) {
                 validErrors.push("ERROR4");
             }
+
+            var allProblems = getAllGroupProblems();
+            $('#groupAllProblems').html(allProblems);
         }
 
         function getLessonGrade(groupId) {
@@ -803,6 +838,106 @@
             }
 
             return "";
+        }
+
+        function getDay(enumDay) {
+            if(enumDay === "SHANBE")
+                return "شنبه";
+            else if(enumDay === "YEKSHANBE")
+                return "یکشنبه";
+            else if(enumDay === "DOSHANBE")
+                return "دوشنبه";
+            else if(enumDay === "SESHANBE")
+                return "سه شنبه";
+            else if(enumDay === "CHARSHANBE")
+                return "چهارشنبه";
+            else if(enumDay === "PANJSHANBE")
+                return "پنجشنبه";
+            return "...";
+        }
+        function getTime(enumTime) {
+            if(enumTime === "8T")
+                return "8 تا 10";
+            else if(enumTime === "10T")
+                return "10 تا 12";
+            else if(enumTime === "12T")
+                return "12 تا 14";
+            else if(enumTime === "14T")
+                return "14 تا 16";
+            else if(enumTime === "16T")
+                return "16 تا 18";
+            else if(enumTime === "18T")
+                return "18 تا 20";
+            return "...";
+        }
+        function getGroupProblems(highlightTime, index) {
+            var warnMessage1 = "";
+            var warnMessage2 = "";
+            var warnMessage3 = "";
+            var warnMessage4 = "";
+
+            for (var i = 0; i < selectedTimes.length; i++) {
+                if (selectedTimes[i] != null) {
+                    if(selectedTimes[i].groupId != highlightTime.groupId) {
+                        if (validErrors.includes("ERROR2") && selectedTimes[i].classroomId === highlightTime.classroomId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                            if (checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
+                                warnMessage1 = warnMessage1 + "<i class='fas fa-arrow-circle-left' style='color:blue;margin-left:2px;'></i>" + "تداخل کلاسی با درس " + selectedTimes[i].name + " در روز " + getDay(selectedTimes[i].day) + " ساعت " + getTime(selectedTimes[i].time) + "<br />";
+                            }
+                        }
+                        if (validErrors.includes("ERROR4") && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType && selectedTimes[i].grade === highlightTime.grade) {
+                            var sameTerm = checkSameLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId);
+                            if (sameTerm != null && sameTerm !== 0) {
+                                warnMessage2 = warnMessage2 + "<i class='fas fa-arrow-circle-left' style='color:blue;margin-left:2px;'></i>" + "تداخل زمانی با درس " + selectedTimes[i].name + " برای ترم " + sameTerm + " در روز " + getDay(selectedTimes[i].day) + " ساعت " + getTime(selectedTimes[i].time) + "<br />";
+                            }
+                        }
+                        if (validErrors.includes("ERROR1") && selectedTimes[i].teacherId === highlightTime.teacherId && selectedTimes[i].day === highlightTime.day && selectedTimes[i].time === highlightTime.time && selectedTimes[i].weekType === highlightTime.weekType) {
+                            if (checkLessonTerms(selectedTimes[i].lessonId, highlightTime.lessonId) === true) {
+                                warnMessage3 = warnMessage3 + "<i class='fas fa-arrow-circle-left' style='color:blue;margin-left:2px;'></i>" + "تداخل زمان استاد درس با درس " + selectedTimes[i].name + " در روز " + getDay(selectedTimes[i].day) + " ساعت " + getTime(selectedTimes[i].time) + "<br />";
+                            }
+                        }
+                    }
+                    // else {
+                    //     if (index !== i) {
+                    //         warnMessage4 = "چند مورد از این گروه در این زمان ثبت شده است!";
+                    //     }
+                    // }
+                }
+            }
+
+            return warnMessage1 + warnMessage2 + warnMessage3;
+        }
+        function findAndGetGroupProblems(groupId) {
+            var problems = "";
+            if (groupId != null && selectedTimes.length > 0) {
+                for (var i = 0; i < selectedTimes.length; i++) {
+                    if (selectedTimes[i] != null) {
+                        if (selectedTimes[i].groupId == groupId) {
+                            problems = problems + getGroupProblems(selectedTimes[i], i);
+                        }
+                    }
+                }
+            }
+
+            return problems
+        }
+
+        function getAllGroupProblems() {
+            var problems = "";
+            if (selectedTimes.length > 0) {
+                for (var i = 0; i < selectedTimes.length; i++) {
+                    if (selectedTimes[i] != null) {
+                        var groupProblem = getGroupProblems(selectedTimes[i], i);
+
+                        if (groupProblem != null && groupProblem !== "") {
+                            problems = problems + "<b>" +
+                                selectedTimes[i].name + "(" + getDay(selectedTimes[i].day) + getTime(selectedTimes[i].time) + (selectedTimes[i].weekType == "ZOJ" ? "زوج" : "فرد") + ")" + ":"
+                                + "</b>" + "<br />" + groupProblem;
+                        }
+                    }
+                }
+            }
+
+            return problems
         }
     </script>
 
@@ -835,7 +970,7 @@
                         <div style="margin-bottom: 25px; font-size: 1.2em;">
                             <div class="col-sm-4" style="padding-right: 0;">
                                 <div class="square" id="square-lesson"></div>
-                                <span>درس</span>
+                                <span>گروه</span>
                             </div>
                             <div class="col-sm-4">
                                 <div class="square" id="square-teacher"></div>
@@ -856,10 +991,12 @@
                                 <label th:for="error4"><input type="checkbox" onclick="filterClick()" th:id="error4" th:value="error4" th:text="'همزمانی' + ' ' + 'دروس' + ' ' + 'با' + ' ' + 'ترم' + ' ' + 'مشابه'" /></label>
                             </div>
                         </div>
-                        <div id="groupselect" style="position: relative;">
+                        <div id="groupselect" style="position: relative; height: 450px;">
                             <select id="group" class="select2" name="group" data-width="100%" required onchange="set_group()">
                                 <option value="">یک گروه را انتخاب کنید...</option>
                             </select>
+                        </div>
+                        <div style="font-size: 7px; border: 1px solid; margin: 5px 0; padding: 2px 5px; clear: both;" id = "groupProblem">
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -875,6 +1012,9 @@
                         </table>
                         <table class="default-plan" id="default-plan6" style="direction: ltr;text-align: center;width: -moz-available">
                         </table>
+
+                        <div style="font-size: 8px; border: 1px solid; margin: 5px 0; padding: 2px 5px;" id = "groupAllProblems">
+                        </div>
                     </div>
                 </div>
             </div>

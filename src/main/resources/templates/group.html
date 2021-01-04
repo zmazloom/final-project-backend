@@ -160,8 +160,6 @@
                     groupIds+= deleteGroups[i].id.substring(5);
             }
 
-            console.log(groupIds);
-
             $.ajax({
                 type: "DELETE",
                 url: '/api/group/groups?groupIds=' + groupIds,

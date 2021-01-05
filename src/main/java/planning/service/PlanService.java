@@ -189,71 +189,183 @@ public class PlanService {
 
             List<Element> rows = table != null ? table.getElementsByTag("tr") : null;
 
-            List<Course> courses = new ArrayList<>();
-
             if (rows != null && rows.size() > 0) {
-                rows.forEach(row -> {
-                    List<Element> cols = row.getElementsByTag("td");
+                for (int i = 0; i < rows.size(); i++) {
+                    List<Element> cols = rows.get(i).getElementsByTag("td");
                     if (cols == null || cols.isEmpty())
-                        return;
-
-                    Teacher professor;
-                    professor = Teacher.builder().lastName(cols.get(8).childNode(0).toString().replace("&nbsp;", "")).build();
-
-                    String name = cols.get(3).childNode(0).toString();
-                    String degree = "";
-                    List<Course.Time> times = new ArrayList<>();
-                    Classroom classroom = new Classroom();
+                        continue;
 
                     String title = cols.get(10).childNode(0).attributes().get("onclick");
+
                     if (title != null && !title.isEmpty()) {
-                        String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
-                        String[] tags = body.split("<br>");
-                        for (String tag : tags) {
-                            Document html = Jsoup.parse(tag);
-                            if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("مقطع")) {
-                                degree = html.getElementsByTag("body").get(0).childNode(1).toString();
-                                if (degree != null && degree.length() > 2)
-                                    degree = degree.substring(1);
-                            } else if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("جلسه")) {
-                                String time = html.getElementsByTag("body").get(0).childNode(1).toString();
-                                times.add(Course.Time.builder()
-                                        .time(time.substring(1, time.indexOf("(")))
-                                        .type(time.contains("زوج") ? PlanDetail.WeekType.ZOJ :
-                                                (time.contains("فرد") ? PlanDetail.WeekType.FARD : PlanDetail.WeekType.HAR))
-                                        .build());
-
-                                if (time.contains("کلاس")) {
-                                    try {
-                                        classroom.setName(time.substring(time.indexOf("کلاس") + 4, time.indexOf(")")));
-                                    } catch (Exception ignored) {
-                                    }
-                                }
-                            }
+                        try {
+                            return newPouya(file);
+                        } catch (IOException e) {
+                            return Collections.emptyList();
                         }
-
+                    } else {
+                        try {
+                            return oldPouya(file);
+                        } catch (IOException e) {
+                            return Collections.emptyList();
+                        }
                     }
-
-                    courses.add(Course.builder()
-                            .code(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
-                            .number(Integer.valueOf(cols.get(2).childNode(0).toString()))
-                            .name(name)
-                            .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
-                            .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))
-                            .teacher(professor)
-                            .degree(degree)
-                            .times(times)
-                            .classroom(classroom)
-                            .build());
-                });
+                }
             }
 
-            return courses;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             return Collections.emptyList();
         } finally {
             file.delete();
         }
+
+        return Collections.emptyList();
+    }
+
+    public List<Course> newPouya(File file) throws IOException {
+        List<Course> courses = new ArrayList<>();
+
+        Document htmlFile = Jsoup.parse(file, "UTF-8");
+
+        Element table = htmlFile.getElementsByTag("table").get(1);
+
+        List<Element> rows = table != null ? table.getElementsByTag("tr") : null;
+
+        if (rows != null && rows.size() > 0) {
+            rows.forEach(row -> {
+                List<Element> cols = row.getElementsByTag("td");
+                if (cols == null || cols.isEmpty())
+                    return;
+
+                Teacher professor;
+                professor = Teacher.builder().lastName(cols.get(8).childNode(0).toString().replace("&nbsp;", "")).build();
+
+                String name = cols.get(3).childNode(0).toString();
+                String degree = "";
+                List<Course.Time> times = new ArrayList<>();
+                Classroom classroom = new Classroom();
+
+                String title = cols.get(10).childNode(0).attributes().get("onclick");
+                if (title != null && !title.isEmpty()) {
+                    String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
+                    String[] tags = body.split("<br>");
+                    for (String tag : tags) {
+                        Document html = Jsoup.parse(tag);
+                        if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("مقطع")) {
+                            degree = html.getElementsByTag("body").get(0).childNode(1).toString();
+                            if (degree != null && degree.length() > 2)
+                                degree = degree.substring(1);
+                        } else if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("جلسه")) {
+                            String time = html.getElementsByTag("body").get(0).childNode(1).toString();
+                            times.add(Course.Time.builder()
+                                    .time(time.substring(1, time.indexOf("(")))
+                                    .type(time.contains("زوج") ? PlanDetail.WeekType.ZOJ :
+                                            (time.contains("فرد") ? PlanDetail.WeekType.FARD : PlanDetail.WeekType.HAR))
+                                    .build());
+
+                            if (time.contains("کلاس")) {
+                                try {
+                                    classroom.setName(time.substring(time.indexOf("کلاس") + 5, time.indexOf(")")));
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                courses.add(Course.builder()
+                        .code(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
+                        .number(Integer.valueOf(cols.get(2).childNode(0).toString()))
+                        .name(name)
+                        .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
+                        .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))
+                        .teacher(professor)
+                        .degree(degree)
+                        .times(times)
+                        .classroom(classroom)
+                        .build());
+            });
+        }
+
+        return courses;
+    }
+
+    public List<Course> oldPouya(File file) throws IOException {
+        Document htmlFile = Jsoup.parse(file, "UTF-8");
+
+        Element container = htmlFile.getElementsByClass("container-fluid").stream()
+                .filter(elem -> !elem.parent().tagName().equalsIgnoreCase("body")).findAny().orElse(null);
+
+        Element table = container != null ? container.getElementsByTag("table").stream().filter(elem -> elem.attributes().get("border").equals("1")).findAny().orElse(null) : null;
+
+        List<Element> rows = table != null ? table.getElementsByTag("tr") : null;
+
+        List<Course> courses = new ArrayList<>();
+
+        if (rows != null) {
+            rows.forEach(row -> {
+                List<Element> cols = row.getElementsByTag("td");
+                if (cols == null || cols.isEmpty())
+                    return;
+
+                Teacher professor;
+                professor = Teacher.builder().lastName(cols.get(8).childNode(0).toString().replace("&nbsp;", "")).build();
+
+                String name = cols.get(3).childNode(0).toString();
+                String degree = "";
+                List<Course.Time> times = new ArrayList<>();
+                Classroom classroom = new Classroom();
+
+                String title = cols.get(10).childNode(0).attributes().get("title");
+                if (title != null && !title.isEmpty()) {
+                    String body = title.substring(title.indexOf(" body=[") + 7).replace("]", "");
+                    String[] tags = body.split("<br>");
+                    for (String tag : tags) {
+                        Document html = Jsoup.parse(tag);
+                        if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("مقطع")) {
+                            degree = html.getElementsByTag("body").get(0).childNode(1).toString();
+                            if (degree != null && degree.length() > 2)
+                                degree = degree.substring(1);
+                        } else if (html.getElementsByTag("b").get(0).childNode(0).toString().contains("جلسه")) {
+                            String time = html.getElementsByTag("body").get(0).childNode(1).toString();
+                            times.add(Course.Time.builder()
+                                    .time(time.substring(1, time.indexOf("(")))
+                                    .type(time.contains("زوج") ? PlanDetail.WeekType.ZOJ :
+                                            (time.contains("فرد") ? PlanDetail.WeekType.FARD : PlanDetail.WeekType.HAR))
+                                    .build());
+
+                            if (time.contains("کلاس")) {
+                                try {
+                                    classroom.setName(time.substring(time.indexOf("کلاس") + 5, time.indexOf(")")));
+                                } catch (Exception ignored) {
+                                }
+                            } else if (time.contains("در")) {
+                                try {
+                                    classroom.setName(time.substring(time.lastIndexOf("در") + 3, time.indexOf(")")));
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                courses.add(Course.builder()
+                        .code(Integer.valueOf(cols.get(1).child(0).childNode(0).toString()))
+                        .number(Integer.valueOf(cols.get(2).childNode(0).toString()))
+                        .name(name)
+                        .unit(Double.valueOf(cols.get(4).childNode(0).toString()))
+                        .capacity(Integer.valueOf(cols.get(6).childNode(0).toString()))
+                        .teacher(professor)
+                        .degree(degree)
+                        .times(times)
+                        .classroom(classroom)
+                        .build());
+            });
+        }
+
+        return courses;
     }
 
     public void convertCoursesToThisProject(Plan plan, List<Course> courses) {
@@ -267,7 +379,8 @@ public class PlanService {
         }
     }
 
-    private void createClassAndTeacherAndLessons(List<Course> courses, List<Teacher> teachers, List<Lesson> lessons, List<Classroom> classrooms) {
+    private void createClassAndTeacherAndLessons
+            (List<Course> courses, List<Teacher> teachers, List<Lesson> lessons, List<Classroom> classrooms) {
         for (Course course : courses) {
             if (course.getClass() != null && course.getClassroom().getName() != null && !course.getClassroom().getName().equals("")) {
                 boolean fined = false;
